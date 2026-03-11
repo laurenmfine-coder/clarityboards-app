@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { ToastProvider } from '@/components/ToastProvider'
 import { NextIntlClientProvider } from 'next-intl'
-import { getMessages } from 'next-intl/server'
+import { headers } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,16 +28,25 @@ export const viewport: Viewport = {
   userScalable: false,
 }
 
+const SUPPORTED_LOCALES = ['en', 'es', 'fr', 'it', 'pt', 'pt-BR', 'de']
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   let messages = {}
+  let locale = 'en'
+
   try {
-    messages = await getMessages()
+    const headersList = headers()
+    const xLocale = headersList.get('x-locale')
+    if (xLocale && SUPPORTED_LOCALES.includes(xLocale)) locale = xLocale
+    messages = (await import(`../messages/${locale}.json`)).default
   } catch {
-    // During prerender/build, fall back to empty messages
+    try {
+      messages = (await import('../messages/en.json')).default
+    } catch {}
   }
 
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -47,7 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
       <body>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <ToastProvider>
             {children}
           </ToastProvider>
