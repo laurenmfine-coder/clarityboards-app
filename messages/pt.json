@@ -1,402 +1,402 @@
 {
   "nav": {
-    "signIn": "Sign in",
-    "getStarted": "Get started free \u2192"
+    "signIn": "Entrar",
+    "getStarted": "Começar grátis →"
   },
   "hero": {
-    "badge": "\u2726 Life management, finally simple",
-    "headline": "Everything on your plate,",
-    "headlineAccent": "organized in seconds.",
-    "subheadline": "Text anything to Clarityboards. AI figures out the rest \u2014 dates, checklists, which board it belongs on. No app switching. No formatting.",
-    "ctaPrimary": "Start free \u2014 no credit card",
-    "ctaSecondary": "See it in action \u2193",
-    "pricingNote": "Free forever \u00b7 Pro from $4.99/mo \u00b7 No app download required"
+    "badge": "✦ Gestão de vida, finalmente simples",
+    "headline": "Tudo o que tens para fazer,",
+    "headlineAccent": "organizado em segundos.",
+    "subheadline": "Envia uma mensagem para o Clarityboards. A IA trata do resto — datas, listas, qual painel usar. Sem mudar de app. Sem formatação.",
+    "ctaPrimary": "Começa grátis — sem cartão de crédito",
+    "ctaSecondary": "Ver em ação ↓",
+    "pricingNote": "Grátis para sempre · Pro a partir de $4.99/mês · Sem download necessário"
   },
   "demo": {
     "chromeUrl": "clarityboards-app.vercel.app/dashboard",
-    "tryIt": "Try it \u2193",
-    "allBoards": "All boards",
-    "noItems": "No items on this board yet.",
-    "clickToExplore": "Click any item to explore",
-    "footerHint": "This is a live demo \u2014 click items, check off tasks, explore boards. Your real data lives in your own account."
+    "tryIt": "Experimenta ↓",
+    "allBoards": "Todos os painéis",
+    "noItems": "Nenhum elemento neste painel.",
+    "clickToExplore": "Clica em qualquer elemento para explorar",
+    "footerHint": "Esta é uma demonstração ao vivo — clica nos elementos, marca tarefas, explora os painéis. Os teus dados reais estão na tua conta."
   },
   "detail": {
-    "checklist": "Checklist",
-    "sharedBoard": "\ud83d\udd17 Shared board",
-    "markComplete": "Mark complete \u2713",
-    "completed": "\u2713 Completed",
-    "done": "Done!",
-    "priority": "{level} priority",
-    "today": "Today!",
-    "daysAway": "{n}d away"
+    "checklist": "Lista de verificação",
+    "sharedBoard": "🔗 Painel partilhado",
+    "markComplete": "Marcar como concluído ✓",
+    "completed": "✓ Concluído",
+    "done": "Feito!",
+    "priority": "Prioridade {level}",
+    "today": "Hoje!",
+    "daysAway": "Em {n}d"
   },
   "sms": {
-    "badge": "\u2726 The magic",
-    "headline": "Just text it.",
-    "subheadline": "No app to open, no form to fill. Send a text like you'd send to a friend \u2014 AI handles the rest.",
+    "badge": "✦ A magia",
+    "headline": "Envia apenas uma mensagem.",
+    "subheadline": "Sem app para abrir, sem formulário para preencher. Envia uma mensagem como enviarias a um amigo — a IA faz o resto.",
     "phone": "+1 (877) 318-9322",
     "name": "Clarityboards"
   },
   "smsStories": {
     "maria": {
-      "persona": "Maria, Soccer Mom",
-      "userText": "Jake's soccer tournament Saturday 8am, bring snacks for 12 kids",
-      "appText": "\u2705 Added to ActivityBoard: \"Jake soccer tournament\" \u00b7 Sat Mar 15 \u00b7 reminder set for Friday night \ud83c\udf4a",
-      "result": "Appeared instantly in ActivityBoard \u2014 date, time, even the snack reminder."
+      "persona": "Maria, mãe de futebolista",
+      "userText": "Torneio de futebol do Jake sábado às 8h, levar lanche para 12 crianças",
+      "appText": "✅ Adicionado ao ActivityBoard: \"Torneio de futebol do Jake\" · Sáb 15 Mar · lembrete definido para sexta à noite 🍊",
+      "result": "Apareceu instantaneamente no ActivityBoard — data, hora e até o lembrete do lanche."
     },
     "priya": {
-      "persona": "Priya, Pre-Med Student",
-      "userText": "BIO 301 midterm March 18, study: chapters 4-7, practice MCQs, review labs",
-      "appText": "\u2705 Added to StudyBoard: \"BIO 301 midterm\" \u00b7 Tue Mar 18 \u00b7 3 checklist tasks added \ud83d\udccb",
-      "result": "The checklist built itself. She opened the app to find it already organized."
+      "persona": "Priya, estudante de pré-medicina",
+      "userText": "Exame parcial BIO 301 a 18 de março, estudar: capítulos 4-7, MCQs de prática, rever laboratórios",
+      "appText": "✅ Adicionado ao StudyBoard: \"Parcial BIO 301\" · Ter 18 Mar · 3 tarefas adicionadas 📋",
+      "result": "A lista criou-se sozinha. Abriu a app e encontrou tudo já organizado."
     },
     "derek": {
-      "persona": "Derek, Job Seeker",
-      "userText": "Applied to Google SWE role today, follow up in 2 weeks if no response",
-      "appText": "\u2705 Added to CareerBoard: \"Google SWE application\" \u00b7 submitted \u00b7 follow-up reminder Mar 30 \ud83d\udcc5",
-      "result": "Application logged, follow-up scheduled \u2014 without opening the app once."
+      "persona": "Derek, à procura de emprego",
+      "userText": "Candidatei-me ao cargo SWE na Google hoje, fazer follow-up em 2 semanas sem resposta",
+      "appText": "✅ Adicionado ao CareerBoard: \"Candidatura SWE Google\" · submetida · lembrete de follow-up 30 Mar 📅",
+      "result": "Candidatura registada, follow-up agendado — sem abrir a app uma única vez."
     },
     "tom": {
-      "persona": "Tom, Empty Nester",
-      "userText": "RSVP deadline for Martins' dinner party is this Friday, plus need to buy wine",
-      "appText": "\u2705 Added 2 items:\n\u2022 \"Martins dinner party RSVP\" \u00b7 Fri Mar 14 \u2192 EventBoard\n\u2022 \"Buy wine for dinner party\" \u2192 TaskBoard",
-      "result": "One text became two separate items on the right boards automatically."
+      "persona": "Tom, com os filhos já crescidos",
+      "userText": "Data limite do RSVP para o jantar dos Martin é esta sexta, mais comprar vinho",
+      "appText": "✅ Adicionados 2 elementos:\n• \"RSVP jantar dos Martin\" · Sex 14 Mar → EventBoard\n• \"Comprar vinho para o jantar\" → TaskBoard",
+      "result": "Uma mensagem tornou-se dois elementos separados nos painéis certos automaticamente."
     }
   },
   "features": {
-    "sectionBadge": "\u2726 Features",
-    "headline": "Everything you need.",
-    "headlineAccent": "Nothing you don't.",
-    "subheadline": "Built for real life \u2014 not productivity theater.",
+    "sectionBadge": "✦ Funcionalidades",
+    "headline": "Tudo o que precisas.",
+    "headlineAccent": "Nada do que não precisas.",
+    "subheadline": "Criado para a vida real — não para a produtividade de aparência.",
     "items": {
       "capture": {
-        "title": "Text to capture",
-        "desc": "Send any message to your Clarityboards number. AI parses dates, checklists, deadlines \u2014 no formatting needed."
+        "title": "Captura por SMS",
+        "desc": "Envia qualquer mensagem para o teu número Clarityboards. A IA analisa datas, listas e prazos — sem formatação necessária."
       },
       "boards": {
-        "title": "5 smart boards",
-        "desc": "EventBoard, StudyBoard, ActivityBoard, CareerBoard, TaskBoard. Items auto-route to the right one."
+        "title": "5 painéis inteligentes",
+        "desc": "EventBoard, StudyBoard, ActivityBoard, CareerBoard, TaskBoard. Os elementos são encaminhados automaticamente para o painel certo."
       },
       "share": {
-        "title": "Share any board",
-        "desc": "Invite family, teammates, or classmates to a specific board. Editor or view-only access, per board."
+        "title": "Partilha qualquer painel",
+        "desc": "Convida familiares, colegas ou companheiros de turma para um painel específico. Acesso de editor ou só leitura, por painel."
       },
       "priority": {
-        "title": "Priority & tags",
-        "desc": "Flag high-priority items, tag by person or project, filter instantly. See exactly what needs attention."
+        "title": "Prioridade e etiquetas",
+        "desc": "Marca elementos de alta prioridade, etiqueta por pessoa ou projeto, filtra instantaneamente. Vê exatamente o que precisa de atenção."
       },
       "calendar": {
-        "title": "Calendar export",
-        "desc": "Every item with a date syncs to Apple Calendar, Google Calendar, or any iCal app."
+        "title": "Exportação de calendário",
+        "desc": "Cada elemento com data sincroniza com o Apple Calendar, Google Calendar ou qualquer app iCal."
       },
       "recurring": {
-        "title": "Recurring items",
-        "desc": "Daily standups, weekly reviews, monthly bills \u2014 set it once and it reappears automatically."
+        "title": "Elementos recorrentes",
+        "desc": "Reuniões diárias, revisões semanais, faturas mensais — define uma vez e reaparece automaticamente."
       }
     }
   },
   "pricing": {
-    "headline": "Simple pricing.",
-    "subheadline": "Start free. Upgrade when you're ready.",
+    "headline": "Preços simples.",
+    "subheadline": "Começa grátis. Muda para Pro quando estiveres pronto.",
     "free": {
-      "name": "Free",
+      "name": "Grátis",
       "price": "$0",
-      "desc": "Forever",
+      "desc": "Para sempre",
       "features": [
-        "3 boards",
-        "SMS capture",
-        "50 items",
-        "Calendar export"
+        "3 painéis",
+        "Captura por SMS",
+        "50 elementos",
+        "Exportação de calendário"
       ],
-      "cta": "Get started"
+      "cta": "Começar"
     },
     "pro": {
       "name": "Pro",
       "price": "$4.99",
-      "desc": "/month \u00b7 or $49.99/yr",
+      "desc": "/mês · ou $49.99/ano",
       "features": [
-        "All 5 boards",
-        "Unlimited items",
-        "Board sharing",
-        "Priority & tags",
-        "Recurring items",
-        "Everything"
+        "Todos os 5 painéis",
+        "Elementos ilimitados",
+        "Painéis partilhados",
+        "Prioridade e etiquetas",
+        "Elementos recorrentes",
+        "Tudo incluído"
       ],
-      "cta": "Start free trial"
+      "cta": "Iniciar período de avaliação"
     }
   },
   "cta": {
-    "headline": "Ready to get your life",
-    "headlineAccent": "out of your head?",
-    "subheadline": "Join families, students, and professionals who text their way to organized.",
-    "button": "Start free today \u2192",
-    "footnote": "No credit card \u00b7 Cancel anytime \u00b7 Works from any phone"
+    "headline": "Pronto para tirar a tua vida",
+    "headlineAccent": "da tua cabeça?",
+    "subheadline": "Junta-te a famílias, estudantes e profissionais que se organizam com uma mensagem.",
+    "button": "Começa grátis hoje →",
+    "footnote": "Sem cartão de crédito · Cancela quando quiseres · Funciona em qualquer telemóvel"
   },
   "footer": {
-    "copyright": "\u00a9 2026 Clarityboards",
-    "privacy": "Privacy",
-    "terms": "Terms"
+    "copyright": "© 2026 Clarityboards",
+    "privacy": "Privacidade",
+    "terms": "Termos"
   },
   "onboarding": {
-    "headline": "Pick your 2 boards.",
-    "welcomeUser": "Welcome, {name}.",
-    "welcome": "Welcome.",
-    "subheadline": "Choose the two areas of life you want to organize first.",
-    "upgradeNote": "Upgrade to Pro anytime to unlock all five \u2014",
-    "upgradeNoteBold": "free during our demo period.",
-    "ctaReady": "Build my boards \u2192",
-    "ctaSaving": "Setting up your boards\u2026",
-    "ctaSelectMore": "Select {n} more board",
-    "ctaSelectMorePlural": "Select {n} more boards",
+    "headline": "Escolhe os teus 2 painéis.",
+    "welcomeUser": "Bem-vindo, {name}.",
+    "welcome": "Bem-vindo.",
+    "subheadline": "Escolhe as duas áreas da tua vida que queres organizar primeiro.",
+    "upgradeNote": "Muda para Pro a qualquer momento para desbloquear os cinco —",
+    "upgradeNoteBold": "grátis durante o nosso período de demonstração.",
+    "ctaReady": "Criar os meus painéis →",
+    "ctaSaving": "A configurar os teus painéis…",
+    "ctaSelectMore": "Seleciona mais {n} painel",
+    "ctaSelectMorePlural": "Seleciona mais {n} painéis",
     "boards": {
       "event": {
-        "who": "Planners & social coordinators",
+        "who": "Organizadores e coordenadores sociais",
         "examples": [
-          "Wedding invitations",
+          "Convites de casamento",
           "Bar/Bat Mitzvahs",
-          "Birthday parties",
-          "Graduations"
+          "Festas de aniversário",
+          "Formações"
         ]
       },
       "study": {
-        "who": "Students of any age",
+        "who": "Estudantes de qualquer idade",
         "examples": [
-          "Assignment due dates",
-          "Exam prep",
-          "Supply lists",
-          "Progress tracking"
+          "Datas de entrega",
+          "Preparação para exames",
+          "Listas de material",
+          "Acompanhamento do progresso"
         ]
       },
       "activity": {
-        "who": "Sports & activity parents",
+        "who": "Pais de desporto e atividades",
         "examples": [
-          "Practice schedules",
-          "Game days",
-          "Recital logistics",
-          "Fee tracking"
+          "Horários de treino",
+          "Dias de jogo",
+          "Logística de recitais",
+          "Controlo de pagamentos"
         ]
       },
       "career": {
-        "who": "Job seekers & professionals",
+        "who": "À procura de emprego e profissionais",
         "examples": [
-          "Interview prep",
-          "Applications",
-          "Follow-up tasks",
-          "STAR stories"
+          "Preparação de entrevistas",
+          "Candidaturas",
+          "Tarefas de follow-up",
+          "Histórias STAR"
         ]
       },
       "task": {
-        "who": "Anyone with a to-do list",
+        "who": "Qualquer pessoa com uma lista de tarefas",
         "examples": [
-          "Personal projects",
-          "Household tasks",
-          "Recurring reminders",
-          "Any deadline"
+          "Projetos pessoais",
+          "Tarefas domésticas",
+          "Lembretes recorrentes",
+          "Qualquer prazo"
         ]
       }
     }
   },
   "dashboard": {
-    "searchPlaceholder": "Search items\u2026",
-    "allBoards": "All boards",
-    "addItem": "Add item",
-    "signOut": "Sign out",
-    "settings": "Settings",
-    "shareBoard": "Share board",
-    "today": "Today",
-    "tomorrow": "Tomorrow",
-    "daysAway": "{n}d away",
-    "daysOverdue": "{n}d overdue",
-    "noItems": "No items yet \u2014 add one above or text your Clarityboards number.",
-    "upgradePrompt": "Upgrade to Pro to unlock all 5 boards",
-    "comingSoon": "Coming soon",
-    "shareComingSoon": "Board sharing is coming soon!",
+    "searchPlaceholder": "Pesquisar elementos…",
+    "allBoards": "Todos os painéis",
+    "addItem": "Adicionar elemento",
+    "signOut": "Terminar sessão",
+    "settings": "Definições",
+    "shareBoard": "Partilhar painel",
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "daysAway": "Em {n}d",
+    "daysOverdue": "{n}d de atraso",
+    "noItems": "Ainda sem elementos — adiciona um acima ou envia uma SMS para o teu número Clarityboards.",
+    "upgradePrompt": "Muda para Pro para desbloquear todos os 5 painéis",
+    "comingSoon": "Em breve",
+    "shareComingSoon": "A partilha de painéis chega em breve!",
     "pro": "Pro",
-    "free": "Free",
-    "markDone": "Mark done",
-    "delete": "Delete",
-    "edit": "Edit",
-    "save": "Save",
-    "cancel": "Cancel",
-    "recurring": "Recurring",
+    "free": "Grátis",
+    "markDone": "Marcar como feito",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "recurring": "Recorrente",
     "priority": {
-      "high": "High",
-      "medium": "Medium",
-      "low": "Low"
+      "high": "Alta",
+      "medium": "Média",
+      "low": "Baixa"
     },
     "status": {
-      "todo": "To do",
-      "in-progress": "In progress",
-      "done": "Done",
-      "rsvp-needed": "RSVP needed",
-      "accepted": "Accepted",
-      "declined": "Declined",
-      "submitted": "Submitted",
-      "applied": "Applied"
+      "todo": "A fazer",
+      "in-progress": "Em curso",
+      "done": "Feito",
+      "rsvp-needed": "RSVP necessário",
+      "accepted": "Aceite",
+      "declined": "Recusado",
+      "submitted": "Submetido",
+      "applied": "Candidatado"
     }
   },
   "settings": {
     "phone": {
-      "title": "Phone number",
-      "subtitle": "Link your number to capture items via SMS",
-      "save": "Save number",
-      "saving": "Saving\u2026",
-      "saved": "Saved!",
+      "title": "Número de telemóvel",
+      "subtitle": "Liga o teu número para capturar elementos via SMS",
+      "save": "Guardar número",
+      "saving": "A guardar…",
+      "saved": "Guardado!",
       "placeholder": "+1 (555) 000-0000"
     },
     "gcal": {
-      "title": "Google Calendar sync",
-      "connect": "Connect Google Calendar",
-      "disconnect": "Disconnect"
+      "title": "Sincronização com Google Calendar",
+      "connect": "Ligar Google Calendar",
+      "disconnect": "Desligar"
     },
     "ical": {
       "title": "iCal / Apple Calendar",
-      "copyLink": "Copy iCal link",
-      "copied": "Copied!"
+      "copyLink": "Copiar link iCal",
+      "copied": "Copiado!"
     },
     "sharing": {
-      "title": "Board sharing",
-      "invite": "Invite someone",
+      "title": "Partilha de painéis",
+      "invite": "Convidar alguém",
       "editor": "Editor",
-      "viewer": "Viewer",
-      "remove": "Remove"
+      "viewer": "Leitor",
+      "remove": "Remover"
     }
   },
   "common": {
-    "loading": "Loading\u2026",
-    "error": "Something went wrong. Please try again.",
-    "close": "Close",
-    "back": "Back",
-    "next": "Next",
-    "or": "or"
+    "loading": "A carregar…",
+    "error": "Algo correu mal. Tenta novamente.",
+    "close": "Fechar",
+    "back": "Voltar",
+    "next": "Seguinte",
+    "or": "ou"
   },
   "languages": {
     "en": "English",
-    "es": "Espa\u00f1ol",
-    "fr": "Fran\u00e7ais",
+    "es": "Español",
+    "fr": "Français",
     "it": "Italiano",
-    "pt": "Portugu\u00eas",
-    "pt-BR": "Portugu\u00eas (Brasil)",
+    "pt": "Português",
+    "pt-BR": "Português (Brasil)",
     "de": "Deutsch"
   },
   "tour": {
     "welcome": {
-      "title": "Welcome to Clarityboards \ud83c\udf89",
-      "body": "You've got events, school, activities, career moves, and a to-do list that never quits. Clarityboards is one place for all of it. Let's take a 60-second tour.",
-      "cta": "Let's go \u2192"
+      "title": "Bem-vindo ao Clarityboards 🎉",
+      "body": "Tens eventos, escola, atividades, movimentos de carreira e uma lista de tarefas que nunca acaba. Clarityboards é um só lugar para tudo. Vamos fazer um tour de 60 segundos.",
+      "cta": "Vamos lá →"
     },
     "boards": {
-      "title": "Your Boards",
-      "body": "Each board is tuned for a different part of your life. EventBoard for milestones, StudyBoard for school, ActivityBoard for kids, CareerBoard for work, TaskBoard for everything else.",
-      "cta": "Got it \u2192"
+      "title": "Os teus painéis",
+      "body": "Cada painel está otimizado para uma parte diferente da tua vida. EventBoard para marcos, StudyBoard para a escola, ActivityBoard para os miúdos, CareerBoard para o trabalho, TaskBoard para tudo o resto.",
+      "cta": "Percebi →"
     },
     "addItem": {
-      "title": "Add anything in seconds",
-      "body": "Hit + to add an item to any board. Give it a title, a date, a status \u2014 done. Takes about 10 seconds.",
-      "cta": "Nice \u2192"
+      "title": "Adiciona qualquer coisa em segundos",
+      "body": "Carrega em + para adicionar um elemento a qualquer painel. Dá-lhe um título, uma data, um estado — pronto. Demora cerca de 10 segundos.",
+      "cta": "Ótimo →"
     },
     "checklist": {
-      "title": "Break it down with checklists",
-      "body": "Every item has a built-in checklist. Add steps, check them off as you go. Watch the progress bar fill up.",
-      "cta": "Love it \u2192"
+      "title": "Divide com listas de verificação",
+      "body": "Cada elemento tem uma lista integrada. Adiciona passos, marca-os à medida que avança. Vê a barra de progresso encher-se.",
+      "cta": "Adoro →"
     },
     "status": {
-      "title": "Smart status tags",
-      "body": "Status labels are tuned to each board. EventBoard has RSVP Needed, Accepted, Declined. CareerBoard has Applied, In Progress. Not just generic 'To Do'.",
-      "cta": "Smart \u2192"
+      "title": "Etiquetas de estado inteligentes",
+      "body": "As etiquetas são adaptadas a cada painel. EventBoard tem RSVP necessário, Aceite, Recusado. CareerBoard tem Candidatado, Em curso. Não apenas um genérico «A fazer».",
+      "cta": "Inteligente →"
     },
     "unified": {
-      "title": "Everything in one feed",
-      "body": "Switch to All Boards view to see every item from every board, sorted by date. One scroll to know what's coming up across your whole life.",
-      "cta": "Wow \u2192"
+      "title": "Tudo num único feed",
+      "body": "Muda para a vista Todos os painéis para ver cada elemento de cada painel, ordenado por data. Um só scroll para saber o que está a chegar em toda a tua vida.",
+      "cta": "Uau →"
     },
     "upgrade": {
-      "title": "Want all 5 boards?",
-      "body": "You're on the Free plan with 2 boards. Upgrade to Pro for $4.99/mo (or $49.99/yr) to unlock all 5 boards plus SMS and email forwarding \u2014 coming soon.",
-      "cta": "Got it \u2192"
+      "title": "Queres todos os 5 painéis?",
+      "body": "Estás no plano Grátis com 2 painéis. Muda para Pro por $4.99/mês (ou $49.99/ano) para desbloquear todos os 5 painéis e o reencaminhamento por SMS e email — em breve.",
+      "cta": "Percebi →"
     },
     "done": {
-      "title": "You're all set! \ud83d\ude80",
-      "body": "That's Clarityboards. Add your first real item, check off a task, or just explore. You can replay this tour anytime from the Help menu.",
-      "cta": "Start using Clarityboards"
+      "title": "Está tudo pronto! 🚀",
+      "body": "Isso é o Clarityboards. Adiciona o teu primeiro elemento real, marca uma tarefa ou apenas explora. Podes repetir este tour a qualquer momento a partir do menu Ajuda.",
+      "cta": "Começar a usar o Clarityboards"
     },
-    "stepOf": "Step {current} of {total}",
-    "back": "\u2190 Back",
-    "skip": "Skip tour",
-    "startTour": "Start the tour \u2192",
-    "skipTour": "Skip tour, take me to the dashboard",
-    "allBoards": "\ud83d\udd00 All Boards",
-    "upgradeBadge": "\u2b50 Upgrade to Pro",
-    "tourComplete": "You're all set!",
-    "tourCompleteBody": "Tour complete. Head to your dashboard and add your first item \u2014 it takes about 10 seconds.",
-    "goToDashboard": "Go to Dashboard \u2192",
-    "replayTour": "\u21a9 Replay tour",
-    "welcomeTitle": "Welcome to",
+    "stepOf": "Passo {current} de {total}",
+    "back": "← Voltar",
+    "skip": "Saltar tour",
+    "startTour": "Iniciar o tour →",
+    "skipTour": "Saltar tour, ir para o painel",
+    "allBoards": "🔀 Todos os painéis",
+    "upgradeBadge": "⭐ Mudar para Pro",
+    "tourComplete": "Está tudo pronto!",
+    "tourCompleteBody": "Tour concluído. Vai ao teu painel e adiciona o primeiro elemento — demora cerca de 10 segundos.",
+    "goToDashboard": "Ir para o painel →",
+    "replayTour": "↩ Repetir tour",
+    "welcomeTitle": "Bem-vindo ao",
     "welcomeApp": "Clarityboards",
-    "welcomeBody": "One platform for every part of your busy life. Let's take a quick tour \u2014 it only takes 60 seconds."
+    "welcomeBody": "Uma plataforma para cada parte da tua vida agitada. Vamos fazer um tour rápido — demora apenas 60 segundos."
   },
   "settingsPhone": {
-    "back": "Back to dashboard",
-    "title": "SMS Forwarding",
-    "subtitle": "Text items directly to your boards",
-    "howItWorksTitle": "How it works",
+    "back": "Voltar ao painel",
+    "title": "Reencaminhamento por SMS",
+    "subtitle": "Envia elementos diretamente para os teus painéis por mensagem",
+    "howItWorksTitle": "Como funciona",
     "howItWorks": [
-      "Text your Clarityboards number: +1 (877) 318-9322",
-      "AI reads your message and adds it to the right board automatically",
-      "Dates, times, checklists, urgency \u2014 all parsed from natural language",
-      "Try: \"Soccer game Friday 4pm\" or \"Pick up: milk, eggs, bread\""
+      "Envia uma SMS para o teu número Clarityboards: +1 (877) 318-9322",
+      "A IA lê a tua mensagem e adiciona-a automaticamente ao painel certo",
+      "Datas, horas, listas, urgência — tudo processado em linguagem natural",
+      "Experimenta: \"Jogo de futebol sexta 16h\" ou \"Comprar: leite, ovos, pão\""
     ],
-    "yourNumberTitle": "Your mobile number",
-    "active": "Active",
-    "label": "Mobile number",
-    "placeholder": "+1 (555) 000-0000 or 10-digit US number",
-    "hint": "US numbers: enter 10 digits (we'll add +1). International: include country code (+44...).",
-    "remove": "Remove",
-    "saving": "Saving\u2026",
-    "update": "Update number",
-    "save": "Save number",
-    "savedPhone": "Phone number saved! You can now text your boards.",
-    "removedPhone": "Phone number removed.",
-    "twilioTitle": "\u23f3 Toll-free verification in progress",
-    "twilioBody": "SMS forwarding will activate once our number (+1 877-318-9322) completes carrier verification \u2014 typically 3\u20137 business days. Your number will be ready to go the moment it clears.",
-    "errorInvalid": "Enter a valid US number (10 digits) or international format (+1...)"
+    "yourNumberTitle": "O teu número de telemóvel",
+    "active": "Ativo",
+    "label": "Número de telemóvel",
+    "placeholder": "+1 (555) 000-0000 ou número US de 10 dígitos",
+    "hint": "Números US: introduz 10 dígitos (adicionamos +1). Internacional: inclui o indicativo (+44...).",
+    "remove": "Remover",
+    "saving": "A guardar…",
+    "update": "Atualizar número",
+    "save": "Guardar número",
+    "savedPhone": "Número guardado! Já podes enviar SMS para os teus painéis.",
+    "removedPhone": "Número de telemóvel removido.",
+    "twilioTitle": "⏳ Verificação em curso",
+    "twilioBody": "O reencaminhamento por SMS será ativado assim que o nosso número (+1 877-318-9322) concluir a verificação da operadora — normalmente 3–7 dias úteis. O teu número estará pronto assim que for aprovado.",
+    "errorInvalid": "Introduz um número US válido (10 dígitos) ou em formato internacional (+1...)"
   },
   "settingsIcal": {
-    "title": "Calendar Export (iCal)",
-    "subtitle": "Subscribe in Apple Calendar, Google Calendar, or Outlook",
-    "howItWorksTitle": "How it works",
-    "copied": "Copied!",
-    "copyLink": "Copy link",
-    "allBoards": "All Boards",
-    "perBoard": "Per-board feeds"
+    "title": "Exportação de calendário (iCal)",
+    "subtitle": "Subscreve no Apple Calendar, Google Calendar ou Outlook",
+    "howItWorksTitle": "Como funciona",
+    "copied": "Copiado!",
+    "copyLink": "Copiar link",
+    "allBoards": "Todos os painéis",
+    "perBoard": "Feeds por painel"
   },
   "settingsSharing": {
-    "back": "Back to dashboard",
-    "title": "Board Sharing",
-    "subtitle": "Invite people to collaborate on specific boards",
-    "inviteButton": "Invite someone",
-    "myShares": "Boards I'm sharing",
-    "sharedWithMe": "Shared with me",
-    "noShares": "No active shares yet.",
-    "noInbound": "No boards have been shared with you yet.",
-    "pending": "Pending",
-    "active": "Active",
+    "back": "Voltar ao painel",
+    "title": "Partilha de painéis",
+    "subtitle": "Convida pessoas para colaborar em painéis específicos",
+    "inviteButton": "Convidar alguém",
+    "myShares": "Painéis que estou a partilhar",
+    "sharedWithMe": "Partilhados comigo",
+    "noShares": "Sem partilhas ativas ainda.",
+    "noInbound": "Ainda não te foram partilhados painéis.",
+    "pending": "Pendente",
+    "active": "Ativo",
     "editor": "Editor",
-    "viewer": "Viewer",
-    "remove": "Remove",
-    "cancel": "Cancel",
-    "sendInvite": "Send Invite",
-    "sending": "Sending\u2026",
-    "inviteTitle": "Invite someone",
-    "boardLabel": "Board",
-    "roleLabel": "Role",
-    "methodLabel": "Send via",
+    "viewer": "Leitor",
+    "remove": "Remover",
+    "cancel": "Cancelar",
+    "sendInvite": "Enviar convite",
+    "sending": "A enviar…",
+    "inviteTitle": "Convidar alguém",
+    "boardLabel": "Painel",
+    "roleLabel": "Função",
+    "methodLabel": "Enviar por",
     "emailMethod": "Email",
     "smsMethod": "SMS",
-    "nameLabel": "Their name",
-    "namePlaceholder": "e.g. Alex",
-    "emailPlaceholder": "email@example.com",
+    "nameLabel": "O nome dela",
+    "namePlaceholder": "ex. Alex",
+    "emailPlaceholder": "email@exemplo.com",
     "phonePlaceholder": "+1 (555) 000-0000",
-    "ownerLabel": "Owner"
+    "ownerLabel": "Proprietário"
   }
 }
