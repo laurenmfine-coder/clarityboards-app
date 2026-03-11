@@ -1,6 +1,8 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
+const OnboardingTour = dynamic(() => import('@/components/OnboardingTour'), { ssr: false })
 import { supabase, Item, ChecklistItem } from '@/lib/supabase'
 import { BOARDS, BOARD_MAP } from '@/lib/boards'
 import { getSeedItems } from '@/lib/seeds'
@@ -409,7 +411,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
 }
 
 // ── Item Card ─────────────────────────────────────────────
-function ItemCard({ item, onClick }: { item: Item; onClick: () => void }) {
+function ItemCard({ item, onClick, isFirst = false }: { item: Item; onClick: () => void; isFirst?: boolean }) {
   const cfg = BOARD_MAP[item.board]
   const pct = progress(item.checklist)
 
@@ -425,14 +427,19 @@ function ItemCard({ item, onClick }: { item: Item; onClick: () => void }) {
             <Monogram board={item.board} size={24} />
             <span className="font-medium text-[#1A2B3C] text-sm truncate">{item.title}</span>
           </div>
-          <StatusPill status={item.status} board={item.board} />
+          <span {...(isFirst ? { 'data-tour': 'status-badge' } : {})}>
+            <StatusPill status={item.status} board={item.board} />
+          </span>
         </div>
         <div className="flex items-center gap-3 mt-1.5">
           {item.date && (
             <span className={`text-xs ${urgencyClass(item.date)}`}>{urgencyLabel(item.date)}</span>
           )}
           {item.checklist.length > 0 && (
-            <span className="text-xs text-[#5A7A94] flex items-center gap-1">
+            <span
+              {...(isFirst ? { 'data-tour': 'checklist' } : {})}
+              className="text-xs text-[#5A7A94] flex items-center gap-1"
+            >
               <CheckSquare size={11} />
               {item.checklist.filter(c=>c.done).length}/{item.checklist.length}
             </span>
@@ -468,8 +475,9 @@ function UpgradeModal({ onClose, itemCount }: { onClose: () => void; itemCount: 
         </div>
         <div className="px-8 py-6">
           <div className="bg-[#EBF3FB] rounded-xl p-4 mb-5 text-center">
-            <p className="text-sm text-[#1B4F8A] font-semibold">🎉 Pro is <strong>free during our demo period</strong></p>
-            <p className="text-xs text-[#5A7A94] mt-1">No credit card required · Unlock everything now</p>
+            <p className="text-2xl font-bold text-[#1B4F8A]" style={{ fontFamily: 'Georgia, serif' }}>$4.99<span className="text-base font-normal text-[#5A7A94]">/mo</span></p>
+            <p className="text-sm text-[#5A7A94] mt-1">or <strong className="text-[#1B4F8A]">$49.99/year</strong> — save 17%</p>
+            <p className="text-xs text-[#5A7A94] mt-1">🎉 Free during our demo period · No credit card required</p>
           </div>
           <div className="space-y-3 mb-6">
             {[
@@ -518,6 +526,7 @@ export default function Dashboard() {
   const [isPro,       setIsPro]       = useState(DEMO_MODE)
   const [activeBoards, setActiveBoards] = useState<string[]>([])
   const [showUpgrade,  setShowUpgrade]  = useState(false)
+  const [showTour,     setShowTour]     = useState(false)
 
   // ── Auth check ──────────────────────────────────────────
   useEffect(() => {
@@ -527,6 +536,12 @@ export default function Dashboard() {
       loadItems(data.user.id)
     })
   }, [router])
+
+  // ── Tour: auto-launch for first-time users ───────────────
+  useEffect(() => {
+    const seen = localStorage.getItem('cb_tour_complete')
+    if (!seen) setShowTour(true)
+  }, [])
 
   // ── Load items ──────────────────────────────────────────
   const loadItems = useCallback(async (uid: string) => {
@@ -646,8 +661,9 @@ export default function Dashboard() {
             </div>
 
             {/* Board tabs */}
-            <div className="flex items-center gap-1 overflow-x-auto flex-1 scrollbar-hide">
+            <div data-tour="board-tabs" className="flex items-center gap-1 overflow-x-auto flex-1 scrollbar-hide">
               <button
+                data-tour="unified-feed"
                 onClick={() => setActiveBoard('all')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${activeBoard === 'all' ? 'bg-white/20 text-white' : 'text-white/60 hover:text-white/90'}`}
               >
@@ -673,6 +689,20 @@ export default function Dashboard() {
             <div className="flex items-center gap-2 flex-shrink-0">
               <button onClick={() => setSearchOpen(s => !s)} className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors">
                 <Search size={16} />
+              </button>
+              <button
+                data-tour="upgrade-banner"
+                onClick={() => setShowUpgrade(true)}
+                className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors hidden sm:flex items-center gap-1 text-xs font-medium px-2"
+              >
+                ⭐ Pro
+              </button>
+              <button
+                onClick={() => { localStorage.removeItem('cb_tour_complete'); setShowTour(true) }}
+                className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors hidden sm:block text-xs"
+                title="Replay tour"
+              >
+                ?
               </button>
               <button onClick={signOut} className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors">
                 <LogOut size={16} />
@@ -759,8 +789,8 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {filtered.map(item => (
-              <ItemCard key={item.id} item={item} onClick={() => setDetail(item)} />
+            {filtered.map((item, index) => (
+              <ItemCard key={item.id} item={item} onClick={() => setDetail(item)} isFirst={index === 0} />
             ))}
           </div>
         )}
@@ -768,6 +798,7 @@ export default function Dashboard() {
 
       {/* ── FAB ── */}
       <button
+        data-tour="add-button"
         onClick={() => setShowAdd(true)}
         className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#1B4F8A] text-white shadow-lg hover:bg-[#15407A] transition-colors flex items-center justify-center z-20"
       >
@@ -779,6 +810,16 @@ export default function Dashboard() {
       {detail       && <DetailModal item={detail} onUpdate={u => updateItem(detail.id, u)} onDelete={() => deleteItem(detail.id)} onClose={() => setDetail(null)} />}
       {shareBoard   && <ShareModal  board={shareBoard} onClose={() => setShareBoard(null)} />}
       {showUpgrade  && <UpgradeModal onClose={() => setShowUpgrade(false)} itemCount={items.length} />}
+
+      {/* ── ONBOARDING TOUR ── */}
+      {showTour && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999 }}>
+          <OnboardingTour onComplete={() => {
+            localStorage.setItem('cb_tour_complete', '1')
+            setShowTour(false)
+          }} />
+        </div>
+      )}
     </div>
   )
 }
