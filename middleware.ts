@@ -25,6 +25,7 @@ export function middleware(req: NextRequest) {
   const locale = detectLocale(req)
   const res = NextResponse.next()
   res.headers.set('x-locale', locale)
+  res.headers.set('Cache-Control', 'no-store')
   return res
 }
 

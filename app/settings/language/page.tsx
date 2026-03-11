@@ -30,9 +30,9 @@ export default function LanguagePage() {
     setCurrent(code)
     setSaved(true)
     setTimeout(() => {
-      // Reload so new locale takes effect
-      window.location.href = '/dashboard'
-    }, 800)
+      // Hard reload so server receives the new cookie and serves correct language
+      window.location.replace('/dashboard')
+    }, 600)
   }
 
   return (
