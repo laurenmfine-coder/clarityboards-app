@@ -13,7 +13,7 @@ type Share = {
   invited_email: string | null
   invited_phone: string | null
   invited_name: string | null
-  role: t('editor') | t('viewer')
+  role: 'editor' | 'viewer'
   status: 'pending' | 'active' | 'revoked'
   created_at: string
 }
@@ -22,7 +22,7 @@ type SharedWithMe = {
   id: string
   board_type: string
   owner_id: string
-  role: t('editor') | t('viewer')
+  role: 'editor' | 'viewer'
   invited_name: string | null
   owner_email?: string
 }
@@ -36,7 +36,7 @@ export default function SharingPage() {
   const [loading, setLoading]         = useState(true)
   const [showInvite, setShowInvite]   = useState(false)
   const [inviteBoard, setInviteBoard] = useState('activity')
-  const [inviteRole, setInviteRole]   = useState<t('editor') | t('viewer')>(t('editor'))
+  const [inviteRole, setInviteRole]   = useState<'editor' | 'viewer'>('editor')
   const [inviteMethod, setInviteMethod] = useState<'email' | 'sms'>('email')
   const [inviteValue, setInviteValue] = useState('')
   const [inviteName, setInviteName]   = useState('')
@@ -46,7 +46,6 @@ export default function SharingPage() {
   const [removeId, setRemoveId]       = useState<string | null>(null)
 
   const load = useCallback(async (uid: string) => {
-    // My outgoing shares
     const { data: myShares } = await supabase
       .from('board_shares')
       .select('*')
@@ -54,7 +53,6 @@ export default function SharingPage() {
       .neq('status', 'revoked')
       .order('created_at', { ascending: false })
 
-    // Boards shared with me
     const { data: inbound } = await supabase
       .from('board_shares')
       .select('*')
@@ -106,7 +104,7 @@ export default function SharingPage() {
     }
   }
 
-  const handleRoleChange = async (shareId: string, role: t('editor') | t('viewer')) => {
+  const handleRoleChange = async (shareId: string, role: 'editor' | 'viewer') => {
     await supabase.from('board_shares').update({ role }).eq('id', shareId)
     setShares(prev => prev.map(s => s.id === shareId ? { ...s, role } : s))
   }
@@ -136,14 +134,14 @@ export default function SharingPage() {
           <ArrowLeft size={20} />
         </button>
         <div>
-          <h1 className="text-white font-bold text-lg">Board Sharing</h1>
-          <p className="text-[#5A7A94] text-xs">Share boards with family, friends, or colleagues</p>
+          <h1 className="text-white font-bold text-lg">{t('title')}</h1>
+          <p className="text-[#5A7A94] text-xs">{t('subtitle')}</p>
         </div>
         <button
           onClick={() => setShowInvite(true)}
           className="ml-auto bg-[#2874A6] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#1f5f8a] transition-colors flex items-center gap-2"
         >
-          + Invite someone
+          + {t('inviteButton')}
         </button>
       </div>
 
@@ -162,7 +160,7 @@ export default function SharingPage() {
         {sharedWithMe.length > 0 && (
           <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden">
             <div className="px-5 py-3 border-b border-[#F0ECE4] bg-[#FAFAF8]">
-              <span className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider">Shared with you</span>
+              <span className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider">{t('sharedWithMe')}</span>
             </div>
             {sharedWithMe.map(s => {
               const cfg = BOARD_MAP[s.board_type as keyof typeof BOARD_MAP]
@@ -176,8 +174,8 @@ export default function SharingPage() {
                     <span className="font-semibold text-sm text-[#1A2B3C]">{cfg?.label}</span>
                     <span className="text-xs text-[#9B8E7E] ml-2">shared by {s.invited_name ?? 'someone'}</span>
                   </div>
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s.role === t('editor') ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}`}>
-                    {s.role === t('editor') ? 'Can edit' : 'View only'}
+                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s.role === 'editor' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}`}>
+                    {s.role === 'editor' ? t('editor') : t('viewer')}
                   </span>
                 </div>
               )
@@ -186,7 +184,7 @@ export default function SharingPage() {
         )}
 
         {/* My boards */}
-        <div className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider px-1">Your boards</div>
+        <div className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider px-1">{t('myShares')}</div>
 
         {BOARDS.map(b => {
           const cfg = BOARD_MAP[b.id as keyof typeof BOARD_MAP]
@@ -201,7 +199,7 @@ export default function SharingPage() {
                 </span>
                 <span className="font-bold text-[#1A2B3C] flex-1">{cfg?.label}</span>
                 {boardShares.length === 0
-                  ? <span className="text-xs text-[#B0A898]">Not shared</span>
+                  ? <span className="text-xs text-[#B0A898]">{t('noShares')}</span>
                   : <span className="text-xs font-semibold" style={{ color: cfg?.color }}>{boardShares.length} {boardShares.length === 1 ? 'person' : 'people'}</span>
                 }
                 <button
@@ -209,14 +207,13 @@ export default function SharingPage() {
                   className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
                   style={{ background: cfg?.color + '18', color: cfg?.color, border: `1px solid ${cfg?.color}30` }}
                 >
-                  + Share
+                  + {t('inviteButton')}
                 </button>
               </div>
 
               {/* Share rows */}
               {boardShares.map(s => (
                 <div key={s.id} className="px-5 py-3 flex items-center gap-3 border-b border-[#F5F2EC] last:border-0">
-                  {/* Avatar */}
                   <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
                     style={{ background: cfg?.color + '20', color: cfg?.color, border: `2px solid ${cfg?.color}40` }}>
                     {(s.invited_name ?? '?')[0].toUpperCase()}
@@ -229,31 +226,31 @@ export default function SharingPage() {
                   {/* Role selector */}
                   <select
                     value={s.role}
-                    onChange={e => handleRoleChange(s.id, e.target.value as t('editor') | t('viewer'))}
+                    onChange={e => handleRoleChange(s.id, e.target.value as 'editor' | 'viewer')}
                     className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border cursor-pointer"
                     style={{
-                      color: s.role === t('editor') ? '#1E8449' : '#2874A6',
-                      background: s.role === t('editor') ? '#EAFAF1' : '#EBF5FB',
-                      borderColor: s.role === t('editor') ? '#A9DFBF' : '#AED6F1',
+                      color: s.role === 'editor' ? '#1E8449' : '#2874A6',
+                      background: s.role === 'editor' ? '#EAFAF1' : '#EBF5FB',
+                      borderColor: s.role === 'editor' ? '#A9DFBF' : '#AED6F1',
                     }}
                   >
-                    <option value="editor">Can edit</option>
-                    <option value="viewer">View only</option>
+                    <option value="editor">{t('editor')}</option>
+                    <option value="viewer">{t('viewer')}</option>
                   </select>
 
                   {/* Status */}
                   <div className="flex items-center gap-1.5">
                     <div className={`w-2 h-2 rounded-full ${s.status === 'active' ? 'bg-green-500' : 'bg-orange-400'}`} />
                     <span className={`text-xs font-medium ${s.status === 'active' ? 'text-green-600' : 'text-orange-500'}`}>
-                      {s.status === 'active' ? 'Active' : 'Pending'}
+                      {s.status === 'active' ? t('active') : t('pending')}
                     </span>
                   </div>
 
                   {/* Remove */}
                   {removeId === s.id ? (
                     <div className="flex gap-2">
-                      <button onClick={() => handleRemove(s.id)} className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100">Remove</button>
-                      <button onClick={() => setRemoveId(null)} className="text-xs px-2.5 py-1 rounded-lg bg-[#F5F2EC] text-[#7A6E62] border border-[#E8E2D9]">Cancel</button>
+                      <button onClick={() => handleRemove(s.id)} className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100">{t('remove')}</button>
+                      <button onClick={() => setRemoveId(null)} className="text-xs px-2.5 py-1 rounded-lg bg-[#F5F2EC] text-[#7A6E62] border border-[#E8E2D9]">{t('cancel')}</button>
                     </div>
                   ) : (
                     <button onClick={() => setRemoveId(s.id)} className="text-[#C4B9AA] hover:text-red-400 transition-colors text-lg leading-none">×</button>
@@ -289,13 +286,13 @@ export default function SharingPage() {
           onClick={e => e.target === e.currentTarget && setShowInvite(false)}>
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-7 space-y-5">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-[#1A2B3C]" style={{ fontFamily: 'Georgia, serif' }}>Invite someone</h2>
+              <h2 className="text-xl font-bold text-[#1A2B3C]" style={{ fontFamily: 'Georgia, serif' }}>{t('inviteTitle')}</h2>
               <button onClick={() => setShowInvite(false)} className="text-[#9B8E7E] hover:text-[#1A2B3C] text-2xl leading-none">×</button>
             </div>
 
             {/* Board picker */}
             <div>
-              <label className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider block mb-2">Board</label>
+              <label className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider block mb-2">{t('boardLabel')}</label>
               <div className="flex flex-wrap gap-2">
                 {BOARDS.map(b => {
                   const cfg = BOARD_MAP[b.id as keyof typeof BOARD_MAP]
@@ -316,17 +313,17 @@ export default function SharingPage() {
 
             {/* Role picker */}
             <div>
-              <label className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider block mb-2">Access level</label>
+              <label className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider block mb-2">{t('roleLabel')}</label>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { value: t('editor'), label: 'Can edit', desc: 'Add, complete & update items', icon: '✏️' },
-                  { value: t('viewer'), label: 'View only', desc: 'See board, export to calendar', icon: '👁' },
+                  { value: 'editor' as const, label: t('editor'), desc: 'Add, complete & update items', icon: '✏️' },
+                  { value: 'viewer' as const, label: t('viewer'), desc: 'See board, export to calendar', icon: '👁' },
                 ].map(opt => (
-                  <button key={opt.value} onClick={() => setInviteRole(opt.value as t('editor') | t('viewer'))}
+                  <button key={opt.value} onClick={() => setInviteRole(opt.value)}
                     className="p-3 rounded-xl text-left border-2 transition-all"
                     style={{
-                      borderColor: inviteRole === opt.value ? (opt.value === t('editor') ? '#1E8449' : '#2874A6') : '#E8E2D9',
-                      background: inviteRole === opt.value ? (opt.value === t('editor') ? '#EAFAF1' : '#EBF5FB') : 'white',
+                      borderColor: inviteRole === opt.value ? (opt.value === 'editor' ? '#1E8449' : '#2874A6') : '#E8E2D9',
+                      background: inviteRole === opt.value ? (opt.value === 'editor' ? '#EAFAF1' : '#EBF5FB') : 'white',
                     }}>
                     <div className="text-lg mb-1">{opt.icon}</div>
                     <div className="font-bold text-sm text-[#1A2B3C]">{opt.label}</div>
@@ -338,17 +335,17 @@ export default function SharingPage() {
 
             {/* Name */}
             <div>
-              <label className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider block mb-2">Their name</label>
+              <label className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider block mb-2">{t('nameLabel')}</label>
               <input value={inviteName} onChange={e => setInviteName(e.target.value)}
-                placeholder="e.g. Mike"
+                placeholder={t('namePlaceholder')}
                 className="w-full px-4 py-2.5 rounded-xl border border-[#E8E2D9] text-sm text-[#1A2B3C] focus:outline-none focus:border-[#2874A6]" />
             </div>
 
             {/* Invite method */}
             <div>
-              <label className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider block mb-2">Invite via</label>
+              <label className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider block mb-2">{t('methodLabel')}</label>
               <div className="flex bg-[#F5F2EC] rounded-xl p-1 mb-3">
-                {[['email', '📧 Email'], ['sms', '📱 Text']].map(([val, label]) => (
+                {[['email', `📧 ${t('emailMethod')}`], ['sms', `📱 ${t('smsMethod')}`]].map(([val, label]) => (
                   <button key={val} onClick={() => setInviteMethod(val as 'email' | 'sms')}
                     className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
                     style={{
@@ -361,7 +358,7 @@ export default function SharingPage() {
                 ))}
               </div>
               <input value={inviteValue} onChange={e => setInviteValue(e.target.value)}
-                placeholder={inviteMethod === 'email' ? 'their@email.com' : '+1 (555) 000-0000'}
+                placeholder={inviteMethod === 'email' ? t('emailPlaceholder') : t('phonePlaceholder')}
                 className="w-full px-4 py-2.5 rounded-xl border border-[#E8E2D9] text-sm text-[#1A2B3C] focus:outline-none focus:border-[#2874A6]" />
             </div>
 
@@ -373,7 +370,7 @@ export default function SharingPage() {
               className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all flex items-center justify-center gap-2 disabled:opacity-40"
               style={{ background: '#1A2B3C' }}
             >
-              {inviting ? <><Loader2 size={16} className="animate-spin" /> Sending...</> : 'Send invite →'}
+              {inviting ? <><Loader2 size={16} className="animate-spin" /> {t('sending')}</> : `${t('sendInvite')} →`}
             </button>
           </div>
         </div>
