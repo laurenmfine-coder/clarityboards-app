@@ -24,3 +24,44 @@ body {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
 ::-webkit-scrollbar-thumb { background: #D4E6F1; border-radius: 3px; }
+
+/* Hide scrollbar on mobile nav tabs */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Safe area insets for notch/home-indicator phones */
+.safe-bottom { padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* Bottom sheet animation */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.sheet-animate { animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1); }
+
+/* Prevent body scroll when modal open on mobile */
+body.modal-open { overflow: hidden; touch-action: none; }
+
+/* Larger tap targets on mobile */
+@media (max-width: 640px) {
+  button { min-height: 44px; }
+  a { min-height: 44px; display: inline-flex; align-items: center; }
+  input, textarea, select { font-size: 16px !important; } /* prevents iOS zoom */
+}
+
+/* Input font size fix for iOS (prevents auto-zoom) */
+input[type="text"],
+input[type="email"],
+input[type="date"],
+textarea {
+  font-size: 16px;
+}
+@media (min-width: 640px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="date"],
+  textarea {
+    font-size: 14px;
+  }
+}

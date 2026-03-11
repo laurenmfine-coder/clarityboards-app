@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 const OnboardingTour = dynamic<{ onComplete: () => void }>(
   () => import('@/components/OnboardingTour'),
@@ -36,14 +35,13 @@ const urgencyClass = (d: string | null) => {
   if (n <= 7) return 'text-orange-500 font-semibold'
   return 'text-[#5A7A94]'
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const urgencyLabel = (d: string | null, t?: any) => {
+const urgencyLabel = (d: string | null) => {
   const n = daysUntil(d)
   if (n === null) return ''
-  if (n < 0)  return t ? t('daysOverdue', { n: Math.abs(n) }) : `${Math.abs(n)}d overdue`
-  if (n === 0) return t ? t('today') : 'Today'
-  if (n === 1) return t ? t('tomorrow') : 'Tomorrow'
-  if (n <= 7) return t ? t('daysAway', { n }) : `${n}d away`
+  if (n < 0)  return `${Math.abs(n)}d overdue`
+  if (n === 0) return 'Today'
+  if (n === 1) return 'Tomorrow'
+  if (n <= 7) return `${n}d away`
   return fmt(d)
 }
 const progress = (cl: ChecklistItem[]) =>
@@ -123,10 +121,8 @@ function ConfettiOverlay({ onDone }: { onDone: () => void }) {
 function ShareModal({ board, onClose }: { board: string; onClose: () => void }) {
   const cfg = BOARD_MAP[board as keyof typeof BOARD_MAP]
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center sm:p-4">
-      <div className="bg-white w-full sm:rounded-2xl sm:max-w-md rounded-t-2xl shadow-2xl max-h-[85dvh] overflow-y-auto sheet-animate">
-        <div className="flex justify-center pt-3 pb-1 sm:hidden"><div className="w-10 h-1 rounded-full bg-[#D4E6F1]" /></div>
-        <div className="p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Monogram board={board} size={32} />
@@ -171,7 +167,6 @@ function ShareModal({ board, onClose }: { board: string; onClose: () => void }) 
         >
           Got it
         </button>
-        </div>
       </div>
     </div>
   )
@@ -190,16 +185,11 @@ function AddModal({ defaultBoard, onSave, onClose }: {
   const cfg = BOARD_MAP[board as keyof typeof BOARD_MAP]
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center sm:p-4">
-      <div className="bg-white w-full sm:rounded-2xl sm:max-w-lg rounded-t-2xl shadow-2xl sm:max-h-[90vh] max-h-[92dvh] overflow-y-auto sheet-animate">
-        {/* Drag handle — mobile only */}
-        <div className="flex justify-center pt-3 pb-1 sm:hidden">
-          <div className="w-10 h-1 rounded-full bg-[#D4E6F1]" />
-        </div>
-        <div className="p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-semibold text-[#1A2B3C]">Add Item</h2>
-          <button onClick={onClose} className="text-[#5A7A94] hover:text-[#1A2B3C] p-1"><X size={20} /></button>
+          <button onClick={onClose} className="text-[#5A7A94] hover:text-[#1A2B3C]"><X size={20} /></button>
         </div>
 
         {/* Board selector */}
@@ -272,7 +262,6 @@ function AddModal({ defaultBoard, onSave, onClose }: {
             Add Item
           </button>
         </div>
-        </div>
       </div>
     </div>
   )
@@ -292,7 +281,6 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
   onDelete: () => void
   onClose: () => void
 }) {
-  const t = useTranslations('dashboard')
   const cfg = BOARD_MAP[item.board]
   const [newTask, setNewTask]         = useState('')
   const [editingId, setEditingId]     = useState<string | null>(null)
@@ -348,13 +336,9 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
   const deleteTask = (id: string) => { onUpdate({ checklist: item.checklist.filter(c => c.id !== id) }) }
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center sm:p-4">
-      <div className="bg-white w-full sm:rounded-2xl sm:max-w-lg sm:max-h-[90vh] max-h-[92dvh] overflow-y-auto rounded-t-2xl sheet-animate">
-        {/* Drag handle — mobile only */}
-        <div className="flex justify-center pt-3 pb-1 sm:hidden">
-          <div className="w-10 h-1 rounded-full bg-[#D4E6F1]" />
-        </div>
-        <div className="sticky top-0 bg-white rounded-t-2xl px-6 pt-4 pb-4 border-b border-[#EBF3FB]">
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white rounded-t-2xl px-6 pt-5 pb-4 border-b border-[#EBF3FB]">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3 flex-1 min-w-0">
               <Monogram board={item.board} size={36} />
@@ -373,7 +357,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
           </div>
         </div>
 
-        <div className="px-6 py-4 space-y-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        <div className="px-6 py-4 space-y-5">
           {/* Date + Priority row */}
           <div className="flex items-center gap-3 flex-wrap">
             <StatusPill status={item.status} board={item.board} />
@@ -385,7 +369,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
                 onBlur={saveDate}
                 className={`text-xs border-b bg-transparent focus:outline-none transition-colors ${editDate ? urgencyClass(editDate) : 'text-[#5A7A94]'} border-transparent focus:border-[#1B4F8A]`}
               />
-              {editDate && <span className={`text-xs ${urgencyClass(editDate)}`}>· {urgencyLabel(editDate, t)}</span>}
+              {editDate && <span className={`text-xs ${urgencyClass(editDate)}`}>· {urgencyLabel(editDate)}</span>}
             </div>
             {/* Priority */}
             <div className="flex items-center gap-1">
@@ -529,7 +513,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
                     </span>
                   )}
                   {editingId !== c.id && (
-                    <div className="flex gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0">
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                       <button onClick={() => startEdit(c)} className="w-6 h-6 rounded flex items-center justify-center text-[#5A7A94] hover:text-[#1B4F8A] hover:bg-[#EBF3FB] transition-all">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                       </button>
@@ -548,8 +532,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
                 />
                 <button onClick={addTask} className="px-3 py-1.5 rounded-lg text-white text-sm font-medium flex-shrink-0" style={{ background: cfg?.color }}>Add</button>
               </div>
-              <p className="text-xs text-[#5A7A94] mt-1 hidden sm:block">Hover to edit or delete · Double-click to edit inline</p>
-              <p className="text-xs text-[#5A7A94] mt-1 sm:hidden">Tap ✕ to delete a task</p>
+              <p className="text-xs text-[#5A7A94] mt-1">Hover to edit or delete · Double-click to edit inline</p>
             </div>
           </div>
 
@@ -578,7 +561,6 @@ function ItemCard({ item, onClick, onSwipeComplete, isFirst = false }: {
   onSwipeComplete: () => void
   isFirst?: boolean
 }) {
-  const t = useTranslations('dashboard')
   const cfg = BOARD_MAP[item.board]
   const pct = progress(item.checklist)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -651,7 +633,7 @@ function ItemCard({ item, onClick, onSwipeComplete, isFirst = false }: {
           </div>
           <div className="flex items-center gap-3 mt-1.5">
             {item.date && (
-              <span className={`text-xs ${urgencyClass(item.date)}`}>{urgencyLabel(item.date, t)}</span>
+              <span className={`text-xs ${urgencyClass(item.date)}`}>{urgencyLabel(item.date)}</span>
             )}
             {item.checklist.length > 0 && (
               <span
@@ -684,14 +666,13 @@ const FREE_CHECKLIST_LIMIT = 3
 
 // ── Upgrade Modal ─────────────────────────────────────────
 function UpgradeModal({ onClose, itemCount }: { onClose: () => void; itemCount: number }) {
-  const t = useTranslations('dashboard')
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center sm:p-4">
-      <div className="bg-white w-full sm:rounded-2xl sm:max-w-md rounded-t-2xl shadow-2xl overflow-hidden max-h-[92dvh] overflow-y-auto sheet-animate">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
         <div style={{ background: 'linear-gradient(135deg, #1B4F8A, #2E9E8F)' }} className="px-8 py-8 text-center">
           <div className="text-4xl mb-3">⭐</div>
           <h2 className="text-white font-bold text-2xl" style={{ fontFamily: 'Georgia, serif' }}>Upgrade to Pro</h2>
-          <p className="text-white/80 text-sm mt-2">{t('upgradeUnlock')}</p>
+          <p className="text-white/80 text-sm mt-2">Unlock everything Clarityboards has to offer</p>
         </div>
         <div className="px-8 py-6">
           <div className="bg-[#EBF3FB] rounded-xl p-4 mb-5 text-center">
@@ -701,11 +682,11 @@ function UpgradeModal({ onClose, itemCount }: { onClose: () => void; itemCount: 
           </div>
           <div className="space-y-3 mb-6">
             {[
-              { icon: '📋', title: t('upgrade.unlimitedItems'), desc: t('upgrade.unlimitedItemsDesc', { limit: FREE_ITEM_LIMIT }) },
-              { icon: '🗂️', title: t('upgrade.allBoards'),    desc: t('upgrade.allBoardsDesc') },
-              { icon: '✅', title: t('upgrade.unlimitedChecklists'), desc: t('upgrade.unlimitedChecklistsDesc', { limit: FREE_CHECKLIST_LIMIT }) },
-              { icon: '👨‍👩‍👧', title: t('upgrade.sharing'), desc: t('upgrade.sharingDesc') },
-              { icon: '🤖', title: t('upgrade.aiForwarding'),   desc: t('upgrade.aiForwardingDesc') },
+              { icon: '📋', title: 'Unlimited items', desc: `You've reached the ${FREE_ITEM_LIMIT}-item Free limit` },
+              { icon: '🗂️', title: 'All 5 boards',    desc: 'Event, Study, Activity, Career & Task' },
+              { icon: '✅', title: 'Unlimited checklists', desc: `Free plan limits ${FREE_CHECKLIST_LIMIT} tasks per item` },
+              { icon: '👨‍👩‍👧', title: 'Share with up to 5', desc: 'Household sharing & collaboration' },
+              { icon: '🤖', title: 'AI forwarding',   desc: 'Text or email items directly to your boards' },
             ].map(f => (
               <div key={f.title} className="flex gap-3 items-start">
                 <span className="text-lg flex-shrink-0">{f.icon}</span>
@@ -723,7 +704,7 @@ function UpgradeModal({ onClose, itemCount }: { onClose: () => void; itemCount: 
           >
             Unlock Pro — Free Now →
           </button>
-          <button onClick={onClose} className="w-full py-2 text-sm text-[#5A7A94] hover:text-[#1A2B3C] mb-2">
+          <button onClick={onClose} className="w-full py-2 text-sm text-[#5A7A94] hover:text-[#1A2B3C]">
             Maybe later
           </button>
         </div>
@@ -898,7 +879,6 @@ function CalendarView({ items, onItemClick }: { items: Item[]; onItemClick: (ite
 export default function Dashboard() {
   const router = useRouter()
   const { toast } = useToast()
-  const t = useTranslations('dashboard')
   const [user,        setUser]        = useState<User | null>(null)
   const [items,       setItems]       = useState<Item[]>([])
   const [loading,     setLoading]     = useState(true)
@@ -1118,7 +1098,7 @@ export default function Dashboard() {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#F4F7FA]">
-      <div className="text-[#1B4F8A] font-georgia text-xl animate-pulse">{t('loading')}</div>
+      <div className="text-[#1B4F8A] font-georgia text-xl animate-pulse">Loading your boards…</div>
     </div>
   )
 
@@ -1141,14 +1121,14 @@ export default function Dashboard() {
               <span className="text-white font-georgia font-bold text-base hidden sm:block">Clarityboards</span>
             </div>
 
-            {/* Board tabs — hidden on mobile (bottom nav handles it) */}
-            <div data-tour="board-tabs" className="hidden sm:flex items-center gap-1 overflow-x-auto flex-1 scrollbar-hide">
+            {/* Board tabs */}
+            <div data-tour="board-tabs" className="flex items-center gap-1 overflow-x-auto flex-1 scrollbar-hide">
               <button
                 data-tour="unified-feed"
                 onClick={() => setActiveBoard('all')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${activeBoard === 'all' ? 'bg-white/20 text-white' : 'text-white/60 hover:text-white/90'}`}
               >
-                <Layers size={13} /> {t('allBoards')}
+                <Layers size={13} /> All Boards
               </button>
               {BOARDS.map(b => {
                 const locked = !isPro && !activeBoards.includes(b.id)
@@ -1199,14 +1179,14 @@ export default function Dashboard() {
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setShowSettings(false)} />
                     <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-xl border border-[#EBF3FB] z-50 overflow-hidden">
-                      <div className="px-3 py-2 text-xs font-semibold text-[#5A7A94] uppercase tracking-wide border-b border-[#EBF3FB]">{t('settings')}</div>
+                      <div className="px-3 py-2 text-xs font-semibold text-[#5A7A94] uppercase tracking-wide border-b border-[#EBF3FB]">Settings</div>
                       <a
                         href="/settings/sharing"
                         onClick={() => setShowSettings(false)}
                         className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
                       >
                         <Share2 size={14} className="text-[#5A7A94]" />
-                        {t('boardSharing')}
+                        Board Sharing
                       </a>
                       <a
                         href="/settings/phone"
@@ -1214,7 +1194,7 @@ export default function Dashboard() {
                         className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
                       >
                         <Phone size={14} className="text-[#5A7A94]" />
-                        {t('smsForwarding')}
+                        SMS Forwarding
                       </a>
                       <a
                         href="/settings/ical"
@@ -1222,15 +1202,7 @@ export default function Dashboard() {
                         className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
                       >
                         <Calendar size={14} className="text-[#5A7A94]" />
-                        {t('calendarExport')}
-                      </a>
-                      <a
-                        href="/settings/language"
-                        onClick={() => setShowSettings(false)}
-                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
-                      >
-                        <span className="text-sm">🌐</span>
-                        {t('language')}
+                        Calendar Export (iCal)
                       </a>
                       <div className="border-t border-[#EBF3FB]">
                         <button
@@ -1238,7 +1210,7 @@ export default function Dashboard() {
                           className="flex items-center gap-2.5 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition-colors w-full text-left"
                         >
                           <LogOut size={14} />
-                          {t('signOut')}
+                          Sign out
                         </button>
                       </div>
                     </div>
@@ -1259,7 +1231,7 @@ export default function Dashboard() {
                 autoFocus
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                placeholder={t('searchPlaceholder')}
+                placeholder="Search items, notes…"
                 className="w-full bg-white/10 text-white placeholder-white/40 rounded-lg px-4 py-2 text-sm focus:outline-none focus:bg-white/20 transition-colors"
               />
             </div>
@@ -1269,78 +1241,12 @@ export default function Dashboard() {
 
       {/* ── STATS STRIP ── */}
       <div className="bg-white border-b border-[#EBF3FB]">
-        {/* Mobile: compact 2-column stats */}
-        <div className="sm:hidden px-4 py-2">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex gap-4">
-              {[
-                { label: t('thisWeek'), value: thisWeek,  color: '#1B4F8A' },
-                { label: t('openItems'), value: openTasks, color: '#2E9E8F' },
-              ].map(s => (
-                <div key={s.label} className="flex items-center gap-1.5">
-                  <span className="text-xl font-bold font-georgia" style={{ color: s.color }}>{s.value}</span>
-                  <span className="text-xs text-[#5A7A94] leading-tight">{s.label}</span>
-                </div>
-              ))}
-            </div>
-            <div className="flex items-center gap-2">
-              {dueSoonCount > 0 && (
-                <button
-                  onClick={() => setDueSoonOnly(v => !v)}
-                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                    dueSoonOnly ? 'bg-orange-500 text-white border-orange-500' : 'bg-orange-50 text-orange-500 border-orange-200'
-                  }`}
-                >
-                  <Bell size={11} />
-                  {dueSoonCount}
-                </button>
-              )}
-              {/* View toggle — mobile */}
-              <div className="flex items-center bg-[#F4F7FA] rounded-lg p-0.5 border border-[#EBF3FB]">
-                <button onClick={() => setViewMode('list')} className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white text-[#1B4F8A] shadow-sm' : 'text-[#5A7A94]'}`}>
-                  <List size={14} />
-                </button>
-                <button onClick={() => setViewMode('calendar')} className={`p-1.5 rounded-md transition-all ${viewMode === 'calendar' ? 'bg-white text-[#1B4F8A] shadow-sm' : 'text-[#5A7A94]'}`}>
-                  <LayoutGrid size={14} />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile filter pills row */}
-          {(priorityFilter || activeTag || allTagsComputed.length > 0) && (
-            <div className="flex gap-1.5 mt-2 overflow-x-auto scrollbar-hide pb-1">
-              {[{ value: 'high', emoji: '🔴' }, { value: 'medium', emoji: '🟡' }, { value: 'low', emoji: '🟢' }].map(p => (
-                <button key={p.value}
-                  onClick={() => setPriorityFilter(v => v === p.value ? '' : p.value)}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all flex-shrink-0 min-h-0 ${
-                    priorityFilter === p.value ? 'bg-[#1A2B3C] text-white border-[#1A2B3C]' : 'bg-white text-[#5A7A94] border-[#E8E2D9]'
-                  }`}
-                >
-                  {p.emoji} {priorityFilter === p.value && <X size={9} />}
-                </button>
-              ))}
-              {allTagsComputed.slice(0, 3).map(tag => (
-                <button key={tag}
-                  onClick={() => setActiveTag(tg => tg === tag ? '' : tag)}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border transition-all flex-shrink-0 min-h-0 ${
-                    activeTag === tag ? 'bg-[#2874A6] text-white border-[#2874A6]' : 'bg-[#EBF3FB] text-[#2874A6] border-[#AED6F1]'
-                  }`}
-                >
-                  #{tag} {activeTag === tag && <X size={9} />}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Desktop: original full strip */}
-        <div className="hidden sm:flex max-w-5xl mx-auto px-4 py-3 gap-6 overflow-x-auto">
+        <div className="max-w-5xl mx-auto px-4 py-3 flex gap-6 overflow-x-auto">
           {[
-            { label: t('thisWeek'),     value: thisWeek,  color: '#1B4F8A' },
-            { label: t('rsvpsNeeded'),  value: rsvpNeed,  color: '#F5A623' },
-            { label: t('openItems'),    value: openTasks, color: '#2E9E8F' },
-            { label: t('totalItems'),   value: items.length, color: '#5A7A94' },
+            { label: 'This week',     value: thisWeek,  color: '#1B4F8A' },
+            { label: 'RSVPs needed',  value: rsvpNeed,  color: '#F5A623' },
+            { label: 'Open items',    value: openTasks, color: '#2E9E8F' },
+            { label: 'Total items',   value: items.length, color: '#5A7A94' },
           ].map(s => (
             <div key={s.label} className="flex items-center gap-2 flex-shrink-0">
               <span className="text-2xl font-bold font-georgia" style={{ color: s.color }}>{s.value}</span>
@@ -1348,19 +1254,23 @@ export default function Dashboard() {
             </div>
           ))}
 
+          {/* Due Soon quick filter */}
           {dueSoonCount > 0 && (
             <button
               onClick={() => setDueSoonOnly(v => !v)}
               className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border transition-all flex-shrink-0 ${
-                dueSoonOnly ? 'bg-orange-500 text-white border-orange-500' : 'bg-orange-50 text-orange-500 border-orange-200 hover:bg-orange-100'
+                dueSoonOnly
+                  ? 'bg-orange-500 text-white border-orange-500'
+                  : 'bg-orange-50 text-orange-500 border-orange-200 hover:bg-orange-100'
               }`}
             >
               <Bell size={11} />
-              {t('dueThisWeek')} · {dueSoonCount}
+              Due this week · {dueSoonCount}
               {dueSoonOnly && <X size={10} className="ml-0.5" />}
             </button>
           )}
 
+          {/* Priority filter pills */}
           {[{ value: 'high', emoji: '🔴' }, { value: 'medium', emoji: '🟡' }, { value: 'low', emoji: '🟢' }].map(p => (
             <button key={p.value}
               onClick={() => setPriorityFilter(v => v === p.value ? '' : p.value)}
@@ -1373,9 +1283,10 @@ export default function Dashboard() {
             </button>
           ))}
 
+          {/* Tag filter pills */}
           {allTagsComputed.slice(0, 5).map(tag => (
             <button key={tag}
-              onClick={() => setActiveTag(tg => tg === tag ? '' : tag)}
+              onClick={() => setActiveTag(t => t === tag ? '' : tag)}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border transition-all flex-shrink-0 ${
                 activeTag === tag ? 'bg-[#2874A6] text-white border-[#2874A6]' : 'bg-[#EBF3FB] text-[#2874A6] border-[#AED6F1] hover:bg-[#2874A6] hover:text-white'
               }`}
@@ -1383,38 +1294,39 @@ export default function Dashboard() {
               #{tag} {activeTag === tag && <X size={9} />}
             </button>
           ))}
-
           <div className="ml-auto flex items-center gap-3 flex-shrink-0">
+            {/* View toggle */}
             <div className="flex items-center bg-[#F4F7FA] rounded-lg p-0.5 border border-[#EBF3FB]">
               <button
                 onClick={() => setViewMode('list')}
                 className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${viewMode === 'list' ? 'bg-white text-[#1B4F8A] shadow-sm' : 'text-[#5A7A94] hover:text-[#1A2B3C]'}`}
-                title={t('listView')}
+                title="List view"
               >
                 <List size={13} />
-                <span>{t('listView')}</span>
+                <span className="hidden sm:inline">List</span>
               </button>
               <button
                 onClick={() => setViewMode('calendar')}
                 className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${viewMode === 'calendar' ? 'bg-white text-[#1B4F8A] shadow-sm' : 'text-[#5A7A94] hover:text-[#1A2B3C]'}`}
-                title={t('calendarView')}
+                title="Calendar view"
               >
                 <LayoutGrid size={13} />
-                <span>{t('calendarView')}</span>
+                <span className="hidden sm:inline">Calendar</span>
               </button>
             </div>
+
             {user?.user_metadata?.avatar_url && (
               <img src={user.user_metadata.avatar_url} alt="" className="w-7 h-7 rounded-full" />
             )}
-            <span className="text-xs text-[#5A7A94]">
-              {user?.user_metadata?.full_name?.split(' ')[0] ?? t('welcome')}
+            <span className="text-xs text-[#5A7A94] hidden sm:block">
+              {user?.user_metadata?.full_name?.split(' ')[0] ?? 'Welcome'}
             </span>
           </div>
         </div>
       </div>
 
       {/* ── MAIN CONTENT ── */}
-      <main className="max-w-5xl mx-auto px-4 py-4 sm:py-6 pb-24 sm:pb-6">
+      <main className="max-w-5xl mx-auto px-4 py-6">
 
         {/* Board header when filtered */}
         {activeBoard !== 'all' && (() => {
@@ -1432,7 +1344,7 @@ export default function Dashboard() {
                 onClick={() => setShareBoard(activeBoard)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#D4E6F1] text-[#5A7A94] text-xs font-medium hover:bg-[#EBF3FB] transition-colors"
               >
-                <Share2 size={13} /> {t('shareBoard')}
+                <Share2 size={13} /> Share board
               </button>
             </div>
           )
@@ -1444,10 +1356,10 @@ export default function Dashboard() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-16">
             <div className="text-4xl mb-3">📋</div>
-            <div className="font-semibold text-[#1A2B3C] mb-1">{t('noItemsTitle')}</div>
-            <div className="text-sm text-[#5A7A94] mb-4">{t('noItemsDesc')}</div>
+            <div className="font-semibold text-[#1A2B3C] mb-1">No items yet</div>
+            <div className="text-sm text-[#5A7A94] mb-4">Add your first item to get started.</div>
             <button onClick={() => setShowAdd(true)} className="px-4 py-2 rounded-xl bg-[#1B4F8A] text-white text-sm font-medium hover:bg-[#15407A] transition-colors">
-              {t('addItem')}
+              Add Item
             </button>
           </div>
         ) : (
@@ -1463,43 +1375,10 @@ export default function Dashboard() {
       <button
         data-tour="add-button"
         onClick={() => setShowAdd(true)}
-        className="fixed right-4 w-14 h-14 rounded-full bg-[#1B4F8A] text-white shadow-lg hover:bg-[#15407A] transition-colors flex items-center justify-center z-20 sm:bottom-6 bottom-[max(5rem,calc(4rem+env(safe-area-inset-bottom)))]"
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#1B4F8A] text-white shadow-lg hover:bg-[#15407A] transition-colors flex items-center justify-center z-20"
       >
         <Plus size={24} />
       </button>
-
-      {/* ── MOBILE BOTTOM NAV ── */}
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#1A2B3C] border-t border-white/10"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
-      >
-        <div className="flex items-center h-14">
-          <button
-            onClick={() => setActiveBoard('all')}
-            className={`flex-1 flex flex-col items-center justify-center gap-0.5 h-full transition-all ${activeBoard === 'all' ? 'text-white' : 'text-white/40'}`}
-          >
-            <Layers size={18} />
-            <span className="text-[10px] font-medium">All</span>
-          </button>
-          {BOARDS.map(b => {
-            const locked = !isPro && !activeBoards.includes(b.id)
-            return (
-              <button
-                key={b.id}
-                onClick={() => locked ? setShowUpgrade(true) : setActiveBoard(b.id)}
-                className={`flex-1 flex flex-col items-center justify-center gap-0.5 h-full transition-all ${activeBoard === b.id ? 'text-white' : locked ? 'text-white/20' : 'text-white/40'}`}
-              >
-                <span
-                  className="w-5 h-5 rounded flex items-center justify-center text-white font-bold"
-                  style={{ background: locked ? '#555' : b.color, fontSize: 9, fontFamily: 'Georgia, serif' }}
-                >
-                  {locked ? '🔒' : b.letter}
-                </span>
-                <span className="text-[10px] font-medium truncate max-w-[40px]">{b.label.replace('Board','')}</span>
-              </button>
-            )
-          })}
-        </div>
-      </nav>
 
       {/* ── MODALS ── */}
       {showAdd      && <AddModal    defaultBoard={activeBoard === 'all' ? 'event' : activeBoard} onSave={addItem} onClose={() => setShowAdd(false)} />}

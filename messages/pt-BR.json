@@ -197,8 +197,8 @@
     }
   },
   "dashboard": {
-    "searchPlaceholder": "Buscar itens…",
-    "allBoards": "Todos os quadros",
+    "searchPlaceholder": "Buscar itens, notas…",
+    "allBoards": "Todos",
     "addItem": "Adicionar item",
     "signOut": "Sair",
     "settings": "Configurações",
@@ -233,6 +233,34 @@
       "declined": "Recusado",
       "submitted": "Enviado",
       "applied": "Candidatado"
+    },
+    "loading": "Carregando seus quadros…",
+    "boardSharing": "Compartilhamento de quadro",
+    "smsForwarding": "Encaminhamento SMS",
+    "calendarExport": "Exportar calendário (iCal)",
+    "language": "Idioma",
+    "thisWeek": "Esta semana",
+    "rsvpsNeeded": "RSVPs pendentes",
+    "openItems": "Itens abertos",
+    "totalItems": "Total de itens",
+    "dueThisWeek": "Vence esta semana",
+    "listView": "Lista",
+    "calendarView": "Calendário",
+    "noItemsTitle": "Sem itens ainda",
+    "noItemsDesc": "Adicione seu primeiro item para começar.",
+    "welcome": "Bem-vindo",
+    "upgradeUnlock": "Desbloqueie tudo o que o Clarityboards tem a oferecer",
+    "upgrade": {
+      "unlimitedItems": "Itens ilimitados",
+      "unlimitedItemsDesc": "Você atingiu o limite de {limit} itens do plano gratuito",
+      "allBoards": "Os 5 quadros",
+      "allBoardsDesc": "Evento, Estudo, Atividade, Carreira e Tarefa",
+      "unlimitedChecklists": "Listas ilimitadas",
+      "unlimitedChecklistsDesc": "O plano gratuito limita a {limit} tarefas por item",
+      "sharing": "Compartilhar com até 5",
+      "sharingDesc": "Compartilhamento familiar e colaboração",
+      "aiForwarding": "Encaminhamento IA",
+      "aiForwardingDesc": "Envie itens por texto ou e-mail diretamente para seus quadros"
     }
   },
   "settings": {

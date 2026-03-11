@@ -197,8 +197,8 @@
     }
   },
   "dashboard": {
-    "searchPlaceholder": "Rechercher…",
-    "allBoards": "Tous les tableaux",
+    "searchPlaceholder": "Rechercher des éléments, notes…",
+    "allBoards": "Tous",
     "addItem": "Ajouter un élément",
     "signOut": "Se déconnecter",
     "settings": "Paramètres",
@@ -233,6 +233,34 @@
       "declined": "Refusé",
       "submitted": "Soumis",
       "applied": "Candidaté"
+    },
+    "loading": "Chargement de vos tableaux…",
+    "boardSharing": "Partage de tableau",
+    "smsForwarding": "Transfert SMS",
+    "calendarExport": "Export calendrier (iCal)",
+    "language": "Langue",
+    "thisWeek": "Cette semaine",
+    "rsvpsNeeded": "RSVP en attente",
+    "openItems": "Éléments ouverts",
+    "totalItems": "Total éléments",
+    "dueThisWeek": "Cette semaine",
+    "listView": "Liste",
+    "calendarView": "Calendrier",
+    "noItemsTitle": "Aucun élément",
+    "noItemsDesc": "Ajoutez votre premier élément pour commencer.",
+    "welcome": "Bienvenue",
+    "upgradeUnlock": "Débloquez tout ce que Clarityboards a à offrir",
+    "upgrade": {
+      "unlimitedItems": "Éléments illimités",
+      "unlimitedItemsDesc": "Vous avez atteint la limite de {limit} éléments du plan gratuit",
+      "allBoards": "Les 5 tableaux",
+      "allBoardsDesc": "Événement, Études, Activité, Carrière et Tâche",
+      "unlimitedChecklists": "Listes illimitées",
+      "unlimitedChecklistsDesc": "Le plan gratuit limite à {limit} tâches par élément",
+      "sharing": "Partager avec jusqu'à 5",
+      "sharingDesc": "Partage familial et collaboration",
+      "aiForwarding": "Transfert IA",
+      "aiForwardingDesc": "Envoyez des éléments par SMS ou e-mail directement à vos tableaux"
     }
   },
   "settings": {

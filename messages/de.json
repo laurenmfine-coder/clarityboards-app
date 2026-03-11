@@ -197,8 +197,8 @@
     }
   },
   "dashboard": {
-    "searchPlaceholder": "Einträge suchen…",
-    "allBoards": "Alle Boards",
+    "searchPlaceholder": "Einträge, Notizen suchen…",
+    "allBoards": "Alle",
     "addItem": "Eintrag hinzufügen",
     "signOut": "Abmelden",
     "settings": "Einstellungen",
@@ -233,6 +233,34 @@
       "declined": "Abgesagt",
       "submitted": "Eingereicht",
       "applied": "Beworben"
+    },
+    "loading": "Deine Boards werden geladen…",
+    "boardSharing": "Board teilen",
+    "smsForwarding": "SMS-Weiterleitung",
+    "calendarExport": "Kalender exportieren (iCal)",
+    "language": "Sprache",
+    "thisWeek": "Diese Woche",
+    "rsvpsNeeded": "RSVPs ausstehend",
+    "openItems": "Offene Einträge",
+    "totalItems": "Einträge gesamt",
+    "dueThisWeek": "Fällig diese Woche",
+    "listView": "Liste",
+    "calendarView": "Kalender",
+    "noItemsTitle": "Noch keine Einträge",
+    "noItemsDesc": "Füge deinen ersten Eintrag hinzu, um zu starten.",
+    "welcome": "Willkommen",
+    "upgradeUnlock": "Schalte alles frei, was Clarityboards zu bieten hat",
+    "upgrade": {
+      "unlimitedItems": "Unbegrenzte Einträge",
+      "unlimitedItemsDesc": "Du hast das Limit von {limit} Einträgen des Free-Plans erreicht",
+      "allBoards": "Alle 5 Boards",
+      "allBoardsDesc": "Event, Lernen, Aktivität, Karriere und Aufgabe",
+      "unlimitedChecklists": "Unbegrenzte Checklisten",
+      "unlimitedChecklistsDesc": "Free-Plan begrenzt auf {limit} Aufgaben pro Eintrag",
+      "sharing": "Mit bis zu 5 teilen",
+      "sharingDesc": "Familienfreigabe und Zusammenarbeit",
+      "aiForwarding": "KI-Weiterleitung",
+      "aiForwardingDesc": "Sende Einträge per Text oder E-Mail direkt an deine Boards"
     }
   },
   "settings": {
