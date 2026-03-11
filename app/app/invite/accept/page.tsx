@@ -1,4 +1,5 @@
 'use client'
+import { Suspense } from 'react'
 import { useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -12,7 +13,7 @@ const BOARD_COLORS: Record<string, string> = {
   career: '#8E44AD', task: '#C0392B',
 }
 
-export default function AcceptInvitePage() {
+function AcceptInviteInner() {
   const params = useSearchParams()
   const router = useRouter()
   const token = params.get('token')
@@ -36,7 +37,6 @@ export default function AcceptInvitePage() {
     setStatus('accepting')
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      // Not signed in — redirect to login with return URL
       router.push(`/login?redirect=/invite/accept?token=${token}`)
       return
     }
@@ -122,5 +122,13 @@ export default function AcceptInvitePage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function AcceptInvitePage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#F2EFE9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Georgia, serif', color: '#5A7A94' }}>Loading...</div>}>
+      <AcceptInviteInner />
+    </Suspense>
   )
 }
