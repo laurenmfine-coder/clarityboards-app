@@ -566,7 +566,7 @@ export default function App() {
           <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, color: "#1a1a2e", marginBottom: 10 }}>You're all set!</div>
           <div style={{ fontSize: 14, color: "#666", marginBottom: 28, lineHeight: 1.6 }}>Tour complete. Head to your dashboard and add your first item — it takes about 10 seconds.</div>
           <button
-            onClick={() => { setTourDone(false); setStarted(false); }}
+            onClick={() => onComplete()}
             style={{ background: "#1B4F8A", color: "white", border: "none", borderRadius: 12, padding: "13px 28px", fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", boxShadow: "0 4px 16px rgba(27,79,138,0.35)", marginBottom: 12, display: "block", width: "100%" }}
           >Go to Dashboard →</button>
           <button
