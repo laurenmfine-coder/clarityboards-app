@@ -791,7 +791,7 @@ export default function Dashboard() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3">
             {filtered.map((item, index) => (
               <ItemCard key={item.id} item={item} onClick={() => setDetail(item)} isFirst={index === 0} />
             ))}
