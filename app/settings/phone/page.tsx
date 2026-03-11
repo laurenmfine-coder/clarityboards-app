@@ -1,11 +1,14 @@
 'use client'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Phone, ArrowLeft, Check, AlertCircle, MessageSquare } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function PhoneSettingsPage() {
   const router = useRouter()
+  const t = useTranslations('settingsPhone')
   const [userId, setUserId]   = useState<string | null>(null)
   const [phone, setPhone]     = useState('')
   const [current, setCurrent] = useState<string | null>(null)
@@ -46,7 +49,7 @@ export default function PhoneSettingsPage() {
     let normalized = cleaned
     if (tenDigit.test(cleaned)) normalized = '+1' + cleaned
     if (!e164.test(normalized)) {
-      setErrorMsg('Enter a valid US number (10 digits) or international format (+1...)')
+      setErrorMsg(t('errorInvalid'))
       setStatus('error')
       return
     }
@@ -91,7 +94,7 @@ export default function PhoneSettingsPage() {
           onClick={() => router.push('/dashboard')}
           className="flex items-center gap-2 text-sm text-[#5A7A94] hover:text-[#1A2B3C] mb-8 transition-colors"
         >
-          <ArrowLeft size={15} /> Back to dashboard
+          <ArrowLeft size={15} /> {t('back')}
         </button>
 
         {/* Header */}
@@ -101,15 +104,15 @@ export default function PhoneSettingsPage() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-[#1A2B3C]" style={{ fontFamily: 'Georgia, serif' }}>
-              SMS Forwarding
+              {t('title')}
             </h1>
-            <p className="text-sm text-[#5A7A94]">Text items directly to your boards</p>
+            <p className="text-sm text-[#5A7A94]">{t('subtitle')}</p>
           </div>
         </div>
 
-        {/* How it works */}
+        {/* {t('howItWorksTitle')} */}
         <div className="bg-white rounded-2xl border border-[#EBF3FB] p-5 mb-5">
-          <div className="text-xs font-semibold text-[#5A7A94] uppercase tracking-wide mb-3">How it works</div>
+          <div className="text-xs font-semibold text-[#5A7A94] uppercase tracking-wide mb-3">{t('howItWorksTitle')}</div>
           <div className="space-y-3">
             {[
               { icon: <MessageSquare size={15} className="text-[#1B4F8A]" />, text: 'Text your Clarityboards number: +1 (877) 318-9322' },
@@ -129,7 +132,7 @@ export default function PhoneSettingsPage() {
 
         {/* Phone input */}
         <div className="bg-white rounded-2xl border border-[#EBF3FB] p-5 mb-5">
-          <div className="text-xs font-semibold text-[#5A7A94] uppercase tracking-wide mb-4">Your mobile number</div>
+          <div className="text-xs font-semibold text-[#5A7A94] uppercase tracking-wide mb-4">{t('yourNumberTitle')}</div>
 
           {current && (
             <div className="flex items-center gap-2 bg-[#EAFAF1] border border-[#27AE60]/20 rounded-xl px-4 py-3 mb-4">
@@ -141,17 +144,17 @@ export default function PhoneSettingsPage() {
 
           <div className="mb-4">
             <label className="text-xs font-semibold text-[#5A7A94] uppercase tracking-wide mb-1.5 block">
-              Mobile number
+              {t('label')}
             </label>
             <input
               type="tel"
               value={phone}
               onChange={e => { setPhone(e.target.value); setStatus('idle') }}
-              placeholder="+1 (555) 000-0000 or 10-digit US number"
+              placeholder={t('placeholder')}
               className="w-full border border-[#D4E6F1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4F8A]/30"
             />
             <p className="text-xs text-[#5A7A94] mt-1.5">
-              US numbers: enter 10 digits (we'll add +1). International: include country code (+44...).
+              {t('hint')}
             </p>
           </div>
 
@@ -165,7 +168,7 @@ export default function PhoneSettingsPage() {
           {status === 'saved' && (
             <div className="flex items-center gap-2 text-sm text-[#27AE60] bg-[#EAFAF1] rounded-xl px-4 py-3 mb-4">
               <Check size={14} className="flex-shrink-0" />
-              {current ? 'Phone number saved! You can now text your boards.' : 'Phone number removed.'}
+              {current ? t('savedPhone') : t('removedPhone')}
             </div>
           )}
 
@@ -185,16 +188,16 @@ export default function PhoneSettingsPage() {
               className="flex-1 py-2.5 rounded-xl text-white text-sm font-medium transition-colors disabled:opacity-50"
               style={{ background: '#1B4F8A' }}
             >
-              {saving ? 'Saving…' : current ? 'Update number' : 'Save number'}
+              {saving ? t('saving') : current ? t('update') : t('save')}
             </button>
           </div>
         </div>
 
         {/* Twilio note */}
         <div className="bg-[#FFF8F0] rounded-2xl border border-[#F5A623]/20 p-4 text-sm text-[#5A7A94]">
-          <span className="font-semibold text-[#F5A623]">⏳ Toll-free verification in progress</span>
+          <span className="font-semibold text-[#F5A623]">{t('twilioTitle')}</span>
           <p className="mt-1">
-            SMS forwarding will activate once our number (+1 877-318-9322) completes carrier verification — typically 3–7 business days. Your number will be ready to go the moment it clears.
+            {t('twilioBody')}
           </p>
         </div>
 

@@ -1,184 +1,498 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { supabase } from '@/lib/supabase'
-import { BOARDS } from '@/lib/boards'
 
-function GoogleBtn({ label = 'Get started free →', large = false, onClick }: { label?: string; large?: boolean; onClick: () => void }) {
+// ── Types ─────────────────────────────────────────────────
+type Board = 'event' | 'study' | 'activity' | 'career' | 'task'
+type DemoItem = {
+  id: string
+  board: Board
+  title: string
+  date: string | null
+  status: string
+  tags?: string[]
+  checklist?: { text: string; done: boolean }[]
+  priority?: 'high' | 'medium' | 'low'
+  shared?: boolean
+}
+
+// ── Board config ──────────────────────────────────────────
+const BOARDS = {
+  event:    { label: 'EventBoard',    letter: 'E', color: '#2874A6', light: '#EBF5FB' },
+  study:    { label: 'StudyBoard',    letter: 'S', color: '#1E8449', light: '#EAFAF1' },
+  activity: { label: 'ActivityBoard', letter: 'A', color: '#E67E22', light: '#FEF3E8' },
+  career:   { label: 'CareerBoard',   letter: 'C', color: '#8E44AD', light: '#F5EEF8' },
+  task:     { label: 'TaskBoard',     letter: 'T', color: '#C0392B', light: '#FDEDEC' },
+}
+
+// ── Demo data (sample titles stay as-is — not UI strings) ─
+const DEMO_ITEMS: DemoItem[] = [
+  { id: '1', board: 'event',    title: "Sofia's quinceañera",      date: '2026-04-10', status: 'accepted',    priority: 'high',   shared: true, checklist: [{text:'Buy dress',done:true},{text:'Book hotel',done:false},{text:'RSVP catering',done:false}] },
+  { id: '2', board: 'event',    title: 'Book club — March',        date: '2026-03-20', status: 'rsvp-needed', tags: ['book-club'] },
+  { id: '3', board: 'activity', title: 'Jake soccer tournament',   date: '2026-03-15', status: 'todo',        priority: 'medium', shared: true },
+  { id: '4', board: 'activity', title: 'Emma violin recital',      date: '2026-03-22', status: 'todo' },
+  { id: '5', board: 'study',    title: 'BIO 301 midterm',          date: '2026-03-18', status: 'in-progress', priority: 'high',   tags: ['BIO301'] },
+  { id: '6', board: 'study',    title: 'CHEM lab report',          date: '2026-03-25', status: 'todo',        tags: ['CHEM202'] },
+  { id: '7', board: 'career',   title: 'Google SWE application',   date: '2026-03-16', status: 'submitted' },
+  { id: '8', board: 'career',   title: 'Meta PM — follow up',      date: '2026-03-19', status: 'in-progress' },
+  { id: '9', board: 'task',     title: 'Call insurance re: claim', date: '2026-03-14', status: 'todo', priority: 'high' },
+  { id: '10', board: 'task',    title: 'Renew car registration',   date: '2026-03-28', status: 'todo' },
+]
+
+// ── Helpers ───────────────────────────────────────────────
+function fmt(d: string | null) {
+  if (!d) return ''
+  return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+function daysUntil(d: string | null) {
+  if (!d) return null
+  return Math.ceil((new Date(d + 'T00:00:00').getTime() - Date.now()) / 86400000)
+}
+function urgencyColor(d: string | null) {
+  const n = daysUntil(d)
+  if (n === null) return '#5A7A94'
+  if (n < 0)  return '#E74C3C'
+  if (n <= 7) return '#E67E22'
+  return '#5A7A94'
+}
+
+// ── Mini board monogram ───────────────────────────────────
+function Mono({ board, size = 24 }: { board: Board; size?: number }) {
+  const b = BOARDS[board]
   return (
-    <button onClick={onClick} style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#1B4F8A', color: 'white', fontWeight: 600, borderRadius: 12, border: 'none', padding: large ? '14px 28px' : '10px 20px', fontSize: large ? '1rem' : '0.875rem' }}>
-      <svg width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-        <path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-        <path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-        <path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-        <path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-      </svg>
-      {label}
-    </button>
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      width: size, height: size, borderRadius: size * 0.28,
+      background: b.color, color: '#fff',
+      fontSize: size * 0.44, fontWeight: 800,
+      fontFamily: 'Georgia, serif', flexShrink: 0,
+    }}>{b.letter}</span>
   )
 }
 
-export default function LoginPage() {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+// ── Priority dot ──────────────────────────────────────────
+function PriorityDot({ p }: { p?: string }) {
+  if (!p) return null
+  const colors: Record<string, string> = { high: '#E74C3C', medium: '#E67E22', low: '#27AE60' }
+  return <span style={{ width: 7, height: 7, borderRadius: '50%', background: colors[p], display: 'inline-block', flexShrink: 0 }} />
+}
 
-  const handleGoogle = async () => {
-    setLoading(true)
-    setError('')
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/dashboard` },
-    })
-    if (error) { setError(error.message); setLoading(false) }
+// ── Demo item card ────────────────────────────────────────
+function DemoCard({ item, onClick, selected }: { item: DemoItem; onClick: () => void; selected: boolean }) {
+  const b = BOARDS[item.board]
+  const n = daysUntil(item.date)
+  const isUrgent = n !== null && n <= 7 && n >= 0
+  return (
+    <div onClick={onClick} style={{
+      display: 'flex', alignItems: 'center', gap: 10,
+      padding: '10px 14px', borderRadius: 12,
+      background: selected ? b.light : 'white',
+      border: `1.5px solid ${selected ? b.color + '60' : '#EEE'}`,
+      cursor: 'pointer', transition: 'all 0.15s',
+      boxShadow: selected ? `0 2px 12px ${b.color}20` : '0 1px 3px rgba(0,0,0,0.04)',
+    }}>
+      <Mono board={item.board} size={26} />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#1A2B3C', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {item.title}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+          {item.date && (
+            <span style={{ fontSize: 11, color: urgencyColor(item.date), fontWeight: isUrgent ? 700 : 400 }}>
+              {isUrgent && n === 0 ? 'Today' : isUrgent ? `${n}d` : fmt(item.date)}
+            </span>
+          )}
+          {item.tags?.map(t => (
+            <span key={t} style={{ fontSize: 10, padding: '1px 6px', borderRadius: 20, background: b.light, color: b.color, fontWeight: 600 }}>#{t}</span>
+          ))}
+          {item.shared && <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 20, background: '#EBF5FB', color: '#2874A6', fontWeight: 600 }}>🔗</span>}
+        </div>
+      </div>
+      <PriorityDot p={item.priority} />
+    </div>
+  )
+}
+
+// ── Detail panel ──────────────────────────────────────────
+function DetailPanel({ item, onClose }: { item: DemoItem; onClose: () => void }) {
+  const t = useTranslations('detail')
+  const b = BOARDS[item.board]
+  const [checks, setChecks] = useState(item.checklist ?? [])
+  const [done, setDone] = useState(item.status === 'done')
+  const [confetti, setConfetti] = useState(false)
+
+  const complete = () => {
+    setDone(true)
+    if (checks.length >= 2) setConfetti(true)
+    setTimeout(() => setConfetti(false), 2200)
   }
 
-  const sampleItems = [
-    { title: "Emma's Bat Mitzvah",            color: '#1B4F8A', letter: 'E', status: 'RSVP Needed', statusBg: '#EBF3FB', statusColor: '#1B4F8A', pct: 25 },
-    { title: 'AP History Essay — WWI Causes', color: '#2E9E8F', letter: 'S', status: 'In Progress',  statusBg: '#E8F8F6', statusColor: '#2E9E8F', pct: 57 },
-    { title: 'Dance Recital — Spring Show',   color: '#E67E22', letter: 'A', status: 'To Do',        statusBg: '#FEF3E8', statusColor: '#E67E22', pct: 20 },
-    { title: 'Interview — Product Manager',   color: '#8E44AD', letter: 'C', status: 'In Progress',  statusBg: '#F5EEF8', statusColor: '#8E44AD', pct: 66 },
-    { title: 'Plan Summer Family Vacation',   color: '#27AE60', letter: 'T', status: 'In Progress',  statusBg: '#EAFAF1', statusColor: '#27AE60', pct: 40 },
-  ]
-
   return (
-    <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', background: '#F4F7FA', color: '#1A2B3C' }}>
-
-      {/* NAV */}
-      <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #EBF3FB' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 2rem', display: 'flex', alignItems: 'center', height: 64, gap: 32 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginRight: 'auto' }}>
-            <div style={{ display: 'flex', gap: 4 }}>
-              {[['#F5A623','#D4E6F1'],['#D4E6F1','#2E9E8F']].map((pair, r) => (
-                <div key={r} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  {pair.map((c,i) => <div key={i} style={{ width: 10, height: 10, borderRadius: 3, background: c }} />)}
+    <div style={{
+      background: 'white', borderRadius: 16, border: `1.5px solid ${b.color}30`,
+      boxShadow: `0 8px 40px ${b.color}18`, overflow: 'hidden', position: 'relative',
+    }}>
+      {confetti && (
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 10 }}>
+          <style>{`@keyframes cf{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(200px) rotate(540deg);opacity:0}}`}</style>
+          {Array.from({length:24}).map((_,i) => (
+            <div key={i} style={{
+              position:'absolute', left:`${Math.random()*100}%`, top:0,
+              width: Math.random()*7+5, height: Math.random()*7+5,
+              borderRadius: Math.random()>.5?'50%':'2px',
+              background: [b.color,'#E67E22','#1E8449','#E74C3C'][i%4],
+              animation:`cf ${Math.random()*1+1}s ease-in forwards`,
+              animationDelay:`${Math.random()*0.4}s`,
+            }}/>
+          ))}
+          <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <div style={{ background:'white', borderRadius:16, padding:'16px 28px', textAlign:'center', boxShadow:'0 4px 24px rgba(0,0,0,0.12)' }}>
+              <div style={{ fontSize:32 }}>🎉</div>
+              <div style={{ fontWeight:800, color:'#1A2B3C', fontSize:15, marginTop:4 }}>{t('done')}</div>
+            </div>
+          </div>
+        </div>
+      )}
+      <div style={{ padding: '16px 18px', borderBottom: `1px solid ${b.color}20`, background: b.light }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <Mono board={item.board} size={32} />
+          <div style={{ flex:1 }}>
+            <div style={{ fontWeight:700, color:'#1A2B3C', fontSize:15 }}>{item.title}</div>
+            <div style={{ fontSize:11, color: b.color, fontWeight:600, marginTop:1 }}>{b.label}</div>
+          </div>
+          <button onClick={onClose} style={{ color:'#9B8E7E', background:'none', border:'none', cursor:'pointer', fontSize:18, lineHeight:1 }}>×</button>
+        </div>
+      </div>
+      <div style={{ padding:'14px 18px', fontSize:13, color:'#5A7A94' }}>
+        {item.date && (
+          <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
+            <span>📅</span>
+            <span style={{ color: urgencyColor(item.date), fontWeight:600 }}>{fmt(item.date)}</span>
+            {daysUntil(item.date) !== null && daysUntil(item.date)! <= 7 && daysUntil(item.date)! >= 0 && (
+              <span style={{ fontSize:11, background:'#FEF3E8', color:'#E67E22', padding:'2px 8px', borderRadius:20, fontWeight:700 }}>
+                {daysUntil(item.date) === 0 ? t('today') : t('daysAway', { n: daysUntil(item.date) })}
+              </span>
+            )}
+          </div>
+        )}
+        {item.priority && (
+          <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
+            <PriorityDot p={item.priority} />
+            <span style={{ textTransform:'capitalize', fontWeight:600, color:'#1A2B3C', fontSize:12 }}>
+              {t('priority', { level: item.priority })}
+            </span>
+          </div>
+        )}
+        {item.shared && (
+          <div style={{ fontSize:11, background:'#EBF5FB', color:'#2874A6', padding:'4px 10px', borderRadius:8, fontWeight:600, marginBottom:10, display:'inline-block' }}>
+            {t('sharedBoard')}
+          </div>
+        )}
+        {checks.length > 0 && (
+          <div style={{ marginBottom:12 }}>
+            <div style={{ fontWeight:700, color:'#1A2B3C', fontSize:12, marginBottom:6, textTransform:'uppercase', letterSpacing:'0.05em' }}>
+              {t('checklist')}
+            </div>
+            <div style={{ background:'#F8F9FA', borderRadius:8, overflow:'hidden' }}>
+              <div style={{ height:3, background:'#EEE', borderRadius:3, margin:'0 0 8px' }}>
+                <div style={{ height:'100%', background:b.color, borderRadius:3, transition:'width 0.4s', width:`${(checks.filter(c=>c.done).length/checks.length)*100}%` }} />
+              </div>
+              {checks.map((c, i) => (
+                <div key={i} onClick={() => setChecks(prev => prev.map((x,j) => j===i?{...x,done:!x.done}:x))}
+                  style={{ display:'flex', alignItems:'center', gap:8, padding:'6px 10px', cursor:'pointer', borderRadius:6 }}>
+                  <div style={{ width:16, height:16, borderRadius:4, border:`2px solid ${c.done?b.color:'#CCC'}`, background:c.done?b.color:'white', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'all 0.15s' }}>
+                    {c.done && <span style={{ color:'white', fontSize:10, fontWeight:900 }}>✓</span>}
+                  </div>
+                  <span style={{ fontSize:12, color: c.done?'#9B8E7E':'#1A2B3C', textDecoration:c.done?'line-through':'none' }}>{c.text}</span>
                 </div>
               ))}
             </div>
-            <span style={{ fontFamily: 'Georgia, serif', fontWeight: 'bold', fontSize: '1.2rem', color: '#1B4F8A' }}>Clarityboards</span>
           </div>
-          <a href="#how"     style={{ fontSize: '0.875rem', color: '#5A7A94', textDecoration: 'none', fontWeight: 500 }}>How it works</a>
-          <a href="#boards"  style={{ fontSize: '0.875rem', color: '#5A7A94', textDecoration: 'none', fontWeight: 500 }}>The boards</a>
-          <a href="#pricing" style={{ fontSize: '0.875rem', color: '#5A7A94', textDecoration: 'none', fontWeight: 500 }}>Pricing</a>
-          <GoogleBtn label={loading ? 'Signing in…' : 'Sign in →'} onClick={handleGoogle} />
+        )}
+        {!done ? (
+          <button onClick={complete} style={{
+            width:'100%', padding:'9px', borderRadius:10, border:'none', cursor:'pointer',
+            background: b.color, color:'white', fontWeight:700, fontSize:13, transition:'opacity 0.15s',
+          }}>
+            {t('markComplete')}
+          </button>
+        ) : (
+          <div style={{ textAlign:'center', padding:'8px', color:'#27AE60', fontWeight:700, fontSize:13 }}>{t('completed')}</div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── SMS story bubble ──────────────────────────────────────
+function SMSBubble({ msg, visible, delay }: { msg: {from:string;text:string}; visible: boolean; delay: number }) {
+  const isUser = msg.from === 'user'
+  return (
+    <div style={{
+      display:'flex', justifyContent: isUser?'flex-end':'flex-start',
+      opacity: visible ? 1 : 0,
+      transform: visible ? 'translateY(0)' : 'translateY(12px)',
+      transition: `all 0.4s ease ${delay}s`,
+    }}>
+      {!isUser && (
+        <div style={{ width:28, height:28, borderRadius:'50%', background:'#1A2B3C', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, marginRight:8, flexShrink:0 }}>C</div>
+      )}
+      <div style={{
+        maxWidth:'78%', padding:'10px 14px', borderRadius: isUser?'18px 18px 4px 18px':'18px 18px 18px 4px',
+        background: isUser ? '#2874A6' : '#F0F0F0',
+        color: isUser ? 'white' : '#1A2B3C',
+        fontSize:13, lineHeight:1.5, whiteSpace:'pre-line',
+        boxShadow: isUser ? '0 2px 8px rgba(40,116,166,0.25)' : '0 1px 4px rgba(0,0,0,0.08)',
+      }}>
+        {msg.text}
+      </div>
+    </div>
+  )
+}
+
+// ── Main landing page ─────────────────────────────────────
+export default function LandingPage() {
+  const router = useRouter()
+  const tNav      = useTranslations('nav')
+  const tHero     = useTranslations('hero')
+  const tDemo     = useTranslations('demo')
+  const tSms      = useTranslations('sms')
+  const tSmsS     = useTranslations('smsStories')
+  const tFeatures = useTranslations('features')
+  const tPricing  = useTranslations('pricing')
+  const tCta      = useTranslations('cta')
+  const tFooter   = useTranslations('footer')
+
+  const SMS_STORIES = [
+    { persona: tSmsS('maria.persona'), emoji: '⚽', color: '#E67E22',
+      texts: [{ from: 'user', text: tSmsS('maria.userText') }, { from: 'app', text: tSmsS('maria.appText') }],
+      result: tSmsS('maria.result') },
+    { persona: tSmsS('priya.persona'), emoji: '📚', color: '#1E8449',
+      texts: [{ from: 'user', text: tSmsS('priya.userText') }, { from: 'app', text: tSmsS('priya.appText') }],
+      result: tSmsS('priya.result') },
+    { persona: tSmsS('derek.persona'), emoji: '💼', color: '#8E44AD',
+      texts: [{ from: 'user', text: tSmsS('derek.userText') }, { from: 'app', text: tSmsS('derek.appText') }],
+      result: tSmsS('derek.result') },
+    { persona: tSmsS('tom.persona'), emoji: '🏠', color: '#2874A6',
+      texts: [{ from: 'user', text: tSmsS('tom.userText') }, { from: 'app', text: tSmsS('tom.appText') }],
+      result: tSmsS('tom.result') },
+  ]
+
+  const FEATURES = [
+    { icon: '📱', title: tFeatures('items.capture.title'),  desc: tFeatures('items.capture.desc') },
+    { icon: '🎯', title: tFeatures('items.boards.title'),   desc: tFeatures('items.boards.desc') },
+    { icon: '🔗', title: tFeatures('items.share.title'),    desc: tFeatures('items.share.desc') },
+    { icon: '🔴', title: tFeatures('items.priority.title'), desc: tFeatures('items.priority.desc') },
+    { icon: '📅', title: tFeatures('items.calendar.title'), desc: tFeatures('items.calendar.desc') },
+    { icon: '🔁', title: tFeatures('items.recurring.title'),desc: tFeatures('items.recurring.desc') },
+  ]
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) router.replace('/dashboard')
+    })
+  }, [router])
+
+  const [activeBoard, setActiveBoard] = useState<Board | 'all'>('all')
+  const [selectedItem, setSelectedItem] = useState<DemoItem | null>(DEMO_ITEMS[0])
+  const [activeStory, setActiveStory] = useState(0)
+  const [visibleBubbles, setVisibleBubbles] = useState<boolean[]>([false, false])
+  const [storyPlaying, setStoryPlaying] = useState(false)
+  const storyRef = useRef<HTMLDivElement>(null)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const h = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', h)
+    return () => window.removeEventListener('scroll', h)
+  }, [])
+
+  const filtered = activeBoard === 'all' ? DEMO_ITEMS : DEMO_ITEMS.filter(i => i.board === activeBoard)
+
+  const playStory = (idx: number) => {
+    setActiveStory(idx)
+    setVisibleBubbles([false, false])
+    setStoryPlaying(true)
+    setTimeout(() => setVisibleBubbles([true, false]), 300)
+    setTimeout(() => setVisibleBubbles([true, true]), 1400)
+    setTimeout(() => setStoryPlaying(false), 2200)
+  }
+
+  useEffect(() => { playStory(0) }, [])
+
+  useEffect(() => {
+    const el = storyRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) playStory(0)
+    }, { threshold: 0.4 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  const story = SMS_STORIES[activeStory]
+
+  return (
+    <div style={{ fontFamily: "'Georgia', serif", background: '#FAFAF8', minHeight: '100vh', color: '#1A2B3C' }}>
+
+      {/* NAV */}
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        background: scrolled ? 'rgba(255,255,255,0.95)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(12px)' : 'none',
+        borderBottom: scrolled ? '1px solid #EEE' : 'none',
+        transition: 'all 0.3s', padding: '0 32px',
+        display: 'flex', alignItems: 'center', height: 60,
+      }}>
+        <div style={{ fontWeight: 800, fontSize: 18, color: '#1A2B3C', letterSpacing: '-0.02em' }}>
+          clarity<span style={{ color: '#2874A6' }}>boards</span>
         </div>
+        <div style={{ flex: 1 }} />
+        <a href="/login" style={{ fontSize: 13, color: '#5A7A94', textDecoration: 'none', marginRight: 20, fontFamily: 'system-ui' }}>
+          {tNav('signIn')}
+        </a>
+        <a href="/onboarding" style={{
+          fontSize: 13, fontWeight: 700, padding: '8px 20px', borderRadius: 10,
+          background: '#1A2B3C', color: 'white', textDecoration: 'none', fontFamily: 'system-ui',
+        }}>
+          {tNav('getStarted')}
+        </a>
       </nav>
 
       {/* HERO */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '6rem 2rem 4rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
-        <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#EBF3FB', borderRadius: 999, padding: '6px 14px', marginBottom: '1.5rem' }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#27AE60' }} />
-            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#1B4F8A' }}>Now in prototype · Invited testers only</span>
+      <section style={{ paddingTop: 80, paddingBottom: 60 }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ textAlign: 'center', paddingTop: 40, paddingBottom: 48 }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: '#EBF5FB', color: '#2874A6', borderRadius: 20,
+              padding: '6px 16px', fontSize: 12, fontWeight: 700,
+              fontFamily: 'system-ui', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 24,
+            }}>
+              {tHero('badge')}
+            </div>
+            <h1 style={{ fontSize: 'clamp(36px, 6vw, 68px)', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.03em', color: '#1A2B3C', margin: '0 0 20px' }}>
+              {tHero('headline')}<br />
+              <span style={{ color: '#2874A6' }}>{tHero('headlineAccent')}</span>
+            </h1>
+            <p style={{ fontSize: 'clamp(15px, 2vw, 19px)', color: '#5A7A94', maxWidth: 560, margin: '0 auto 36px', lineHeight: 1.6, fontFamily: 'system-ui' }}>
+              {tHero('subheadline')}
+            </p>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <a href="/onboarding" style={{ padding: '14px 32px', borderRadius: 12, background: '#1A2B3C', color: 'white', fontWeight: 800, fontSize: 15, textDecoration: 'none', fontFamily: 'system-ui', boxShadow: '0 4px 20px rgba(26,43,60,0.25)' }}>
+                {tHero('ctaPrimary')}
+              </a>
+              <a href="#demo" style={{ padding: '14px 32px', borderRadius: 12, border: '2px solid #E8E2D9', color: '#1A2B3C', fontWeight: 700, fontSize: 15, textDecoration: 'none', fontFamily: 'system-ui', background: 'white' }}>
+                {tHero('ctaSecondary')}
+              </a>
+            </div>
+            <p style={{ marginTop: 14, fontSize: 12, color: '#B0A898', fontFamily: 'system-ui' }}>{tHero('pricingNote')}</p>
           </div>
-          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '3.5rem', fontWeight: 'bold', lineHeight: 1.1, marginBottom: '1.5rem', letterSpacing: '-0.02em' }}>
-            One place for your <em style={{ color: '#1B4F8A' }}>whole</em> life.
-          </h1>
-          <p style={{ fontSize: '1.125rem', color: '#5A7A94', lineHeight: 1.7, marginBottom: '2rem' }}>
-            Invitations, assignments, sports schedules, job interviews, and personal projects — all in one organized feed, sorted by when they happen.
-          </p>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-            <GoogleBtn label={loading ? 'Signing in…' : 'Get started free →'} large onClick={handleGoogle} />
-            <span style={{ fontSize: '0.8rem', color: '#5A7A94' }}>Free forever · No credit card</span>
-          </div>
-          {error && <p style={{ marginTop: 12, color: '#E74C3C', fontSize: '0.875rem' }}>{error}</p>}
-        </div>
 
-        {/* Dashboard preview */}
-        <div style={{ background: 'white', borderRadius: 20, boxShadow: '0 20px 60px rgba(27,79,138,0.12)', overflow: 'hidden', border: '1px solid #EBF3FB' }}>
-          <div style={{ background: '#1A2B3C', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ display: 'flex', gap: 3 }}>
-              {[['#F5A623','#D4E6F1'],['#D4E6F1','#2E9E8F']].map((pair, r) => (
-                <div key={r} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  {pair.map((c,i) => <div key={i} style={{ width: 7, height: 7, borderRadius: 2, background: c }} />)}
-                </div>
+          {/* DEMO */}
+          <div id="demo" style={{ background: 'white', borderRadius: 20, boxShadow: '0 20px 80px rgba(26,43,60,0.10), 0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #EEE', overflow: 'hidden' }}>
+            <div style={{ background: '#1A2B3C', padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ display:'flex', gap:6 }}>
+                {['#FF5F57','#FFBD2E','#28CA41'].map(c => <div key={c} style={{ width:11, height:11, borderRadius:'50%', background:c }} />)}
+              </div>
+              <div style={{ flex:1, background:'rgba(255,255,255,0.08)', borderRadius:6, padding:'4px 12px', fontSize:11, color:'rgba(255,255,255,0.5)', fontFamily:'system-ui', textAlign:'center' }}>
+                {tDemo('chromeUrl')}
+              </div>
+              <div style={{ fontSize:11, color:'rgba(255,255,255,0.4)', fontFamily:'system-ui' }}>{tDemo('tryIt')}</div>
+            </div>
+            <div style={{ display: 'flex', gap: 0, overflowX: 'auto', borderBottom: '1px solid #EEE', background: '#F8F9FA', padding: '0 12px' }}>
+              {[{ id: 'all', label: tDemo('allBoards'), color: '#1A2B3C' }, ...Object.entries(BOARDS).map(([id, b]) => ({ id, label: b.label, color: b.color }))].map(tab => (
+                <button key={tab.id} onClick={() => { setActiveBoard(tab.id as any); setSelectedItem(null) }}
+                  style={{ padding: '10px 14px', border: 'none', background: 'none', cursor: 'pointer', fontSize: 12, fontWeight: activeBoard === tab.id ? 800 : 500, color: activeBoard === tab.id ? tab.color : '#9B8E7E', borderBottom: activeBoard === tab.id ? `2px solid ${tab.color}` : '2px solid transparent', whiteSpace: 'nowrap', transition: 'all 0.15s', fontFamily: 'system-ui', marginBottom: -1 }}>
+                  {tab.label}
+                </button>
               ))}
             </div>
-            <span style={{ color: 'white', fontFamily: 'Georgia, serif', fontWeight: 'bold', fontSize: '0.85rem', marginLeft: 4 }}>Clarityboards</span>
-            <div style={{ marginLeft: 'auto', display: 'flex', gap: 5 }}>
-              {BOARDS.map(b => <div key={b.id} style={{ width: 22, height: 22, borderRadius: 6, background: b.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 10, fontFamily: 'Georgia, serif', fontWeight: 'bold' }}>{b.letter}</div>)}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 360 }}>
+              <div style={{ padding: 14, borderRight: '1px solid #EEE', display: 'flex', flexDirection: 'column', gap: 6, overflowY: 'auto', maxHeight: 420 }}>
+                {filtered.length === 0 && <div style={{ padding: 24, textAlign: 'center', color: '#B0A898', fontSize: 13, fontFamily: 'system-ui' }}>{tDemo('noItems')}</div>}
+                {filtered.map(item => <DemoCard key={item.id} item={item} selected={selectedItem?.id === item.id} onClick={() => setSelectedItem(item)} />)}
+              </div>
+              <div style={{ padding: 14, background: '#FAFAF8' }}>
+                {selectedItem ? (
+                  <DetailPanel item={selectedItem} onClose={() => setSelectedItem(null)} />
+                ) : (
+                  <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8, color: '#B0A898' }}>
+                    <div style={{ fontSize: 32 }}>👆</div>
+                    <div style={{ fontSize: 13, fontFamily: 'system-ui' }}>{tDemo('clickToExplore')}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div style={{ padding: '10px 18px', background: '#F0F7FF', borderTop: '1px solid #E0EEFA', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 13 }}>✦</span>
+              <span style={{ fontSize: 12, color: '#2874A6', fontFamily: 'system-ui', fontWeight: 600 }}>{tDemo('footerHint')}</span>
             </div>
           </div>
-          <div style={{ padding: '10px 16px', borderBottom: '1px solid #EBF3FB', display: 'flex', gap: 20 }}>
-            {[['2','This week','#1B4F8A'],['2','RSVPs needed','#F5A623'],['13','Open items','#2E9E8F']].map(([n,l,c]) => (
-              <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontFamily: 'Georgia, serif', fontWeight: 'bold', fontSize: '1.1rem', color: c }}>{n}</span>
-                <span style={{ fontSize: '0.7rem', color: '#5A7A94' }}>{l}</span>
-              </div>
-            ))}
+        </div>
+      </section>
+
+      {/* SMS SECTION */}
+      <section ref={storyRef} style={{ padding: '80px 24px', background: '#1A2B3C' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 52 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#2874A6', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'system-ui', marginBottom: 14 }}>{tSms('badge')}</div>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 46px)', fontWeight: 900, color: 'white', margin: 0, letterSpacing: '-0.02em' }}>{tSms('headline')}</h2>
+            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', marginTop: 12, fontFamily: 'system-ui', maxWidth: 480, margin: '12px auto 0' }}>{tSms('subheadline')}</p>
           </div>
-          <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 7 }}>
-            {sampleItems.map((item, i) => (
-              <div key={i} style={{ background: '#F4F7FA', borderRadius: 10, overflow: 'hidden', borderLeft: `3px solid ${item.color}`, opacity: 1 - i * 0.08 }}>
-                <div style={{ padding: '9px 12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
-                    <span style={{ width: 18, height: 18, borderRadius: 5, background: item.color, color: 'white', fontSize: 9, fontFamily: 'Georgia, serif', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{item.letter}</span>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#1A2B3C', flex: 1 }}>{item.title}</span>
-                    <span style={{ fontSize: '0.65rem', fontWeight: 600, padding: '2px 7px', borderRadius: 999, background: item.statusBg, color: item.statusColor, flexShrink: 0 }}>{item.status}</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.2fr)', gap: 40, alignItems: 'start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {SMS_STORIES.map((s, i) => (
+                <button key={i} onClick={() => playStory(i)} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', borderRadius: 14, background: activeStory === i ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)', border: `1.5px solid ${activeStory === i ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}>
+                  <div style={{ fontSize: 24, flexShrink: 0 }}>{s.emoji}</div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: activeStory === i ? 'white' : 'rgba(255,255,255,0.7)', fontFamily: 'system-ui' }}>{s.persona}</div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 2, fontFamily: 'system-ui' }}>{s.result.slice(0, 48)}…</div>
                   </div>
-                  <div style={{ height: 3, background: '#EBF3FB', borderRadius: 99 }}>
-                    <div style={{ height: '100%', width: `${item.pct}%`, background: item.color, borderRadius: 99 }} />
-                  </div>
+                  {activeStory === i && <div style={{ marginLeft:'auto', width:6, height:6, borderRadius:'50%', background: s.color, flexShrink:0 }} />}
+                </button>
+              ))}
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '10px 18px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#2874A6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, color: 'white', fontWeight: 800 }}>C</div>
+                <div>
+                  <div style={{ fontSize: 12, color: 'white', fontWeight: 700, fontFamily: 'system-ui' }}>{tSms('name')}</div>
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', fontFamily: 'system-ui' }}>{tSms('phone')}</div>
                 </div>
+                <div style={{ marginLeft:'auto', fontSize:11, color:'rgba(255,255,255,0.3)', fontFamily:'system-ui' }}>Messages</div>
               </div>
-            ))}
+              <div style={{ padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: 12, minHeight: 180 }}>
+                {story.texts.map((msg, i) => <SMSBubble key={`${activeStory}-${i}`} msg={msg} visible={visibleBubbles[i] ?? false} delay={0} />)}
+              </div>
+              <div style={{ margin: '0 14px 14px', padding: '10px 14px', borderRadius: 10, background: story.color + '20', border: `1px solid ${story.color}40`, opacity: visibleBubbles[1] ? 1 : 0, transition: 'opacity 0.4s 0.3s' }}>
+                <div style={{ fontSize: 12, color: story.color, fontWeight: 700, fontFamily: 'system-ui' }}>✦ {story.result}</div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section id="how" style={{ background: 'white', padding: '6rem 2rem' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <p style={{ textAlign: 'center', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.12em', color: '#5A7A94', textTransform: 'uppercase', marginBottom: '1rem' }}>How it works</p>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '2.5rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '1rem' }}>
-            Built for how life <em style={{ color: '#1B4F8A' }}>actually</em> works.
-          </h2>
-          <p style={{ textAlign: 'center', color: '#5A7A94', fontSize: '1.1rem', maxWidth: 560, margin: '0 auto 4rem' }}>
-            Not how productivity apps assume it does. Life doesn't fit into one tool type — so Clarityboards doesn't ask it to.
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }}>
-            {[
-              { icon: '📨', title: 'Forward anything in', body: 'Get a paper invitation? Text a photo. Evite link? Paste it. Email invite? Forward it. Everything lands in your EventBoard automatically — no manual typing required.' },
-              { icon: '☑️', title: 'Track what still needs doing', body: 'Every item has a checklist. Every checklist shows progress. The unified feed tells you what is coming up and what still needs to happen before it does.' },
-              { icon: '📅', title: 'See it all in one place', body: 'Five boards, one chronological feed. Filter to a single board anytime. Color-coded, urgency-flagged, and sorted by date — not by which app you remembered to open.' },
-            ].map(f => (
-              <div key={f.title} style={{ background: '#F4F7FA', borderRadius: 16, padding: '2rem' }}>
-                <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>{f.icon}</div>
-                <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '0.75rem' }}>{f.title}</h3>
-                <p style={{ color: '#5A7A94', fontSize: '0.9rem', lineHeight: 1.7 }}>{f.body}</p>
-              </div>
-            ))}
+      {/* FEATURES */}
+      <section style={{ padding: '80px 24px', background: '#FAFAF8' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 52 }}>
+            <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 42px)', fontWeight: 900, margin: '0 0 12px', letterSpacing: '-0.02em' }}>
+              {tFeatures('headline')}<br /><span style={{ color: '#2874A6' }}>{tFeatures('headlineAccent')}</span>
+            </h2>
+            <p style={{ fontSize: 15, color: '#5A7A94', fontFamily: 'system-ui', maxWidth: 440, margin: '0 auto' }}>{tFeatures('subheadline')}</p>
           </div>
-        </div>
-      </section>
-
-      {/* BOARDS */}
-      <section id="boards" style={{ padding: '6rem 2rem' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <p style={{ textAlign: 'center', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.12em', color: '#5A7A94', textTransform: 'uppercase', marginBottom: '1rem' }}>The boards</p>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '2.5rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '1rem' }}>
-            Five boards. Every <em style={{ color: '#1B4F8A' }}>role</em> you play.
-          </h2>
-          <p style={{ textAlign: 'center', color: '#5A7A94', fontSize: '1.1rem', maxWidth: 560, margin: '0 auto 4rem' }}>
-            Each board is purpose-built for a different domain of your life. Use one or all five.
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem' }}>
-            {[
-              { letter: 'E', name: 'EventBoard',    color: '#1B4F8A', bg: '#EBF3FB', tagline: 'Milestone invitations & RSVPs',    items: ['Bar Mitzvahs','Quinceañeras','Weddings','Graduations','Birthdays'] },
-              { letter: 'S', name: 'StudyBoard',    color: '#2E9E8F', bg: '#E8F8F6', tagline: 'Assignments & deadlines',           items: ['Due dates','Progress tracking','Supply lists','Multi-class view'] },
-              { letter: 'A', name: 'ActivityBoard', color: '#E67E22', bg: '#FEF3E8', tagline: "Kids' sports & activities",         items: ['Practice schedules','Game days','Fees & dues','Snack assignments','Recital logistics'] },
-              { letter: 'C', name: 'CareerBoard',   color: '#8E44AD', bg: '#F5EEF8', tagline: 'Interviews & applications',         items: ['Interview prep','STAR stories','Follow-up tasks','Application status'] },
-              { letter: 'T', name: 'TaskBoard',     color: '#27AE60', bg: '#EAFAF1', tagline: 'Projects & to-dos',                 items: ['Personal projects','Recurring tasks','Household tasks','Any deadline'] },
-            ].map(b => (
-              <div key={b.name} style={{ background: 'white', borderRadius: 16, padding: '1.5rem', border: `1px solid ${b.bg}` }}>
-                <div style={{ width: 44, height: 44, borderRadius: 12, background: b.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontFamily: 'Georgia, serif', fontWeight: 'bold', fontSize: '1.25rem', marginBottom: 12 }}>{b.letter}</div>
-                <div style={{ fontFamily: 'Georgia, serif', fontWeight: 'bold', fontSize: '1rem', marginBottom: 4 }}>{b.name}</div>
-                <div style={{ fontSize: '0.75rem', color: '#5A7A94', fontStyle: 'italic', marginBottom: 12 }}>{b.tagline}</div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                  {b.items.map(item => (
-                    <li key={item} style={{ fontSize: '0.75rem', color: '#5A7A94', marginBottom: 4, display: 'flex', gap: 6 }}>
-                      <span style={{ color: b.color, fontWeight: 'bold' }}>·</span> {item}
-                    </li>
-                  ))}
-                </ul>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
+            {FEATURES.map((f, i) => (
+              <div key={i} style={{ background: 'white', borderRadius: 16, padding: '22px 24px', border: '1px solid #EEE', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', transition: 'transform 0.15s, box-shadow 0.15s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform='translateY(-3px)'; (e.currentTarget as HTMLDivElement).style.boxShadow='0 8px 32px rgba(0,0,0,0.09)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform='translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow='0 2px 12px rgba(0,0,0,0.04)' }}
+              >
+                <div style={{ fontSize: 28, marginBottom: 10 }}>{f.icon}</div>
+                <div style={{ fontWeight: 800, fontSize: 15, color: '#1A2B3C', marginBottom: 6 }}>{f.title}</div>
+                <div style={{ fontSize: 13, color: '#5A7A94', lineHeight: 1.6, fontFamily: 'system-ui' }}>{f.desc}</div>
               </div>
             ))}
           </div>
@@ -186,71 +500,60 @@ export default function LoginPage() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" style={{ background: 'white', padding: '6rem 2rem' }}>
-        <div style={{ maxWidth: 800, margin: '0 auto' }}>
-          <p style={{ textAlign: 'center', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.12em', color: '#5A7A94', textTransform: 'uppercase', marginBottom: '1rem' }}>Pricing</p>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '2.5rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '1rem' }}>
-            Simple, <em style={{ color: '#1B4F8A' }}>honest</em> pricing.
-          </h2>
-          <p style={{ textAlign: 'center', color: '#5A7A94', fontSize: '1.1rem', marginBottom: '3rem' }}>Start free. Upgrade when the app earns it — not before.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+      <section style={{ padding: '80px 24px', background: 'white' }}>
+        <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 42px)', fontWeight: 900, margin: '0 0 12px', letterSpacing: '-0.02em' }}>{tPricing('headline')}</h2>
+          <p style={{ fontSize: 15, color: '#5A7A94', fontFamily: 'system-ui', marginBottom: 40 }}>{tPricing('subheadline')}</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, maxWidth: 560, margin: '0 auto' }}>
             {[
-              { name: 'Free', price: '$0', sub: 'forever, no credit card', color: '#5A7A94', border: '#EBF3FB', bg: 'white', features: ['Choose 2 boards to start','Up to 10 active items','Up to 3 checklist tasks per item','Deadline reminders','Link paste (Evite, Paperless Post)','Household sharing — up to 2 members','Calendar export (.ics)'], primary: false },
-              { name: 'Pro',  price: '$4.99', sub: 'per month · or $49/year · FREE during demo', color: '#1B4F8A', border: '#1B4F8A', bg: '#EBF3FB', features: ['Everything in Free','All 5 boards (Free: choose 2)','Unlimited items (Free: 10 max)','Unlimited checklist tasks (Free: 3 per item)','Household sharing — up to 5 members','AI text & email forwarding to your boards','Custom reminder schedules','Gift tracker per event','Full data export · Priority support'], primary: true },
-            ].map(tier => (
-              <div key={tier.name} style={{ borderRadius: 20, padding: '2.5rem', border: `2px solid ${tier.border}`, background: tier.bg }}>
-                <div style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 'bold', color: tier.color, marginBottom: 8 }}>{tier.name}</div>
-                <div style={{ fontFamily: 'Georgia, serif', fontSize: '2.5rem', fontWeight: 'bold', color: '#1A2B3C', marginBottom: 4 }}>{tier.price}</div>
-                <div style={{ fontSize: '0.8rem', color: '#5A7A94', marginBottom: '1.5rem' }}>{tier.sub}</div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem' }}>
-                  {tier.features.map(f => (
-                    <li key={f} style={{ display: 'flex', gap: 8, fontSize: '0.875rem', marginBottom: 10 }}>
-                      <span style={{ color: '#27AE60', fontWeight: 'bold', flexShrink: 0 }}>✓</span> {f}
-                    </li>
-                  ))}
-                </ul>
-                {tier.primary
-                  ? <>
-                      <div style={{ background: '#1B4F8A', borderRadius: 12, padding: '4px 14px', display: 'inline-block', marginBottom: 12 }}>
-                        <span style={{ color: '#F5A623', fontWeight: 700, fontSize: '0.8rem' }}>🎉 FREE during demo period</span>
+              { key: 'free', highlighted: false, accent: '#5A7A94', href: '/onboarding' },
+              { key: 'pro',  highlighted: true,  accent: '#2874A6', href: '/onboarding' },
+            ].map(({ key, highlighted, href }) => {
+              const features = tPricing.raw(`${key}.features`) as string[]
+              return (
+                <div key={key} style={{ borderRadius: 18, padding: '28px 24px', background: highlighted ? '#1A2B3C' : 'white', border: `2px solid ${highlighted ? '#1A2B3C' : '#EEE'}`, textAlign: 'left', boxShadow: highlighted ? '0 12px 48px rgba(26,43,60,0.25)' : 'none' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: highlighted ? 'rgba(255,255,255,0.5)' : '#9B8E7E', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'system-ui', marginBottom: 8 }}>{tPricing(`${key}.name` as any)}</div>
+                  <div style={{ fontSize: 32, fontWeight: 900, color: highlighted ? 'white' : '#1A2B3C', letterSpacing: '-0.02em' }}>{tPricing(`${key}.price` as any)}</div>
+                  <div style={{ fontSize: 12, color: highlighted ? 'rgba(255,255,255,0.4)' : '#9B8E7E', fontFamily: 'system-ui', marginBottom: 20 }}>{tPricing(`${key}.desc` as any)}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 24 }}>
+                    {features.map((f: string) => (
+                      <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: highlighted ? 'rgba(255,255,255,0.8)' : '#5A7A94', fontFamily: 'system-ui' }}>
+                        <span style={{ color: highlighted ? '#2874A6' : '#27AE60', fontWeight: 800 }}>✓</span> {f}
                       </div>
-                      <br />
-                      <GoogleBtn label="Get Pro free →" large onClick={handleGoogle} />
-                    </>
-                  : <GoogleBtn label="Get started free →" large onClick={handleGoogle} />
-                }
-              </div>
-            ))}
+                    ))}
+                  </div>
+                  <a href={href} style={{ display: 'block', textAlign: 'center', padding: '11px', borderRadius: 10, textDecoration: 'none', background: highlighted ? '#2874A6' : '#F5F2EC', color: highlighted ? 'white' : '#1A2B3C', fontWeight: 700, fontSize: 13, fontFamily: 'system-ui' }}>
+                    {tPricing(`${key}.cta` as any)}
+                  </a>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* FINAL CTA */}
-      <section style={{ padding: '6rem 2rem', textAlign: 'center' }}>
-        <div style={{ maxWidth: 600, margin: '0 auto' }}>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-            Your life has a lot going on. <em style={{ color: '#1B4F8A' }}>Clarityboards</em> keeps up.
+      {/* CTA */}
+      <section style={{ padding: '80px 24px', background: '#EBF5FB', textAlign: 'center' }}>
+        <div style={{ maxWidth: 560, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 900, margin: '0 0 16px', letterSpacing: '-0.02em' }}>
+            {tCta('headline')}<br /><span style={{ color: '#2874A6' }}>{tCta('headlineAccent')}</span>
           </h2>
-          <p style={{ color: '#5A7A94', fontSize: '1.1rem', marginBottom: '2rem' }}>Free to start. Sign in with Google and your boards are ready in seconds.</p>
-          <GoogleBtn label={loading ? 'Signing in…' : 'Get started free →'} large onClick={handleGoogle} />
-          {error && <p style={{ marginTop: 12, color: '#E74C3C', fontSize: '0.875rem' }}>{error}</p>}
-          <p style={{ marginTop: 16, fontSize: '0.8rem', color: '#5A7A94' }}>Prototype · Invited testers only · No spam, ever</p>
+          <p style={{ fontSize: 15, color: '#5A7A94', marginBottom: 32, fontFamily: 'system-ui', lineHeight: 1.6 }}>{tCta('subheadline')}</p>
+          <a href="/onboarding" style={{ display: 'inline-block', padding: '16px 40px', borderRadius: 14, background: '#1A2B3C', color: 'white', fontWeight: 800, fontSize: 16, textDecoration: 'none', fontFamily: 'system-ui', boxShadow: '0 8px 32px rgba(26,43,60,0.25)' }}>
+            {tCta('button')}
+          </a>
+          <p style={{ marginTop: 14, fontSize: 12, color: '#9B8E7E', fontFamily: 'system-ui' }}>{tCta('footnote')}</p>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer style={{ background: '#1A2B3C', padding: '2rem', textAlign: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 8 }}>
-          <div style={{ display: 'flex', gap: 4 }}>
-            {[['#F5A623','#D4E6F1'],['#D4E6F1','#2E9E8F']].map((pair, r) => (
-              <div key={r} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                {pair.map((c,i) => <div key={i} style={{ width: 8, height: 8, borderRadius: 2, background: c }} />)}
-              </div>
-            ))}
-          </div>
-          <span style={{ fontFamily: 'Georgia, serif', fontWeight: 'bold', color: 'white', fontSize: '1rem' }}>Clarityboards</span>
+      <footer style={{ padding: '28px 24px', background: '#1A2B3C', textAlign: 'center' }}>
+        <div style={{ fontWeight: 800, fontSize: 15, color: 'white', marginBottom: 8 }}>
+          clarity<span style={{ color: '#2874A6' }}>boards</span>
         </div>
-        <p style={{ color: '#5A7A94', fontSize: '0.8rem' }}>© 2026 Clarityboards · clarityboards.com · hello@clarityboards.com</p>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontFamily: 'system-ui' }}>
+          {tFooter('copyright')} · <a href="/privacy" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>{tFooter('privacy')}</a> · <a href="/terms" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>{tFooter('terms')}</a>
+        </div>
       </footer>
     </div>
   )

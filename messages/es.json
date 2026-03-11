@@ -1,0 +1,402 @@
+{
+  "nav": {
+    "signIn": "Sign in",
+    "getStarted": "Get started free \u2192"
+  },
+  "hero": {
+    "badge": "\u2726 Life management, finally simple",
+    "headline": "Everything on your plate,",
+    "headlineAccent": "organized in seconds.",
+    "subheadline": "Text anything to Clarityboards. AI figures out the rest \u2014 dates, checklists, which board it belongs on. No app switching. No formatting.",
+    "ctaPrimary": "Start free \u2014 no credit card",
+    "ctaSecondary": "See it in action \u2193",
+    "pricingNote": "Free forever \u00b7 Pro from $4.99/mo \u00b7 No app download required"
+  },
+  "demo": {
+    "chromeUrl": "clarityboards-app.vercel.app/dashboard",
+    "tryIt": "Try it \u2193",
+    "allBoards": "All boards",
+    "noItems": "No items on this board yet.",
+    "clickToExplore": "Click any item to explore",
+    "footerHint": "This is a live demo \u2014 click items, check off tasks, explore boards. Your real data lives in your own account."
+  },
+  "detail": {
+    "checklist": "Checklist",
+    "sharedBoard": "\ud83d\udd17 Shared board",
+    "markComplete": "Mark complete \u2713",
+    "completed": "\u2713 Completed",
+    "done": "Done!",
+    "priority": "{level} priority",
+    "today": "Today!",
+    "daysAway": "{n}d away"
+  },
+  "sms": {
+    "badge": "\u2726 The magic",
+    "headline": "Just text it.",
+    "subheadline": "No app to open, no form to fill. Send a text like you'd send to a friend \u2014 AI handles the rest.",
+    "phone": "+1 (877) 318-9322",
+    "name": "Clarityboards"
+  },
+  "smsStories": {
+    "maria": {
+      "persona": "Maria, Soccer Mom",
+      "userText": "Jake's soccer tournament Saturday 8am, bring snacks for 12 kids",
+      "appText": "\u2705 Added to ActivityBoard: \"Jake soccer tournament\" \u00b7 Sat Mar 15 \u00b7 reminder set for Friday night \ud83c\udf4a",
+      "result": "Appeared instantly in ActivityBoard \u2014 date, time, even the snack reminder."
+    },
+    "priya": {
+      "persona": "Priya, Pre-Med Student",
+      "userText": "BIO 301 midterm March 18, study: chapters 4-7, practice MCQs, review labs",
+      "appText": "\u2705 Added to StudyBoard: \"BIO 301 midterm\" \u00b7 Tue Mar 18 \u00b7 3 checklist tasks added \ud83d\udccb",
+      "result": "The checklist built itself. She opened the app to find it already organized."
+    },
+    "derek": {
+      "persona": "Derek, Job Seeker",
+      "userText": "Applied to Google SWE role today, follow up in 2 weeks if no response",
+      "appText": "\u2705 Added to CareerBoard: \"Google SWE application\" \u00b7 submitted \u00b7 follow-up reminder Mar 30 \ud83d\udcc5",
+      "result": "Application logged, follow-up scheduled \u2014 without opening the app once."
+    },
+    "tom": {
+      "persona": "Tom, Empty Nester",
+      "userText": "RSVP deadline for Martins' dinner party is this Friday, plus need to buy wine",
+      "appText": "\u2705 Added 2 items:\n\u2022 \"Martins dinner party RSVP\" \u00b7 Fri Mar 14 \u2192 EventBoard\n\u2022 \"Buy wine for dinner party\" \u2192 TaskBoard",
+      "result": "One text became two separate items on the right boards automatically."
+    }
+  },
+  "features": {
+    "sectionBadge": "\u2726 Features",
+    "headline": "Everything you need.",
+    "headlineAccent": "Nothing you don't.",
+    "subheadline": "Built for real life \u2014 not productivity theater.",
+    "items": {
+      "capture": {
+        "title": "Text to capture",
+        "desc": "Send any message to your Clarityboards number. AI parses dates, checklists, deadlines \u2014 no formatting needed."
+      },
+      "boards": {
+        "title": "5 smart boards",
+        "desc": "EventBoard, StudyBoard, ActivityBoard, CareerBoard, TaskBoard. Items auto-route to the right one."
+      },
+      "share": {
+        "title": "Share any board",
+        "desc": "Invite family, teammates, or classmates to a specific board. Editor or view-only access, per board."
+      },
+      "priority": {
+        "title": "Priority & tags",
+        "desc": "Flag high-priority items, tag by person or project, filter instantly. See exactly what needs attention."
+      },
+      "calendar": {
+        "title": "Calendar export",
+        "desc": "Every item with a date syncs to Apple Calendar, Google Calendar, or any iCal app."
+      },
+      "recurring": {
+        "title": "Recurring items",
+        "desc": "Daily standups, weekly reviews, monthly bills \u2014 set it once and it reappears automatically."
+      }
+    }
+  },
+  "pricing": {
+    "headline": "Simple pricing.",
+    "subheadline": "Start free. Upgrade when you're ready.",
+    "free": {
+      "name": "Free",
+      "price": "$0",
+      "desc": "Forever",
+      "features": [
+        "3 boards",
+        "SMS capture",
+        "50 items",
+        "Calendar export"
+      ],
+      "cta": "Get started"
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "$4.99",
+      "desc": "/month \u00b7 or $49.99/yr",
+      "features": [
+        "All 5 boards",
+        "Unlimited items",
+        "Board sharing",
+        "Priority & tags",
+        "Recurring items",
+        "Everything"
+      ],
+      "cta": "Start free trial"
+    }
+  },
+  "cta": {
+    "headline": "Ready to get your life",
+    "headlineAccent": "out of your head?",
+    "subheadline": "Join families, students, and professionals who text their way to organized.",
+    "button": "Start free today \u2192",
+    "footnote": "No credit card \u00b7 Cancel anytime \u00b7 Works from any phone"
+  },
+  "footer": {
+    "copyright": "\u00a9 2026 Clarityboards",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "onboarding": {
+    "headline": "Pick your 2 boards.",
+    "welcomeUser": "Welcome, {name}.",
+    "welcome": "Welcome.",
+    "subheadline": "Choose the two areas of life you want to organize first.",
+    "upgradeNote": "Upgrade to Pro anytime to unlock all five \u2014",
+    "upgradeNoteBold": "free during our demo period.",
+    "ctaReady": "Build my boards \u2192",
+    "ctaSaving": "Setting up your boards\u2026",
+    "ctaSelectMore": "Select {n} more board",
+    "ctaSelectMorePlural": "Select {n} more boards",
+    "boards": {
+      "event": {
+        "who": "Planners & social coordinators",
+        "examples": [
+          "Wedding invitations",
+          "Bar/Bat Mitzvahs",
+          "Birthday parties",
+          "Graduations"
+        ]
+      },
+      "study": {
+        "who": "Students of any age",
+        "examples": [
+          "Assignment due dates",
+          "Exam prep",
+          "Supply lists",
+          "Progress tracking"
+        ]
+      },
+      "activity": {
+        "who": "Sports & activity parents",
+        "examples": [
+          "Practice schedules",
+          "Game days",
+          "Recital logistics",
+          "Fee tracking"
+        ]
+      },
+      "career": {
+        "who": "Job seekers & professionals",
+        "examples": [
+          "Interview prep",
+          "Applications",
+          "Follow-up tasks",
+          "STAR stories"
+        ]
+      },
+      "task": {
+        "who": "Anyone with a to-do list",
+        "examples": [
+          "Personal projects",
+          "Household tasks",
+          "Recurring reminders",
+          "Any deadline"
+        ]
+      }
+    }
+  },
+  "dashboard": {
+    "searchPlaceholder": "Search items\u2026",
+    "allBoards": "All boards",
+    "addItem": "Add item",
+    "signOut": "Sign out",
+    "settings": "Settings",
+    "shareBoard": "Share board",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "daysAway": "{n}d away",
+    "daysOverdue": "{n}d overdue",
+    "noItems": "No items yet \u2014 add one above or text your Clarityboards number.",
+    "upgradePrompt": "Upgrade to Pro to unlock all 5 boards",
+    "comingSoon": "Coming soon",
+    "shareComingSoon": "Board sharing is coming soon!",
+    "pro": "Pro",
+    "free": "Free",
+    "markDone": "Mark done",
+    "delete": "Delete",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "recurring": "Recurring",
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "status": {
+      "todo": "To do",
+      "in-progress": "In progress",
+      "done": "Done",
+      "rsvp-needed": "RSVP needed",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "submitted": "Submitted",
+      "applied": "Applied"
+    }
+  },
+  "settings": {
+    "phone": {
+      "title": "Phone number",
+      "subtitle": "Link your number to capture items via SMS",
+      "save": "Save number",
+      "saving": "Saving\u2026",
+      "saved": "Saved!",
+      "placeholder": "+1 (555) 000-0000"
+    },
+    "gcal": {
+      "title": "Google Calendar sync",
+      "connect": "Connect Google Calendar",
+      "disconnect": "Disconnect"
+    },
+    "ical": {
+      "title": "iCal / Apple Calendar",
+      "copyLink": "Copy iCal link",
+      "copied": "Copied!"
+    },
+    "sharing": {
+      "title": "Board sharing",
+      "invite": "Invite someone",
+      "editor": "Editor",
+      "viewer": "Viewer",
+      "remove": "Remove"
+    }
+  },
+  "common": {
+    "loading": "Loading\u2026",
+    "error": "Something went wrong. Please try again.",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "or": "or"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Espa\u00f1ol",
+    "fr": "Fran\u00e7ais",
+    "it": "Italiano",
+    "pt": "Portugu\u00eas",
+    "pt-BR": "Portugu\u00eas (Brasil)",
+    "de": "Deutsch"
+  },
+  "tour": {
+    "welcome": {
+      "title": "Welcome to Clarityboards \ud83c\udf89",
+      "body": "You've got events, school, activities, career moves, and a to-do list that never quits. Clarityboards is one place for all of it. Let's take a 60-second tour.",
+      "cta": "Let's go \u2192"
+    },
+    "boards": {
+      "title": "Your Boards",
+      "body": "Each board is tuned for a different part of your life. EventBoard for milestones, StudyBoard for school, ActivityBoard for kids, CareerBoard for work, TaskBoard for everything else.",
+      "cta": "Got it \u2192"
+    },
+    "addItem": {
+      "title": "Add anything in seconds",
+      "body": "Hit + to add an item to any board. Give it a title, a date, a status \u2014 done. Takes about 10 seconds.",
+      "cta": "Nice \u2192"
+    },
+    "checklist": {
+      "title": "Break it down with checklists",
+      "body": "Every item has a built-in checklist. Add steps, check them off as you go. Watch the progress bar fill up.",
+      "cta": "Love it \u2192"
+    },
+    "status": {
+      "title": "Smart status tags",
+      "body": "Status labels are tuned to each board. EventBoard has RSVP Needed, Accepted, Declined. CareerBoard has Applied, In Progress. Not just generic 'To Do'.",
+      "cta": "Smart \u2192"
+    },
+    "unified": {
+      "title": "Everything in one feed",
+      "body": "Switch to All Boards view to see every item from every board, sorted by date. One scroll to know what's coming up across your whole life.",
+      "cta": "Wow \u2192"
+    },
+    "upgrade": {
+      "title": "Want all 5 boards?",
+      "body": "You're on the Free plan with 2 boards. Upgrade to Pro for $4.99/mo (or $49.99/yr) to unlock all 5 boards plus SMS and email forwarding \u2014 coming soon.",
+      "cta": "Got it \u2192"
+    },
+    "done": {
+      "title": "You're all set! \ud83d\ude80",
+      "body": "That's Clarityboards. Add your first real item, check off a task, or just explore. You can replay this tour anytime from the Help menu.",
+      "cta": "Start using Clarityboards"
+    },
+    "stepOf": "Step {current} of {total}",
+    "back": "\u2190 Back",
+    "skip": "Skip tour",
+    "startTour": "Start the tour \u2192",
+    "skipTour": "Skip tour, take me to the dashboard",
+    "allBoards": "\ud83d\udd00 All Boards",
+    "upgradeBadge": "\u2b50 Upgrade to Pro",
+    "tourComplete": "You're all set!",
+    "tourCompleteBody": "Tour complete. Head to your dashboard and add your first item \u2014 it takes about 10 seconds.",
+    "goToDashboard": "Go to Dashboard \u2192",
+    "replayTour": "\u21a9 Replay tour",
+    "welcomeTitle": "Welcome to",
+    "welcomeApp": "Clarityboards",
+    "welcomeBody": "One platform for every part of your busy life. Let's take a quick tour \u2014 it only takes 60 seconds."
+  },
+  "settingsPhone": {
+    "back": "Back to dashboard",
+    "title": "SMS Forwarding",
+    "subtitle": "Text items directly to your boards",
+    "howItWorksTitle": "How it works",
+    "howItWorks": [
+      "Text your Clarityboards number: +1 (877) 318-9322",
+      "AI reads your message and adds it to the right board automatically",
+      "Dates, times, checklists, urgency \u2014 all parsed from natural language",
+      "Try: \"Soccer game Friday 4pm\" or \"Pick up: milk, eggs, bread\""
+    ],
+    "yourNumberTitle": "Your mobile number",
+    "active": "Active",
+    "label": "Mobile number",
+    "placeholder": "+1 (555) 000-0000 or 10-digit US number",
+    "hint": "US numbers: enter 10 digits (we'll add +1). International: include country code (+44...).",
+    "remove": "Remove",
+    "saving": "Saving\u2026",
+    "update": "Update number",
+    "save": "Save number",
+    "savedPhone": "Phone number saved! You can now text your boards.",
+    "removedPhone": "Phone number removed.",
+    "twilioTitle": "\u23f3 Toll-free verification in progress",
+    "twilioBody": "SMS forwarding will activate once our number (+1 877-318-9322) completes carrier verification \u2014 typically 3\u20137 business days. Your number will be ready to go the moment it clears.",
+    "errorInvalid": "Enter a valid US number (10 digits) or international format (+1...)"
+  },
+  "settingsIcal": {
+    "title": "Calendar Export (iCal)",
+    "subtitle": "Subscribe in Apple Calendar, Google Calendar, or Outlook",
+    "howItWorksTitle": "How it works",
+    "copied": "Copied!",
+    "copyLink": "Copy link",
+    "allBoards": "All Boards",
+    "perBoard": "Per-board feeds"
+  },
+  "settingsSharing": {
+    "back": "Back to dashboard",
+    "title": "Board Sharing",
+    "subtitle": "Invite people to collaborate on specific boards",
+    "inviteButton": "Invite someone",
+    "myShares": "Boards I'm sharing",
+    "sharedWithMe": "Shared with me",
+    "noShares": "No active shares yet.",
+    "noInbound": "No boards have been shared with you yet.",
+    "pending": "Pending",
+    "active": "Active",
+    "editor": "Editor",
+    "viewer": "Viewer",
+    "remove": "Remove",
+    "cancel": "Cancel",
+    "sendInvite": "Send Invite",
+    "sending": "Sending\u2026",
+    "inviteTitle": "Invite someone",
+    "boardLabel": "Board",
+    "roleLabel": "Role",
+    "methodLabel": "Send via",
+    "emailMethod": "Email",
+    "smsMethod": "SMS",
+    "nameLabel": "Their name",
+    "namePlaceholder": "e.g. Alex",
+    "emailPlaceholder": "email@example.com",
+    "phonePlaceholder": "+1 (555) 000-0000",
+    "ownerLabel": "Owner"
+  }
+}

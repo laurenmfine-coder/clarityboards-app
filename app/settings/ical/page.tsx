@@ -1,12 +1,12 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { BOARDS } from '@/lib/boards'
-import { Calendar, Copy, Check, Download, ExternalLink, Smartphone, Monitor, ArrowLeft } from 'lucide-react'
+import { Calendar, Copy, Check, Download, ExternalLink, Smartphone, Monitor } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function ICalSettingsPage() {
-  const router = useRouter()
+  const t = useTranslations('settingsIcal')
   const [userId, setUserId] = useState<string | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
 
@@ -36,21 +36,13 @@ export default function ICalSettingsPage() {
       onClick={() => copyToClipboard(text, id)}
       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#D4E6F1] text-[#5A7A94] text-xs font-medium hover:bg-[#EBF3FB] transition-colors flex-shrink-0"
     >
-      {copied === id ? <><Check size={12} className="text-green-500" /> Copied!</> : <><Copy size={12} /> Copy link</>}
+      {copied === id ? <><Check size={12} className="text-green-500" /> {t('copied')}</> : <><Copy size={12} /> {t('copyLink')}</>}
     </button>
   )
 
   return (
     <div className="min-h-screen bg-[#F4F7FA]">
       <div className="max-w-2xl mx-auto px-4 py-10">
-
-        {/* Back */}
-        <button
-          onClick={() => router.push('/dashboard')}
-          className="flex items-center gap-2 text-sm text-[#5A7A94] hover:text-[#1A2B3C] mb-8 transition-colors"
-        >
-          <ArrowLeft size={15} /> Back to dashboard
-        </button>
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">

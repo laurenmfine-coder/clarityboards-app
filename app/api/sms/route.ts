@@ -62,9 +62,13 @@ interface ParsedItem {
 export async function POST(req: NextRequest) {
   const body = await req.formData()
   const from = body.get('From') as string
-  const messageBody = (body.get('Body') as string)?.trim()
+  const messageBody = ((body.get('Body') as string) ?? '').trim()
+  const numMedia = parseInt((body.get('NumMedia') as string) ?? '0', 10)
+  const mediaUrl = numMedia > 0 ? (body.get('MediaUrl0') as string) : null
+  const mediaType = numMedia > 0 ? (body.get('MediaContentType0') as string) : null
 
-  if (!from || !messageBody) {
+  // Require either a text body OR an image — MMS with no caption is fine
+  if (!from || (!messageBody && !mediaUrl)) {
     return twimlResponse('Could not parse your message. Please try again.')
   }
 
@@ -102,12 +106,36 @@ export async function POST(req: NextRequest) {
   } | null = null
 
   try {
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 800,
-      messages: [{
-        role: 'user',
-        content: `You are parsing a text message for Clarityboards, a life management app.
+    // Build message content — support text, image (MMS), or both
+    type ContentBlock =
+      | { type: 'text'; text: string }
+      | { type: 'image'; source: { type: 'base64'; media_type: string; data: string } }
+
+    const userContent: ContentBlock[] = []
+
+    // Fetch image from Twilio (requires Basic auth) and send as base64
+    if (mediaUrl && mediaType?.startsWith('image/')) {
+      const twilioSid  = process.env.TWILIO_ACCOUNT_SID!
+      const twilioAuth = process.env.TWILIO_AUTH_TOKEN!
+      const imgRes = await fetch(mediaUrl, {
+        headers: {
+          Authorization: 'Basic ' + Buffer.from(`${twilioSid}:${twilioAuth}`).toString('base64'),
+        },
+      })
+      const imgBuffer = await imgRes.arrayBuffer()
+      const base64 = Buffer.from(imgBuffer).toString('base64')
+      userContent.push({ type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } })
+    }
+
+    userContent.push({
+      type: 'text',
+      text: messageBody
+        ? `Message: "${messageBody}"`
+        : '(No text caption — extract all relevant details from the image above.)',
+    })
+
+    const systemPrompt = `You are parsing a message for Clarityboards, a life management app.
+${mediaUrl ? 'The user sent a photo — likely an invitation, flyer, or event notice. Extract all details visible: event name, date, time, location, RSVP deadline, dress code, and any action items.' : ''}
 
 TODAY'S DATE: ${todayFormatted}
 TODAY IN ISO FORMAT: ${todayISO}
@@ -130,26 +158,24 @@ MILESTONE SPLITTING RULES — always split into multiple items when you detect:
 - An RSVP deadline AND an event date → create "RSVP: [Event]" (rsvp-needed, rsvp date) + "[Event]" (accepted, event date)
 - A prep task AND an event → create "[Prep task]" (todo, prep date) + "[Event]" (event date)
 - Multiple deadlines for same event → one item per deadline
-- Example: "Sofia's quinceañera April 10, need to RSVP by March 20 and buy dress by April 1" →
+- Example: "Sofia's quinceañera April 10, RSVP by March 20, buy dress by April 1" →
   Item 1: title "RSVP — Sofia's Quinceañera", date March 20, board event, status rsvp-needed
   Item 2: title "Buy dress — Sofia's Quinceañera", date April 1, board task, status todo
   Item 3: title "Sofia's Quinceañera", date April 10, board event, status accepted
 
 For "add" or "multi", each item has:
 - title: clear short title (max 60 chars). Do NOT include time or date in the title. For milestone items, format as "[Milestone] — [Event name]".
-- date: YYYY-MM-DD. RULES: "today" → ${todayISO}. "tomorrow" → ${tomorrowISO}. For other relative terms (this Friday, next week, etc.) calculate from ${todayISO}. ALWAYS resolve — never return null if any day or date is mentioned.
-- time: time string like "4:00 PM" if mentioned, otherwise null. ALWAYS capture times like "4pm", "4:00pm", "at 4", "noon", "3:30".
+- date: YYYY-MM-DD. RULES: "today" → ${todayISO}. "tomorrow" → ${tomorrowISO}. For other relative terms calculate from ${todayISO}. ALWAYS resolve — never return null if any day or date is mentioned.
+- time: time string like "4:00 PM" if mentioned, otherwise null.
 - notes: location, details, context. If a time was parsed, include it here too as "⏰ [time]". Otherwise null.
 - board: event | study | activity | career | task. For prep/shopping tasks use "task", for the event itself use "event".
-- status: for event use "rsvp-needed" unless already confirmed (then "accepted"). For tasks/prep use "todo". If message says "accepted" or "going" use "accepted". If "declined" use "declined".
-- checklist: array of strings for any sub-tasks or to-do items. Recognize ALL of these triggers (case-insensitive): "to do:", "todo:", "checklist:", "checklist item:", "check:", "tasks:", "steps:", "don't forget:", "dont forget:", "remember to:", "remember:", "also need to:", "need to:", "needs to:", "pick up:", "bring:", "pack:", "grab:", "get:", "buy:", "items:", "list:", or any phrase that introduces a list of things to do or bring. Also recognize single items after these triggers, not just lists. E.g. "To do: Wear blue polo, bring camera" → ["Wear blue polo", "bring camera"]. "Remember to bring snacks" → ["Bring snacks"]. "Don't forget: permission slip" → ["Permission slip"]. Otherwise [].
+- status: for event use "rsvp-needed" unless already confirmed. For tasks use "todo".
+- checklist: array of strings for sub-tasks, things to bring, etc. Otherwise [].
 - urgent: true if message uses "urgent", "ASAP", "don't forget", "important", otherwise false
 
 For "update": { search: "keywords to find item", changes: { only changed fields } }
 For "delete": { search: "keywords to find item" }
 For "complete": { search: "keywords to find item" }
-
-Message: "${messageBody}"
 
 Return JSON:
 - Single: { "action": "add", "items": [{...}] }
@@ -157,7 +183,12 @@ Return JSON:
 - Update: { "action": "update", "update": { "search": "...", "changes": {...} } }
 - Delete: { "action": "delete", "delete": { "search": "..." } }
 - Complete: { "action": "complete", "complete": { "search": "..." } }`
-      }]
+
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 800,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userContent as any }],
     })
 
     const text = response.content[0].type === 'text' ? response.content[0].text : ''
@@ -167,11 +198,13 @@ Return JSON:
     console.log('[SMS] Parsed result:', JSON.stringify(aiResult))
   } catch (err) {
     console.error('[SMS] AI parse FAILED — using fallback. Error:', err)
-    console.log('[SMS] Message was:', messageBody)
+    const fallbackTitle = messageBody
+      ? messageBody.slice(0, 60).trim()
+      : mediaUrl ? 'Photo capture' : 'New item'
     aiResult = {
       action: 'add',
       items: [{
-        title: messageBody.slice(0, 60).trim(),
+        title: fallbackTitle,
         date: null,
         time: null,
         notes: messageBody.length > 60 ? messageBody.slice(60).trim() : null,

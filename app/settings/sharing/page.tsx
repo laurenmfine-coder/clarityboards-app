@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { BOARD_MAP, BOARDS } from '@/lib/boards'
 import { ArrowLeft, X, Check, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 type Share = {
   id: string
@@ -12,7 +13,7 @@ type Share = {
   invited_email: string | null
   invited_phone: string | null
   invited_name: string | null
-  role: 'editor' | 'viewer'
+  role: t('editor') | t('viewer')
   status: 'pending' | 'active' | 'revoked'
   created_at: string
 }
@@ -21,20 +22,21 @@ type SharedWithMe = {
   id: string
   board_type: string
   owner_id: string
-  role: 'editor' | 'viewer'
+  role: t('editor') | t('viewer')
   invited_name: string | null
   owner_email?: string
 }
 
 export default function SharingPage() {
   const router = useRouter()
+  const t = useTranslations('settingsSharing')
   const [userId, setUserId]           = useState<string | null>(null)
   const [shares, setShares]           = useState<Share[]>([])
   const [sharedWithMe, setSharedWithMe] = useState<SharedWithMe[]>([])
   const [loading, setLoading]         = useState(true)
   const [showInvite, setShowInvite]   = useState(false)
   const [inviteBoard, setInviteBoard] = useState('activity')
-  const [inviteRole, setInviteRole]   = useState<'editor' | 'viewer'>('editor')
+  const [inviteRole, setInviteRole]   = useState<t('editor') | t('viewer')>(t('editor'))
   const [inviteMethod, setInviteMethod] = useState<'email' | 'sms'>('email')
   const [inviteValue, setInviteValue] = useState('')
   const [inviteName, setInviteName]   = useState('')
@@ -104,7 +106,7 @@ export default function SharingPage() {
     }
   }
 
-  const handleRoleChange = async (shareId: string, role: 'editor' | 'viewer') => {
+  const handleRoleChange = async (shareId: string, role: t('editor') | t('viewer')) => {
     await supabase.from('board_shares').update({ role }).eq('id', shareId)
     setShares(prev => prev.map(s => s.id === shareId ? { ...s, role } : s))
   }
@@ -174,8 +176,8 @@ export default function SharingPage() {
                     <span className="font-semibold text-sm text-[#1A2B3C]">{cfg?.label}</span>
                     <span className="text-xs text-[#9B8E7E] ml-2">shared by {s.invited_name ?? 'someone'}</span>
                   </div>
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s.role === 'editor' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}`}>
-                    {s.role === 'editor' ? 'Can edit' : 'View only'}
+                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s.role === t('editor') ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}`}>
+                    {s.role === t('editor') ? 'Can edit' : 'View only'}
                   </span>
                 </div>
               )
@@ -227,12 +229,12 @@ export default function SharingPage() {
                   {/* Role selector */}
                   <select
                     value={s.role}
-                    onChange={e => handleRoleChange(s.id, e.target.value as 'editor' | 'viewer')}
+                    onChange={e => handleRoleChange(s.id, e.target.value as t('editor') | t('viewer'))}
                     className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border cursor-pointer"
                     style={{
-                      color: s.role === 'editor' ? '#1E8449' : '#2874A6',
-                      background: s.role === 'editor' ? '#EAFAF1' : '#EBF5FB',
-                      borderColor: s.role === 'editor' ? '#A9DFBF' : '#AED6F1',
+                      color: s.role === t('editor') ? '#1E8449' : '#2874A6',
+                      background: s.role === t('editor') ? '#EAFAF1' : '#EBF5FB',
+                      borderColor: s.role === t('editor') ? '#A9DFBF' : '#AED6F1',
                     }}
                   >
                     <option value="editor">Can edit</option>
@@ -317,14 +319,14 @@ export default function SharingPage() {
               <label className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider block mb-2">Access level</label>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { value: 'editor', label: 'Can edit', desc: 'Add, complete & update items', icon: '✏️' },
-                  { value: 'viewer', label: 'View only', desc: 'See board, export to calendar', icon: '👁' },
+                  { value: t('editor'), label: 'Can edit', desc: 'Add, complete & update items', icon: '✏️' },
+                  { value: t('viewer'), label: 'View only', desc: 'See board, export to calendar', icon: '👁' },
                 ].map(opt => (
-                  <button key={opt.value} onClick={() => setInviteRole(opt.value as 'editor' | 'viewer')}
+                  <button key={opt.value} onClick={() => setInviteRole(opt.value as t('editor') | t('viewer'))}
                     className="p-3 rounded-xl text-left border-2 transition-all"
                     style={{
-                      borderColor: inviteRole === opt.value ? (opt.value === 'editor' ? '#1E8449' : '#2874A6') : '#E8E2D9',
-                      background: inviteRole === opt.value ? (opt.value === 'editor' ? '#EAFAF1' : '#EBF5FB') : 'white',
+                      borderColor: inviteRole === opt.value ? (opt.value === t('editor') ? '#1E8449' : '#2874A6') : '#E8E2D9',
+                      background: inviteRole === opt.value ? (opt.value === t('editor') ? '#EAFAF1' : '#EBF5FB') : 'white',
                     }}>
                     <div className="text-lg mb-1">{opt.icon}</div>
                     <div className="font-bold text-sm text-[#1A2B3C]">{opt.label}</div>
