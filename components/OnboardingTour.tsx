@@ -520,7 +520,7 @@ function OnboardingTour({ onComplete }: { onComplete: () => void }) {
 // ─────────────────────────────────────────────
 // DEMO WRAPPER — shows tour then completion screen
 // ─────────────────────────────────────────────
-export default function App() {
+export default function App({ onComplete }: { onComplete: () => void }) {
   const [tourDone, setTourDone] = useState(false);
   const [started, setStarted] = useState(false);
 
@@ -547,7 +547,7 @@ export default function App() {
             Start the tour →
           </button>
           <button
-            onClick={() => { setStarted(true); setTourDone(true); }}
+            onClick={() => onComplete()}
             style={{ background: "none", border: "1px solid rgba(255,255,255,0.3)", color: "rgba(255,255,255,0.6)", borderRadius: 12, padding: "10px 24px", fontSize: 14, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", width: "100%" }}
           >
             Skip tour, take me to the dashboard
