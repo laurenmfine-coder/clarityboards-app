@@ -150,9 +150,13 @@ Return JSON:
     })
 
     const text = response.content[0].type === 'text' ? response.content[0].text : ''
+    console.log('[SMS] Raw AI response:', text)
     const clean = text.trim().replace(/^```json\n?/, '').replace(/\n?```$/, '')
     aiResult = JSON.parse(clean)
-  } catch {
+    console.log('[SMS] Parsed result:', JSON.stringify(aiResult))
+  } catch (err) {
+    console.error('[SMS] AI parse FAILED — using fallback. Error:', err)
+    console.log('[SMS] Message was:', messageBody)
     aiResult = {
       action: 'add',
       items: [{
