@@ -2,7 +2,10 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
-const OnboardingTour = dynamic(() => import('@/components/OnboardingTour'), { ssr: false })
+const OnboardingTour = dynamic<{ onComplete: () => void }>(
+  () => import('@/components/OnboardingTour'),
+  { ssr: false }
+)
 import { supabase, Item, ChecklistItem } from '@/lib/supabase'
 import { BOARDS, BOARD_MAP } from '@/lib/boards'
 import { getSeedItems } from '@/lib/seeds'
