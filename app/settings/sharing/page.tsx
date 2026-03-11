@@ -382,4 +382,3 @@ export default function SharingPage() {
     </div>
   )
 }
-

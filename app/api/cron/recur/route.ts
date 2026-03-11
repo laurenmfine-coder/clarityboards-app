@@ -1,23 +1,20 @@
+export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
-// Vercel cron: runs nightly at 2am UTC
-// Add to vercel.json: { "crons": [{ "path": "/api/cron/recur", "schedule": "0 2 * * *" }] }
 export async function GET(req: NextRequest) {
-  // Simple auth check — Vercel passes this header automatically
   const authHeader = req.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
   const today = new Date().toISOString().slice(0, 10)
 
-  // Find all rules due today or earlier
   const { data: rules, error } = await supabase
     .from('recurring_rules')
     .select('id')
