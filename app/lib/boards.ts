@@ -1,0 +1,90 @@
+import { Board } from './supabase'
+
+export interface BoardConfig {
+  id: Board
+  label: string
+  letter: string
+  color: string
+  bg: string
+  lightBg: string
+  tagline: string
+  statuses: { value: string; label: string }[]
+}
+
+export const BOARDS: BoardConfig[] = [
+  {
+    id: 'event',
+    label: 'EventBoard',
+    letter: 'E',
+    color: '#1B4F8A',
+    bg: '#1B4F8A',
+    lightBg: '#EBF3FB',
+    tagline: 'Milestone celebrations, invitations & RSVPs',
+    statuses: [
+      { value: 'rsvp-needed', label: 'RSVP Needed' },
+      { value: 'accepted',    label: 'Accepted' },
+      { value: 'declined',    label: 'Declined' },
+      { value: 'done',        label: 'Done' },
+    ],
+  },
+  {
+    id: 'study',
+    label: 'StudyBoard',
+    letter: 'S',
+    color: '#2E9E8F',
+    bg: '#2E9E8F',
+    lightBg: '#E8F8F6',
+    tagline: 'Assignments, due dates & progress',
+    statuses: [
+      { value: 'todo',        label: 'Not Started' },
+      { value: 'in-progress', label: 'In Progress' },
+      { value: 'submitted',   label: 'Submitted' },
+      { value: 'done',        label: 'Done' },
+    ],
+  },
+  {
+    id: 'activity',
+    label: 'ActivityBoard',
+    letter: 'A',
+    color: '#E67E22',
+    bg: '#E67E22',
+    lightBg: '#FEF3E8',
+    tagline: "Kids' sports, dance & activity logistics",
+    statuses: [
+      { value: 'todo',        label: 'To Do' },
+      { value: 'in-progress', label: 'In Progress' },
+      { value: 'done',        label: 'Done' },
+    ],
+  },
+  {
+    id: 'career',
+    label: 'CareerBoard',
+    letter: 'C',
+    color: '#8E44AD',
+    bg: '#8E44AD',
+    lightBg: '#F5EEF8',
+    tagline: 'Interviews, applications & follow-ups',
+    statuses: [
+      { value: 'todo',        label: 'To Do' },
+      { value: 'in-progress', label: 'In Progress' },
+      { value: 'applied',     label: 'Applied' },
+      { value: 'done',        label: 'Done' },
+    ],
+  },
+  {
+    id: 'task',
+    label: 'TaskBoard',
+    letter: 'T',
+    color: '#27AE60',
+    bg: '#27AE60',
+    lightBg: '#EAFAF1',
+    tagline: 'Projects, to-dos & personal deadlines',
+    statuses: [
+      { value: 'todo',        label: 'To Do' },
+      { value: 'in-progress', label: 'In Progress' },
+      { value: 'done',        label: 'Done' },
+    ],
+  },
+]
+
+export const BOARD_MAP = Object.fromEntries(BOARDS.map(b => [b.id, b])) as Record<Board, BoardConfig>
