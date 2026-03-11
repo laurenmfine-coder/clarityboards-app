@@ -1,6 +1,5 @@
 'use client'
 export const dynamic = 'force-dynamic'
-export const dynamic = 'force-dynamic'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { BOARDS } from '@/lib/boards'
@@ -175,3 +174,4 @@ export default function ICalSettingsPage() {
     </div>
   )
 }
+
