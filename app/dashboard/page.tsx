@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 const OnboardingTour = dynamic<{ onComplete: () => void }>(
@@ -10,9 +10,11 @@ import { supabase, Item, ChecklistItem } from '@/lib/supabase'
 import { BOARDS, BOARD_MAP } from '@/lib/boards'
 import { getSeedItems } from '@/lib/seeds'
 import { User } from '@supabase/supabase-js'
+import { useToast } from '@/components/ToastProvider'
 import {
   Plus, LogOut, Share2, X, Check, ChevronDown, ChevronUp,
-  Calendar, Bell, Search, CheckSquare, Layers
+  Calendar, Bell, Search, CheckSquare, Layers, LayoutGrid, List,
+  Phone, Settings
 } from 'lucide-react'
 
 // ── Helpers ──────────────────────────────────────────────
@@ -244,6 +246,29 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const pct = progress(item.checklist)
 
+  // Inline edit state
+  const [editTitle, setEditTitle]   = useState(item.title)
+  const [editDate,  setEditDate]    = useState(item.date ?? '')
+  const [editNotes, setEditNotes]   = useState(item.notes ?? '')
+  const [titleDirty, setTitleDirty] = useState(false)
+  const [dateDirty,  setDateDirty]  = useState(false)
+  const [notesDirty, setNotesDirty] = useState(false)
+
+  const saveTitle = () => {
+    if (editTitle.trim() && editTitle !== item.title) onUpdate({ title: editTitle.trim() })
+    setTitleDirty(false)
+  }
+  const saveDate = () => {
+    const val = editDate || null
+    if (val !== item.date) onUpdate({ date: val })
+    setDateDirty(false)
+  }
+  const saveNotes = () => {
+    const val = editNotes.trim() || null
+    if (val !== item.notes) onUpdate({ notes: val })
+    setNotesDirty(false)
+  }
+
   const toggleCheck = (id: string) => {
     const updated = item.checklist.map(c => c.id === id ? { ...c, done: !c.done } : c)
     onUpdate({ checklist: updated })
@@ -270,10 +295,18 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white rounded-t-2xl px-6 pt-5 pb-4 border-b border-[#EBF3FB]">
           <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3 flex-1 min-w-0">
               <Monogram board={item.board} size={36} />
-              <div>
-                <div className="font-semibold text-[#1A2B3C] text-base leading-tight">{item.title}</div>
+              <div className="flex-1 min-w-0">
+                {/* Editable title */}
+                <input
+                  value={editTitle}
+                  onChange={e => { setEditTitle(e.target.value); setTitleDirty(true) }}
+                  onBlur={saveTitle}
+                  onKeyDown={e => e.key === 'Enter' && saveTitle()}
+                  className="font-semibold text-[#1A2B3C] text-base leading-tight w-full bg-transparent border-b border-transparent focus:border-[#1B4F8A] focus:outline-none pb-0.5 transition-colors"
+                  title="Click to edit title"
+                />
                 <div className="text-xs text-[#5A7A94] mt-0.5">{cfg?.label}</div>
               </div>
             </div>
@@ -284,12 +317,21 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
         <div className="px-6 py-4 space-y-5">
           <div className="flex items-center gap-3 flex-wrap">
             <StatusPill status={item.status} board={item.board} />
-            {item.date && (
-              <span className={`text-xs flex items-center gap-1 ${urgencyClass(item.date)}`}>
-                <Calendar size={12} />
-                {urgencyLabel(item.date)} · {fmt(item.date)}
-              </span>
-            )}
+            {/* Editable date */}
+            <div className="flex items-center gap-1.5">
+              <Calendar size={12} className="text-[#5A7A94]" />
+              <input
+                type="date"
+                value={editDate}
+                onChange={e => { setEditDate(e.target.value); setDateDirty(true) }}
+                onBlur={saveDate}
+                className={`text-xs border-b bg-transparent focus:outline-none transition-colors ${
+                  editDate ? urgencyClass(editDate) : 'text-[#5A7A94]'
+                } border-transparent focus:border-[#1B4F8A]`}
+                title="Click to edit date"
+              />
+              {editDate && <span className={`text-xs ${urgencyClass(editDate)}`}>· {urgencyLabel(editDate)}</span>}
+            </div>
           </div>
 
           <div>
@@ -321,14 +363,20 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
             </div>
           )}
 
-          {item.notes && (
-            <div>
-              <div className="text-xs font-semibold text-[#5A7A94] uppercase tracking-wide mb-1">Notes</div>
-              <div className="text-sm text-[#1A2B3C] bg-[#EBF3FB] rounded-xl px-4 py-3 whitespace-pre-line">{item.notes}</div>
-            </div>
-          )}
+          {/* Editable notes */}
+          <div>
+            <div className="text-xs font-semibold text-[#5A7A94] uppercase tracking-wide mb-1">Notes</div>
+            <textarea
+              value={editNotes}
+              onChange={e => { setEditNotes(e.target.value); setNotesDirty(true) }}
+              onBlur={saveNotes}
+              rows={3}
+              placeholder="Location, instructions, reminders… (click to edit)"
+              className="w-full text-sm text-[#1A2B3C] bg-[#EBF3FB] rounded-xl px-4 py-3 whitespace-pre-line resize-none focus:outline-none focus:ring-2 focus:ring-[#1B4F8A]/30 transition-all"
+            />
+          </div>
 
-          {/* Checklist — add, edit, delete */}
+          {/* Checklist */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <div className="text-xs font-semibold text-[#5A7A94] uppercase tracking-wide">Checklist</div>
@@ -368,13 +416,11 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
                   {editingId !== c.id && (
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                       <button onClick={() => startEdit(c)}
-                        className="w-6 h-6 rounded flex items-center justify-center text-[#5A7A94] hover:text-[#1B4F8A] hover:bg-[#EBF3FB] transition-all"
-                        title="Edit task">
+                        className="w-6 h-6 rounded flex items-center justify-center text-[#5A7A94] hover:text-[#1B4F8A] hover:bg-[#EBF3FB] transition-all">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                       </button>
                       <button onClick={() => deleteTask(c.id)}
-                        className="w-6 h-6 rounded flex items-center justify-center text-[#5A7A94] hover:text-red-500 hover:bg-red-50 transition-all"
-                        title="Delete task">
+                        className="w-6 h-6 rounded flex items-center justify-center text-[#5A7A94] hover:text-red-500 hover:bg-red-50 transition-all">
                         <X size={12} />
                       </button>
                     </div>
@@ -413,46 +459,98 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
   )
 }
 
-// ── Item Card ─────────────────────────────────────────────
-function ItemCard({ item, onClick, isFirst = false }: { item: Item; onClick: () => void; isFirst?: boolean }) {
+
+// ── Item Card (with swipe-to-complete on mobile) ──────────
+function ItemCard({ item, onClick, onSwipeComplete, isFirst = false }: {
+  item: Item
+  onClick: () => void
+  onSwipeComplete: () => void
+  isFirst?: boolean
+}) {
   const cfg = BOARD_MAP[item.board]
   const pct = progress(item.checklist)
+  const cardRef = useRef<HTMLDivElement>(null)
+  const startX  = useRef(0)
+  const [swipeX, setSwipeX] = useState(0)
+  const [swiped, setSwiped] = useState(false)
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX
+    setSwipeX(0)
+  }
+  const onTouchMove = (e: React.TouchEvent) => {
+    const dx = e.touches[0].clientX - startX.current
+    if (dx > 0) setSwipeX(Math.min(dx, 90)) // right swipe only, max 90px
+  }
+  const onTouchEnd = () => {
+    if (swipeX > 55) {
+      setSwiped(true)
+      setTimeout(() => {
+        onSwipeComplete()
+        setSwiped(false)
+        setSwipeX(0)
+      }, 350)
+    } else {
+      setSwipeX(0)
+    }
+  }
+
+  const isDone = item.status === 'done'
 
   return (
-    <div
-      onClick={onClick}
-      className="bg-white rounded-xl border border-[#EBF3FB] hover:border-[#D4E6F1] hover:shadow-md transition-all cursor-pointer flex overflow-hidden"
-    >
-      <div className="w-1 flex-shrink-0" style={{ background: cfg?.color }} />
-      <div className="flex-1 px-4 py-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            <Monogram board={item.board} size={24} />
-            <span className="font-medium text-[#1A2B3C] text-sm truncate">{item.title}</span>
-          </div>
-          <span {...(isFirst ? { 'data-tour': 'status-badge' } : {})}>
-            <StatusPill status={item.status} board={item.board} />
-          </span>
-        </div>
-        <div className="flex items-center gap-3 mt-1.5">
-          {item.date && (
-            <span className={`text-xs ${urgencyClass(item.date)}`}>{urgencyLabel(item.date)}</span>
-          )}
-          {item.checklist.length > 0 && (
-            <span
-              {...(isFirst ? { 'data-tour': 'checklist' } : {})}
-              className="text-xs text-[#5A7A94] flex items-center gap-1"
-            >
-              <CheckSquare size={11} />
-              {item.checklist.filter(c=>c.done).length}/{item.checklist.length}
+    <div className="relative overflow-hidden rounded-xl">
+      {/* Swipe reveal layer */}
+      <div
+        className="absolute inset-y-0 left-0 flex items-center justify-start px-4 rounded-xl transition-all"
+        style={{ background: '#27AE60', width: Math.max(swipeX, 0), opacity: swipeX > 10 ? 1 : 0 }}
+      >
+        <Check size={18} color="white" strokeWidth={2.5} />
+      </div>
+
+      {/* Card */}
+      <div
+        ref={cardRef}
+        onClick={() => { if (swipeX < 5) onClick() }}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        className={`bg-white border border-[#EBF3FB] hover:border-[#D4E6F1] hover:shadow-md transition-all cursor-pointer flex overflow-hidden rounded-xl ${isDone ? 'opacity-60' : ''} ${swiped ? 'scale-95 opacity-0' : ''}`}
+        style={{
+          transform: `translateX(${swipeX}px)`,
+          transition: swipeX === 0 ? 'transform 0.25s ease, opacity 0.3s ease, box-shadow 0.15s' : 'none',
+        }}
+      >
+        <div className="w-1 flex-shrink-0" style={{ background: cfg?.color }} />
+        <div className="flex-1 px-4 py-3">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <Monogram board={item.board} size={24} />
+              <span className={`font-medium text-[#1A2B3C] text-sm truncate ${isDone ? 'line-through text-[#5A7A94]' : ''}`}>{item.title}</span>
+            </div>
+            <span {...(isFirst ? { 'data-tour': 'status-badge' } : {})}>
+              <StatusPill status={item.status} board={item.board} />
             </span>
+          </div>
+          <div className="flex items-center gap-3 mt-1.5">
+            {item.date && (
+              <span className={`text-xs ${urgencyClass(item.date)}`}>{urgencyLabel(item.date)}</span>
+            )}
+            {item.checklist.length > 0 && (
+              <span
+                {...(isFirst ? { 'data-tour': 'checklist' } : {})}
+                className="text-xs text-[#5A7A94] flex items-center gap-1"
+              >
+                <CheckSquare size={11} />
+                {item.checklist.filter(c=>c.done).length}/{item.checklist.length}
+              </span>
+            )}
+          </div>
+          {pct !== null && (
+            <div className="mt-2 h-1 bg-[#EBF3FB] rounded-full">
+              <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: cfg?.color }} />
+            </div>
           )}
         </div>
-        {pct !== null && (
-          <div className="mt-2 h-1 bg-[#EBF3FB] rounded-full">
-            <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: cfg?.color }} />
-          </div>
-        )}
       </div>
     </div>
   )
@@ -515,8 +613,172 @@ function UpgradeModal({ onClose, itemCount }: { onClose: () => void; itemCount: 
   )
 }
 
+// ── Calendar Month View ───────────────────────────────────
+function CalendarView({ items, onItemClick }: { items: Item[]; onItemClick: (item: Item) => void }) {
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const now = new Date()
+    return new Date(now.getFullYear(), now.getMonth(), 1)
+  })
+
+  const year = currentMonth.getFullYear()
+  const month = currentMonth.getMonth()
+
+  const firstDayOfMonth = new Date(year, month, 1).getDay()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const prevMonth = () => setCurrentMonth(new Date(year, month - 1, 1))
+  const nextMonth = () => setCurrentMonth(new Date(year, month + 1, 1))
+  const goToToday = () => setCurrentMonth(new Date(today.getFullYear(), today.getMonth(), 1))
+
+  // Build a map: "YYYY-MM-DD" → Item[]
+  const itemsByDate: Record<string, Item[]> = {}
+  items.forEach(item => {
+    if (item.date) {
+      const key = item.date.slice(0, 10)
+      if (!itemsByDate[key]) itemsByDate[key] = []
+      itemsByDate[key].push(item)
+    }
+  })
+
+  const monthLabel = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+  // Count items with no date for "unscheduled" section
+  const unscheduledItems = items.filter(i => !i.date)
+
+  const cells: Array<{ day: number | null; dateStr: string | null }> = []
+  for (let i = 0; i < firstDayOfMonth; i++) cells.push({ day: null, dateStr: null })
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+    cells.push({ day: d, dateStr })
+  }
+  // Pad to full weeks
+  while (cells.length % 7 !== 0) cells.push({ day: null, dateStr: null })
+
+  return (
+    <div>
+      {/* Calendar header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <h2 className="font-georgia font-bold text-lg text-[#1A2B3C]">{monthLabel}</h2>
+          <button
+            onClick={goToToday}
+            className="text-xs px-2.5 py-1 rounded-lg border border-[#D4E6F1] text-[#5A7A94] hover:bg-[#EBF3FB] transition-colors font-medium"
+          >
+            Today
+          </button>
+        </div>
+        <div className="flex items-center gap-1">
+          <button onClick={prevMonth} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5A7A94] hover:bg-[#EBF3FB] hover:text-[#1A2B3C] transition-colors">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button onClick={nextMonth} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5A7A94] hover:bg-[#EBF3FB] hover:text-[#1A2B3C] transition-colors">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Day-of-week headers */}
+      <div className="grid grid-cols-7 mb-1">
+        {DAY_LABELS.map(d => (
+          <div key={d} className="text-center text-xs font-semibold text-[#5A7A94] py-2 uppercase tracking-wide">
+            {d}
+          </div>
+        ))}
+      </div>
+
+      {/* Calendar grid */}
+      <div className="grid grid-cols-7 gap-px bg-[#EBF3FB] rounded-xl overflow-hidden border border-[#EBF3FB]">
+        {cells.map((cell, idx) => {
+          if (!cell.day || !cell.dateStr) {
+            return <div key={`empty-${idx}`} className="bg-[#F4F7FA] min-h-[80px]" />
+          }
+          const cellDate = new Date(cell.dateStr + 'T00:00:00')
+          const isToday = cellDate.getTime() === today.getTime()
+          const isPast  = cellDate < today
+          const dayItems = itemsByDate[cell.dateStr] ?? []
+          const MAX_VISIBLE = 2
+
+          return (
+            <div
+              key={cell.dateStr}
+              className={`bg-white min-h-[80px] p-1.5 ${isPast && !isToday ? 'opacity-60' : ''}`}
+            >
+              {/* Date number */}
+              <div className="mb-1">
+                <span
+                  className={`inline-flex w-6 h-6 items-center justify-center rounded-full text-xs font-semibold ${
+                    isToday
+                      ? 'bg-[#1B4F8A] text-white'
+                      : 'text-[#1A2B3C]'
+                  }`}
+                >
+                  {cell.day}
+                </span>
+              </div>
+
+              {/* Items for this day */}
+              <div className="space-y-0.5">
+                {dayItems.slice(0, MAX_VISIBLE).map(item => {
+                  const cfg = BOARD_MAP[item.board]
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => onItemClick(item)}
+                      className="w-full text-left px-1.5 py-0.5 rounded text-[10px] font-medium truncate transition-opacity hover:opacity-80"
+                      style={{ background: `${cfg?.color}20`, color: cfg?.color, borderLeft: `2px solid ${cfg?.color}` }}
+                      title={item.title}
+                    >
+                      {item.title}
+                    </button>
+                  )
+                })}
+                {dayItems.length > MAX_VISIBLE && (
+                  <div className="text-[10px] text-[#5A7A94] pl-1 font-medium">
+                    +{dayItems.length - MAX_VISIBLE} more
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Unscheduled items */}
+      {unscheduledItems.length > 0 && (
+        <div className="mt-5">
+          <div className="text-xs font-semibold text-[#5A7A94] uppercase tracking-wide mb-2 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#5A7A94] inline-block" />
+            No date ({unscheduledItems.length})
+          </div>
+          <div className="grid grid-cols-1 gap-2">
+            {unscheduledItems.map(item => {
+              const cfg = BOARD_MAP[item.board]
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onItemClick(item)}
+                  className="flex items-center gap-2 bg-white rounded-xl border border-[#EBF3FB] hover:border-[#D4E6F1] px-3 py-2 text-left transition-all hover:shadow-sm w-full"
+                >
+                  <div className="w-1 self-stretch rounded-full flex-shrink-0" style={{ background: cfg?.color }} />
+                  <Monogram board={item.board} size={22} />
+                  <span className="text-sm text-[#1A2B3C] truncate flex-1">{item.title}</span>
+                  <StatusPill status={item.status} board={item.board} />
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function Dashboard() {
   const router = useRouter()
+  const { toast } = useToast()
   const [user,        setUser]        = useState<User | null>(null)
   const [items,       setItems]       = useState<Item[]>([])
   const [loading,     setLoading]     = useState(true)
@@ -530,6 +792,9 @@ export default function Dashboard() {
   const [activeBoards, setActiveBoards] = useState<string[]>([])
   const [showUpgrade,  setShowUpgrade]  = useState(false)
   const [showTour,     setShowTour]     = useState(false)
+  const [viewMode,     setViewMode]     = useState<'list' | 'calendar'>('list')
+  const [dueSoonOnly,  setDueSoonOnly]  = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
 
   // ── Auth check ──────────────────────────────────────────
   useEffect(() => {
@@ -590,7 +855,6 @@ export default function Dashboard() {
   // ── Add item ────────────────────────────────────────────
   const addItem = async (partial: Partial<Item>) => {
     if (!user) return
-    // Enforce Free tier item limit
     if (!isPro && items.length >= FREE_ITEM_LIMIT) {
       setShowAdd(false)
       setShowUpgrade(true)
@@ -601,7 +865,11 @@ export default function Dashboard() {
       .insert({ ...partial, user_id: user.id })
       .select()
       .single()
-    if (!error && data) setItems(prev => [...prev, data as Item].sort((a,b) => (a.date ?? 'z') > (b.date ?? 'z') ? 1 : -1))
+    if (!error && data) {
+      setItems(prev => [...prev, data as Item].sort((a,b) => (a.date ?? 'z') > (b.date ?? 'z') ? 1 : -1))
+      const boardName = BOARD_MAP[(partial.board as string)]?.label ?? 'your board'
+      toast(`Added to ${boardName}`)
+    }
     setShowAdd(false)
   }
 
@@ -612,22 +880,37 @@ export default function Dashboard() {
       const updated = data as Item
       setItems(prev => prev.map(i => i.id === id ? updated : i))
       setDetail(updated)
+      if (updates.status) toast(`Status updated to "${updated.status}"`, 'info')
     }
   }
 
   // ── Delete item ─────────────────────────────────────────
   const deleteItem = async (id: string) => {
+    const item = items.find(i => i.id === id)
     await supabase.from('items').delete().eq('id', id)
     setItems(prev => prev.filter(i => i.id !== id))
     setDetail(null)
+    toast(`"${item?.title ?? 'Item'}" deleted`, 'info')
+  }
+
+  // ── Swipe complete ──────────────────────────────────────
+  const swipeComplete = async (id: string) => {
+    const item = items.find(i => i.id === id)
+    if (!item || item.status === 'done') return
+    await supabase.from('items').update({ status: 'done' }).eq('id', id)
+    setItems(prev => prev.map(i => i.id === id ? { ...i, status: 'done' } : i))
+    toast(`✓ "${item.title}" marked done`)
   }
 
   // ── Filtered items ──────────────────────────────────────
   const filtered = items.filter(i => {
-    const boardMatch  = activeBoard === 'all' || i.board === activeBoard
-    const searchMatch = !search || i.title.toLowerCase().includes(search.toLowerCase()) || i.notes?.toLowerCase().includes(search.toLowerCase())
-    return boardMatch && searchMatch
+    const boardMatch    = activeBoard === 'all' || i.board === activeBoard
+    const searchMatch   = !search || i.title.toLowerCase().includes(search.toLowerCase()) || i.notes?.toLowerCase().includes(search.toLowerCase())
+    const dueSoonMatch  = !dueSoonOnly || (() => { const n = daysUntil(i.date); return n !== null && n >= 0 && n <= 7 })()
+    return boardMatch && searchMatch && dueSoonMatch
   })
+
+  const dueSoonCount = items.filter(i => { const n = daysUntil(i.date); return n !== null && n >= 0 && n <= 7 }).length
 
   // ── Stats ───────────────────────────────────────────────
   const thisWeek  = items.filter(i => { const n = daysUntil(i.date); return n !== null && n >= 0 && n <= 7 }).length
@@ -709,7 +992,52 @@ export default function Dashboard() {
               >
                 ?
               </button>
-              <button onClick={signOut} className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+
+              {/* Settings dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowSettings(s => !s)}
+                  className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+                  title="Settings"
+                >
+                  <Settings size={16} />
+                </button>
+                {showSettings && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setShowSettings(false)} />
+                    <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-xl border border-[#EBF3FB] z-50 overflow-hidden">
+                      <div className="px-3 py-2 text-xs font-semibold text-[#5A7A94] uppercase tracking-wide border-b border-[#EBF3FB]">Settings</div>
+                      <a
+                        href="/settings/phone"
+                        onClick={() => setShowSettings(false)}
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
+                      >
+                        <Phone size={14} className="text-[#5A7A94]" />
+                        SMS Forwarding
+                      </a>
+                      <a
+                        href="/settings/ical"
+                        onClick={() => setShowSettings(false)}
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
+                      >
+                        <Calendar size={14} className="text-[#5A7A94]" />
+                        Calendar Export (iCal)
+                      </a>
+                      <div className="border-t border-[#EBF3FB]">
+                        <button
+                          onClick={() => { setShowSettings(false); signOut() }}
+                          className="flex items-center gap-2.5 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition-colors w-full text-left"
+                        >
+                          <LogOut size={14} />
+                          Sign out
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <button onClick={signOut} className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors sm:hidden">
                 <LogOut size={16} />
               </button>
             </div>
@@ -745,8 +1073,42 @@ export default function Dashboard() {
             </div>
           ))}
 
-          {/* User greeting */}
-          <div className="ml-auto flex items-center gap-2 flex-shrink-0">
+          {/* Due Soon quick filter */}
+          {dueSoonCount > 0 && (
+            <button
+              onClick={() => setDueSoonOnly(v => !v)}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border transition-all flex-shrink-0 ${
+                dueSoonOnly
+                  ? 'bg-orange-500 text-white border-orange-500'
+                  : 'bg-orange-50 text-orange-500 border-orange-200 hover:bg-orange-100'
+              }`}
+            >
+              <Bell size={11} />
+              Due this week · {dueSoonCount}
+              {dueSoonOnly && <X size={10} className="ml-0.5" />}
+            </button>
+          )}
+          <div className="ml-auto flex items-center gap-3 flex-shrink-0">
+            {/* View toggle */}
+            <div className="flex items-center bg-[#F4F7FA] rounded-lg p-0.5 border border-[#EBF3FB]">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${viewMode === 'list' ? 'bg-white text-[#1B4F8A] shadow-sm' : 'text-[#5A7A94] hover:text-[#1A2B3C]'}`}
+                title="List view"
+              >
+                <List size={13} />
+                <span className="hidden sm:inline">List</span>
+              </button>
+              <button
+                onClick={() => setViewMode('calendar')}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${viewMode === 'calendar' ? 'bg-white text-[#1B4F8A] shadow-sm' : 'text-[#5A7A94] hover:text-[#1A2B3C]'}`}
+                title="Calendar view"
+              >
+                <LayoutGrid size={13} />
+                <span className="hidden sm:inline">Calendar</span>
+              </button>
+            </div>
+
             {user?.user_metadata?.avatar_url && (
               <img src={user.user_metadata.avatar_url} alt="" className="w-7 h-7 rounded-full" />
             )}
@@ -782,8 +1144,10 @@ export default function Dashboard() {
           )
         })()}
 
-        {/* Items grid */}
-        {filtered.length === 0 ? (
+        {/* Items — list or calendar view */}
+        {viewMode === 'calendar' ? (
+          <CalendarView items={filtered} onItemClick={setDetail} />
+        ) : filtered.length === 0 ? (
           <div className="text-center py-16">
             <div className="text-4xl mb-3">📋</div>
             <div className="font-semibold text-[#1A2B3C] mb-1">No items yet</div>
@@ -795,7 +1159,7 @@ export default function Dashboard() {
         ) : (
           <div className="grid grid-cols-1 gap-3">
             {filtered.map((item, index) => (
-              <ItemCard key={item.id} item={item} onClick={() => setDetail(item)} isFirst={index === 0} />
+              <ItemCard key={item.id} item={item} onClick={() => setDetail(item)} onSwipeComplete={() => swipeComplete(item.id)} isFirst={index === 0} />
             ))}
           </div>
         )}
