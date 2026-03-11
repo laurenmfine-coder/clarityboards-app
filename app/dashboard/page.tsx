@@ -1204,6 +1204,14 @@ export default function Dashboard() {
                         <Calendar size={14} className="text-[#5A7A94]" />
                         Calendar Export (iCal)
                       </a>
+                      <a
+                        href="/settings/language"
+                        onClick={() => setShowSettings(false)}
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
+                      >
+                        <span className="text-sm">🌐</span>
+                        Language
+                      </a>
                       <div className="border-t border-[#EBF3FB]">
                         <button
                           onClick={() => { setShowSettings(false); signOut() }}
