@@ -82,7 +82,13 @@ export async function POST(req: NextRequest) {
   }
 
   const userId = profile.user_id
-  const todayFormatted = new Date().toLocaleDateString('en-US', {
+
+  // Use UTC to avoid Vercel server timezone shifting the date
+  const nowUTC = new Date()
+  const todayISO = nowUTC.toISOString().slice(0, 10) // e.g. "2026-03-11"
+  const tomorrowISO = new Date(nowUTC.getTime() + 86400000).toISOString().slice(0, 10)
+  const todayFormatted = nowUTC.toLocaleDateString('en-US', {
+    timeZone: 'America/New_York',
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   })
 
@@ -101,7 +107,13 @@ export async function POST(req: NextRequest) {
       max_tokens: 800,
       messages: [{
         role: 'user',
-        content: `You are parsing a text message for Clarityboards, a life management app. Today is ${todayFormatted}.
+        content: `You are parsing a text message for Clarityboards, a life management app.
+
+TODAY'S DATE: ${todayFormatted}
+TODAY IN ISO FORMAT: ${todayISO}
+TOMORROW IN ISO FORMAT: ${tomorrowISO}
+
+You MUST use these exact ISO dates as your anchor. Do not guess or calculate — use the values above directly.
 
 Determine the action and return ONLY a JSON object. No markdown, no explanation.
 
@@ -113,10 +125,10 @@ ACTIONS:
 5. "complete" - marking an item done (e.g. "mark homework done", "finished the interview")
 
 For "add" or "multi", each item has:
-- title: clear short title (max 60 chars)
-- date: YYYY-MM-DD resolved from today's date for relative terms (tomorrow, this Friday, next week, etc.). ALWAYS resolve relative dates — never leave null if a day or date is mentioned.
-- time: time string like "4:00 PM" if mentioned, otherwise null
-- notes: location, details, context (null if none)
+- title: clear short title (max 60 chars). Do NOT include time or date in the title.
+- date: YYYY-MM-DD. RULES: "today" → ${todayISO}. "tomorrow" → ${tomorrowISO}. For other relative terms (this Friday, next week, etc.) calculate from ${todayISO}. ALWAYS resolve — never return null if any day or date is mentioned.
+- time: time string like "4:00 PM" if mentioned, otherwise null. ALWAYS capture times like "4pm", "4:00pm", "at 4", "noon", "3:30".
+- notes: location, details, context. If a time was parsed, include it here too as "⏰ [time]". Otherwise null.
 - board: event | study | activity | career | task
 - status: for event use "rsvp-needed", for study use "not-started", others use "todo". If message says "accepted" or "going" use "accepted". If "declined" use "declined".
 - checklist: array of strings if message lists sub-items (e.g. "pick up: milk, eggs, bread" → ["milk", "eggs", "bread"]). Otherwise [].
