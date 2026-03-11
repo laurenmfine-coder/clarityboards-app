@@ -1,4 +1,5 @@
 'use client'
+import { Suspense } from 'react'
 import { useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -12,7 +13,7 @@ const BOARD_COLORS: Record<string, string> = {
   career: '#8E44AD', task: '#C0392B',
 }
 
-export default function AcceptInvitePage() {
+function AcceptInviteInner() {
   const params = useSearchParams()
   const router = useRouter()
   const token = params.get('token')
@@ -124,3 +125,5 @@ export default function AcceptInvitePage() {
     </div>
   )
 }
+
+export default function AcceptInvitePage() { return <Suspense><AcceptInviteInner /></Suspense> }
