@@ -107,7 +107,7 @@ export default function SharingPage() {
     }
   }
 
-  const handleRoleChange = async (shareId: string, role: t('editor') | t('viewer')) => {
+  const handleRoleChange = async (shareId: string, role: 'editor' | 'viewer') => {
     await supabase.from('board_shares').update({ role }).eq('id', shareId)
     setShares(prev => prev.map(s => s.id === shareId ? { ...s, role } : s))
   }
