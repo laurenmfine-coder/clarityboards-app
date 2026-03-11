@@ -538,7 +538,8 @@ export default function Dashboard() {
       setUser(data.user)
       loadItems(data.user.id)
     })
-  }, [router])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ── Tour: auto-launch for first-time users ───────────────
   useEffect(() => {
@@ -575,7 +576,8 @@ export default function Dashboard() {
     const realItems = data.filter(i => !i.title?.startsWith('__boards__'))
     setItems(realItems as Item[])
     setLoading(false)
-  }, [router])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ── Seed new user ───────────────────────────────────────
   const seedUser = async (uid: string) => {
