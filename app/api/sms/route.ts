@@ -11,12 +11,28 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 })
 
+const BOARD_STATUSES: Record<string, string> = {
+  event: 'rsvp-needed',
+  study: 'not-started',
+  activity: 'todo',
+  career: 'todo',
+  task: 'todo',
+}
+
+const BOARD_NAMES: Record<string, string> = {
+  event: 'EventBoard',
+  study: 'StudyBoard',
+  activity: 'ActivityBoard',
+  career: 'CareerBoard',
+  task: 'TaskBoard',
+}
+
 const BOARD_KEYWORDS: Record<string, string[]> = {
-  event:    ['party', 'birthday', 'wedding', 'rsvp', 'invite', 'invitation', 'celebration', 'event', 'bat mitzvah', 'bar mitzvah', 'shower', 'graduation', 'ceremony', 'gala', 'dinner', 'fundraiser'],
+  event:    ['party', 'birthday', 'wedding', 'rsvp', 'invite', 'invitation', 'celebration', 'bat mitzvah', 'bar mitzvah', 'shower', 'graduation', 'ceremony', 'gala', 'dinner', 'fundraiser'],
   study:    ['homework', 'assignment', 'due', 'exam', 'test', 'quiz', 'essay', 'project', 'class', 'lecture', 'study', 'course', 'grade', 'submit', 'paper', 'reading'],
   activity: ['practice', 'game', 'match', 'tryout', 'meet', 'tournament', 'recital', 'performance', 'sport', 'dance', 'swim', 'soccer', 'baseball', 'basketball', 'gymnastics', 'camp'],
-  career:   ['interview', 'application', 'apply', 'job', 'resume', 'follow up', 'offer', 'hiring', 'recruiter', 'linkedin', 'career', 'position', 'role', 'company'],
-  task:     ['todo', 'task', 'reminder', 'errand', 'appointment', 'call', 'email', 'pay', 'buy', 'schedule', 'meeting', 'deadline'],
+  career:   ['interview', 'application', 'apply', 'job', 'resume', 'follow up', 'offer', 'hiring', 'recruiter', 'linkedin', 'career', 'position', 'role'],
+  task:     ['todo', 'task', 'reminder', 'errand', 'appointment', 'call', 'email', 'pay', 'buy', 'schedule', 'meeting', 'deadline', 'pick up', 'drop off'],
 }
 
 function guessBoard(text: string): string {
@@ -27,19 +43,26 @@ function guessBoard(text: string): string {
   return 'task'
 }
 
-const BOARD_STATUSES: Record<string, string> = {
-  event: 'rsvp-needed',
-  study: 'todo',
-  activity: 'todo',
-  career: 'todo',
-  task: 'todo',
+function formatDateForReply(dateStr: string): string {
+  const d = new Date(dateStr + 'T12:00:00')
+  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+}
+
+interface ParsedItem {
+  title: string
+  date: string | null
+  time: string | null
+  notes: string | null
+  board: string
+  status: string
+  checklist: string[]
+  urgent: boolean
 }
 
 export async function POST(req: NextRequest) {
-  // Verify Twilio signature (basic)
   const body = await req.formData()
   const from = body.get('From') as string
-  const messageBody = body.get('Body') as string
+  const messageBody = (body.get('Body') as string)?.trim()
 
   if (!from || !messageBody) {
     return twimlResponse('Could not parse your message. Please try again.')
@@ -54,74 +77,214 @@ export async function POST(req: NextRequest) {
 
   if (!profile) {
     return twimlResponse(
-      `Your phone number isn't linked to a Clarityboards account. Visit clarityboards-app.vercel.app to connect your number in Settings.`
+      `Your phone number isn't linked to a Clarityboards account. Visit clarityboards-app.vercel.app and connect your number in Settings.`
     )
   }
 
-  // Use Claude to parse the message
-  let parsed: { title: string; date: string | null; notes: string | null; board: string } | null = null
+  const userId = profile.user_id
+  const todayFormatted = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  })
+
+  // ── Claude AI parse ───────────────────────────────────────────
+  let aiResult: {
+    action: 'add' | 'update' | 'delete' | 'complete' | 'multi'
+    items?: ParsedItem[]
+    update?: { search: string; changes: Partial<ParsedItem> }
+    delete?: { search: string }
+    complete?: { search: string }
+  } | null = null
 
   try {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 300,
+      max_tokens: 800,
       messages: [{
         role: 'user',
-        content: `Parse this text message into a calendar/task item. Return ONLY valid JSON with these fields:
-- title: short clear title (max 60 chars)
-- date: ISO date string YYYY-MM-DD if a date is mentioned, otherwise null
-- notes: any extra details, location, or context (null if none)
-- board: one of: event, study, activity, career, task
+        content: `You are parsing a text message for Clarityboards, a life management app. Today is ${todayFormatted}.
+
+Determine the action and return ONLY a JSON object. No markdown, no explanation.
+
+ACTIONS:
+1. "add" - adding one item
+2. "multi" - adding multiple items in one message
+3. "update" - updating an existing item (e.g. "change soccer game to Friday")
+4. "delete" - deleting an item (e.g. "delete the dentist appointment")
+5. "complete" - marking an item done (e.g. "mark homework done", "finished the interview")
+
+For "add" or "multi", each item has:
+- title: clear short title (max 60 chars)
+- date: YYYY-MM-DD resolved from today's date for relative terms (tomorrow, this Friday, next week, etc.). ALWAYS resolve relative dates — never leave null if a day or date is mentioned.
+- time: time string like "4:00 PM" if mentioned, otherwise null
+- notes: location, details, context (null if none)
+- board: event | study | activity | career | task
+- status: for event use "rsvp-needed", for study use "not-started", others use "todo". If message says "accepted" or "going" use "accepted". If "declined" use "declined".
+- checklist: array of strings if message lists sub-items (e.g. "pick up: milk, eggs, bread" → ["milk", "eggs", "bread"]). Otherwise [].
+- urgent: true if message uses "urgent", "ASAP", "don't forget", "important", otherwise false
+
+For "update": { search: "keywords to find item", changes: { only changed fields } }
+For "delete": { search: "keywords to find item" }
+For "complete": { search: "keywords to find item" }
 
 Message: "${messageBody}"
 
-Return only the JSON object, no markdown.`
+Return JSON:
+- Single: { "action": "add", "items": [{...}] }
+- Multiple: { "action": "multi", "items": [{...}, {...}] }
+- Update: { "action": "update", "update": { "search": "...", "changes": {...} } }
+- Delete: { "action": "delete", "delete": { "search": "..." } }
+- Complete: { "action": "complete", "complete": { "search": "..." } }`
       }]
     })
 
     const text = response.content[0].type === 'text' ? response.content[0].text : ''
-    parsed = JSON.parse(text.trim())
+    const clean = text.trim().replace(/^```json\n?/, '').replace(/\n?```$/, '')
+    aiResult = JSON.parse(clean)
   } catch {
-    // Fallback: basic parse
-    const board = guessBoard(messageBody)
-    parsed = {
-      title: messageBody.slice(0, 60).trim(),
-      date: null,
-      notes: messageBody.length > 60 ? messageBody.slice(60).trim() : null,
-      board,
+    aiResult = {
+      action: 'add',
+      items: [{
+        title: messageBody.slice(0, 60).trim(),
+        date: null,
+        time: null,
+        notes: messageBody.length > 60 ? messageBody.slice(60).trim() : null,
+        board: guessBoard(messageBody),
+        status: 'todo',
+        checklist: [],
+        urgent: false,
+      }]
     }
   }
 
-  if (!parsed) {
-    return twimlResponse("Sorry, I couldn't understand that. Try: \"Emma's soccer game May 15\" or \"Doctor appointment tomorrow\"")
+  if (!aiResult) {
+    return twimlResponse("Sorry, I couldn't understand that. Try: \"Emma's soccer game Friday at 4pm\" or \"Pick up: milk, eggs, bread\"")
   }
 
-  const board = parsed.board ?? guessBoard(messageBody)
+  // ── ADD / MULTI ───────────────────────────────────────────────
+  if (aiResult.action === 'add' || aiResult.action === 'multi') {
+    const items = aiResult.items ?? []
+    if (items.length === 0) {
+      return twimlResponse("I couldn't find any items to add. Try: \"dentist Thursday at 2pm\"")
+    }
 
-  // Insert into Supabase
-  const { error } = await supabaseAdmin.from('items').insert({
-    user_id: profile.user_id,
-    title: parsed.title,
-    date: parsed.date,
-    notes: parsed.notes,
-    board,
-    status: BOARD_STATUSES[board] ?? 'todo',
-    checklist: [],
-  })
+    const inserted: (ParsedItem & { board: string })[] = []
 
-  if (error) {
-    return twimlResponse('Sorry, something went wrong saving your item. Please try again.')
+    for (const item of items) {
+      const board = item.board ?? guessBoard(messageBody)
+      const noteParts = [
+        item.time ? `⏰ ${item.time}` : null,
+        item.urgent ? '⚡ Urgent' : null,
+        item.notes ?? null,
+      ].filter(Boolean)
+      const notes = noteParts.length > 0 ? noteParts.join(' · ') : null
+
+      const checklist = (item.checklist ?? []).map((text: string, i: number) => ({
+        id: `sms-${Date.now()}-${i}`,
+        text,
+        done: false,
+      }))
+
+      const { error } = await supabaseAdmin.from('items').insert({
+        user_id: userId,
+        title: item.title,
+        date: item.date ?? null,
+        notes,
+        board,
+        status: item.status ?? BOARD_STATUSES[board] ?? 'todo',
+        checklist,
+      })
+
+      if (!error) inserted.push({ ...item, board })
+    }
+
+    if (inserted.length === 0) {
+      return twimlResponse('Sorry, something went wrong saving your items. Please try again.')
+    }
+
+    if (inserted.length === 1) {
+      const item = inserted[0]
+      const dateStr = item.date ? ` · ${formatDateForReply(item.date)}` : ''
+      const timeStr = item.time ? ` at ${item.time}` : ''
+      const checkStr = item.checklist?.length > 0 ? ` · ${item.checklist.length} tasks` : ''
+      const urgentStr = item.urgent ? ' ⚡' : ''
+      return twimlResponse(`✅ Added to ${BOARD_NAMES[item.board]}: "${item.title}"${dateStr}${timeStr}${checkStr}${urgentStr}`)
+    }
+
+    const lines = inserted.map(item => {
+      const dateStr = item.date ? ` (${formatDateForReply(item.date)})` : ''
+      return `• ${item.title}${dateStr} → ${BOARD_NAMES[item.board]}`
+    }).join('\n')
+    return twimlResponse(`✅ Added ${inserted.length} items:\n${lines}`)
   }
 
-  const boardNames: Record<string, string> = {
-    event: 'EventBoard', study: 'StudyBoard', activity: 'ActivityBoard',
-    career: 'CareerBoard', task: 'TaskBoard',
+  // ── COMPLETE ──────────────────────────────────────────────────
+  if (aiResult.action === 'complete') {
+    const search = aiResult.complete?.search
+    if (!search) return twimlResponse("I couldn't find which item to mark complete.")
+
+    const { data: found } = await supabaseAdmin
+      .from('items')
+      .select('id, title')
+      .eq('user_id', userId)
+      .ilike('title', `%${search}%`)
+      .limit(1)
+      .single()
+
+    if (!found) return twimlResponse(`Couldn't find an item matching "${search}". Check your dashboard.`)
+
+    await supabaseAdmin.from('items').update({ status: 'done' }).eq('id', found.id)
+    return twimlResponse(`✅ Marked done: "${found.title}"`)
   }
 
-  const dateStr = parsed.date ? ` on ${parsed.date}` : ''
-  return twimlResponse(
-    `✅ Added to ${boardNames[board]}: "${parsed.title}"${dateStr}. Open Clarityboards to see it!`
-  )
+  // ── DELETE ────────────────────────────────────────────────────
+  if (aiResult.action === 'delete') {
+    const search = aiResult.delete?.search
+    if (!search) return twimlResponse("I couldn't find which item to delete.")
+
+    const { data: found } = await supabaseAdmin
+      .from('items')
+      .select('id, title')
+      .eq('user_id', userId)
+      .ilike('title', `%${search}%`)
+      .limit(1)
+      .single()
+
+    if (!found) return twimlResponse(`Couldn't find an item matching "${search}". Check your dashboard.`)
+
+    await supabaseAdmin.from('items').delete().eq('id', found.id)
+    return twimlResponse(`🗑️ Deleted: "${found.title}"`)
+  }
+
+  // ── UPDATE ────────────────────────────────────────────────────
+  if (aiResult.action === 'update') {
+    const search = aiResult.update?.search
+    const changes = aiResult.update?.changes
+    if (!search || !changes) return twimlResponse("I couldn't understand what to update.")
+
+    const { data: found } = await supabaseAdmin
+      .from('items')
+      .select('id, title')
+      .eq('user_id', userId)
+      .ilike('title', `%${search}%`)
+      .limit(1)
+      .single()
+
+    if (!found) return twimlResponse(`Couldn't find an item matching "${search}". Check your dashboard.`)
+
+    const updates: Record<string, unknown> = {}
+    if (changes.title) updates.title = changes.title
+    if (changes.date !== undefined) updates.date = changes.date
+    if (changes.notes !== undefined) updates.notes = changes.notes
+    if (changes.status) updates.status = changes.status
+    if (changes.board) updates.board = changes.board
+
+    await supabaseAdmin.from('items').update(updates).eq('id', found.id)
+
+    const dateStr = changes.date ? ` · ${formatDateForReply(changes.date)}` : ''
+    return twimlResponse(`✏️ Updated: "${found.title}"${dateStr}`)
+  }
+
+  return twimlResponse("I didn't understand that. Try: \"Soccer game Friday 4pm\", \"Mark homework done\", or \"Delete dentist appointment\"")
 }
 
 function twimlResponse(message: string) {
