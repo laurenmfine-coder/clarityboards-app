@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/recur",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/ical",
+      "schedule": "0 */6 * * *"
     }
   ]
 }
