@@ -18,6 +18,8 @@ import {
   Phone, Settings, RefreshCw, MapPin, Tag, Flag, Sparkles
 } from 'lucide-react'
 import RecurringPicker, { RecurRule } from '@/components/RecurringPicker'
+import PWAManager from '@/components/PWAManager'
+import GlobalSearch from '@/components/GlobalSearch'
 
 // ── Helpers ──────────────────────────────────────────────
 const fmt = (d: string | null) => {
@@ -51,6 +53,30 @@ const progress = (cl: ChecklistItem[]) =>
   cl.length === 0 ? null : Math.round((cl.filter(c => c.done).length / cl.length) * 100)
 
 // ── Status pill ───────────────────────────────────────────
+// ── Tooltip hint ──────────────────────────────────────────
+function Hint({ text }: { text: string }) {
+  const [show, setShow] = useState(false)
+  return (
+    <span className="relative inline-flex items-center" style={{ verticalAlign: 'middle' }}>
+      <button
+        onMouseEnter={() => setShow(true)}
+        onFocus={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        onBlur={() => setShow(false)}
+        className="w-4 h-4 rounded-full bg-[#D4E6F1] text-[#5A7A94] text-[9px] font-bold flex items-center justify-center hover:bg-[#1B4F8A] hover:text-white transition-colors cursor-default"
+        style={{ lineHeight: 1 }}
+        aria-label="Help"
+      >?</button>
+      {show && (
+        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-52 bg-[#1A2B3C] text-white text-xs rounded-lg px-3 py-2 shadow-xl z-50 pointer-events-none" style={{ lineHeight: 1.5 }}>
+          {text}
+          <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#1A2B3C]" />
+        </span>
+      )}
+    </span>
+  )
+}
+
 function StatusPill({ status, board }: { status: string; board: string }) {
   const cfg = BOARD_MAP[board as keyof typeof BOARD_MAP]
   const map: Record<string, string> = {
@@ -299,11 +325,12 @@ const PRIORITY_OPTIONS = [
   { value: 'low',    label: '🟢 Low',    color: '#27AE60' },
 ]
 
-function DetailModal({ item, onUpdate, onDelete, onClose }: {
+function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
   item: Item
   onUpdate: (updates: Partial<Item>) => void
   onDelete: () => void
   onClose: () => void
+  boardNames?: Record<string, string>
 }) {
   const t = useTranslations('dashboard')
   const cfg = BOARD_MAP[item.board]
@@ -379,7 +406,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
                   onKeyDown={e => e.key === 'Enter' && saveTitle()}
                   className="font-semibold text-[#1A2B3C] text-base leading-tight w-full bg-transparent border-b border-transparent focus:border-[#1B4F8A] focus:outline-none pb-0.5 transition-colors"
                 />
-                <div className="text-xs text-[#5A7A94] mt-0.5">{cfg?.label}</div>
+                <div className="text-xs text-[#5A7A94] mt-0.5">{boardNames[item.board] || cfg?.label}</div>
               </div>
             </div>
             <button onClick={onClose} className="text-[#5A7A94] hover:text-[#1A2B3C] flex-shrink-0"><X size={20} /></button>
@@ -509,8 +536,8 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
 
           {/* Recurring schedule */}
           <div>
-            <div className="text-xs font-semibold text-[#5A7A94] uppercase tracking-wide mb-2 flex items-center gap-1">
-              <RefreshCw size={11} /> Repeat
+            <div className="text-xs font-semibold text-[#5A7A94] uppercase tracking-wide mb-2 flex items-center gap-1.5">
+              <RefreshCw size={11} /> Repeat <Hint text="Set a recurring schedule. Clarityboards will automatically create the next occurrence each night at 2 AM." />
             </div>
             <RecurringPicker
               value={(item as any)._recurRule ?? null}
@@ -580,6 +607,29 @@ function DetailModal({ item, onUpdate, onDelete, onClose }: {
               </div>
               <p className="text-xs text-[#5A7A94] mt-1 hidden sm:block">Hover to edit or delete · Double-click to edit inline</p>
               <p className="text-xs text-[#5A7A94] mt-1 sm:hidden">Tap ✕ to delete a task</p>
+            </div>
+          </div>
+
+          {/* Move to Board */}
+          <div>
+            <div className="text-xs font-semibold text-[#5A7A94] uppercase tracking-wide mb-2 flex items-center gap-1.5">
+              Move to Board <Hint text="Move this item to a different board. It will disappear from the current view and appear in the destination board." />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {BOARDS.map(b => (
+                <button
+                  key={b.id}
+                  disabled={b.id === item.board}
+                  onClick={() => onUpdate({ board: b.id as any })}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all disabled:opacity-40 disabled:cursor-default"
+                  style={b.id === item.board
+                    ? { background: b.color, color: '#fff', borderColor: b.color }
+                    : { background: '#fff', color: '#5A7A94', borderColor: '#D4E6F1' }}
+                >
+                  <Monogram board={b.id} size={16} />
+                  {boardNames[b.id] || b.label}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -954,6 +1004,7 @@ export default function Dashboard() {
   const [activeTag,      setActiveTag]      = useState<string>('')
   const [showConfetti,   setShowConfetti]   = useState(false)
   const [allTags,        setAllTags]        = useState<string[]>([])
+  const [boardNames,     setBoardNames]     = useState<Record<string, string>>({}) // id → custom label
 
   // ── Auth check ──────────────────────────────────────────
   useEffect(() => {
@@ -969,6 +1020,14 @@ export default function Dashboard() {
   useEffect(() => {
     const seen = localStorage.getItem('cb_tour_complete')
     if (!seen) setShowTour(true)
+  }, [])
+
+  // ── Load custom board names ──────────────────────────────
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('cb_board_names')
+      if (saved) setBoardNames(JSON.parse(saved))
+    } catch {}
   }, [])
 
   // ── Load items ──────────────────────────────────────────
@@ -1124,6 +1183,11 @@ export default function Dashboard() {
       const updated = data as Item
       setItems(prev => prev.map(i => i.id === id ? { ...updated, _tags: (i as any)._tags } as any : i))
       setDetail(prev => prev ? { ...updated, _tags: (prev as any)._tags } as any : prev)
+      if (dbUpdates.board && dbUpdates.board !== items.find(i => i.id === id)?.board) {
+        const destLabel = BOARD_MAP[dbUpdates.board as keyof typeof BOARD_MAP]?.label ?? dbUpdates.board
+        toast(`Moved to ${destLabel}`, 'info')
+        setDetail(null)
+      }
       if (dbUpdates.status) {
         toast(`Status updated to "${updated.status}"`, 'info')
         // Confetti for completing items with checklists or urgent flag
@@ -1136,6 +1200,9 @@ export default function Dashboard() {
       }
     }
   }
+
+  // ── Board label (custom name or default) ────────────────
+  const boardLabel = (id: string) => boardNames[id] || BOARD_MAP[id as keyof typeof BOARD_MAP]?.label || id
 
   // ── Delete item ─────────────────────────────────────────
   const deleteItem = async (id: string) => {
@@ -1219,14 +1286,19 @@ export default function Dashboard() {
               </button>
               {BOARDS.map(b => {
                 const locked = !isPro && !activeBoards.includes(b.id)
+                const isMeal = b.id === 'meal'
                 return (
                   <button
                     key={b.id}
-                    onClick={() => locked ? setShowUpgrade(true) : setActiveBoard(b.id)}
+                    onClick={() => {
+                      if (locked) { setShowUpgrade(true); return }
+                      if (isMeal) { router.push('/settings/meal'); return }
+                      setActiveBoard(b.id)
+                    }}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${activeBoard === b.id ? 'bg-white/20 text-white' : locked ? 'text-white/30' : 'text-white/60 hover:text-white/90'}`}
                   >
                     <span className="w-4 h-4 rounded flex items-center justify-center text-white font-bold flex-shrink-0" style={{ background: locked ? '#888' : b.color, fontSize: 9, fontFamily: 'Georgia, serif' }}>{locked ? '🔒' : b.letter}</span>
-                    <span className="hidden sm:inline">{b.label}</span>
+                    <span className="hidden sm:inline">{boardLabel(b.id)}</span>
                     <span className="inline sm:hidden">{b.letter}</span>
                   </button>
                 )
@@ -1235,7 +1307,7 @@ export default function Dashboard() {
 
             {/* Right actions */}
             <div className="flex items-center gap-2 flex-shrink-0">
-              <button onClick={() => setSearchOpen(s => !s)} className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+              <button onClick={() => setSearchOpen(true)} className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors" title="Search all boards (⌘K)">
                 <Search size={16} />
               </button>
               <button
@@ -1298,6 +1370,54 @@ export default function Dashboard() {
                       >
                         <RefreshCw size={14} className="text-[#5A7A94]" />
                         Subscribe to Calendars
+                      </a>
+                      <a
+                        href="/settings/gcal"
+                        onClick={() => setShowSettings(false)}
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
+                      >
+                        <span className="text-sm">📅</span>
+                        Google Calendar Sync
+                      </a>
+                      <a
+                        href="/settings/boards"
+                        onClick={() => setShowSettings(false)}
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
+                      >
+                        <span className="text-sm">✏️</span>
+                        Rename Boards
+                      </a>
+                      <a
+                        href="/settings/export"
+                        onClick={() => setShowSettings(false)}
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
+                      >
+                        <span className="text-sm">📤</span>
+                        Export &amp; Connect
+                      </a>
+                      <a
+                        href="/settings/zapier"
+                        onClick={() => setShowSettings(false)}
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
+                      >
+                        <span className="text-sm">⚡</span>
+                        Zapier Integration
+                      </a>
+                      <a
+                        href="/settings/notifications"
+                        onClick={() => setShowSettings(false)}
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
+                      >
+                        <span className="text-sm">🔔</span>
+                        Notifications
+                      </a>
+                      <a
+                        href="/settings/templates"
+                        onClick={() => setShowSettings(false)}
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
+                      >
+                        <span className="text-sm">📋</span>
+                        Templates
                       </a>
                       <a
                         href="/settings/language"
@@ -1499,16 +1619,26 @@ export default function Dashboard() {
               <div className="flex items-center gap-3">
                 <Monogram board={activeBoard} size={40} />
                 <div>
-                  <div className="font-georgia font-bold text-xl text-[#1A2B3C]">{cfg?.label}</div>
+                  <div className="font-georgia font-bold text-xl text-[#1A2B3C]">{boardLabel(activeBoard)}</div>
                   <div className="text-sm text-[#5A7A94]">{cfg?.tagline}</div>
                 </div>
               </div>
-              <button
-                onClick={() => setShareBoard(activeBoard)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#D4E6F1] text-[#5A7A94] text-xs font-medium hover:bg-[#EBF3FB] transition-colors"
-              >
-                <Share2 size={13} /> {t('shareBoard')}
-              </button>
+              <div className="flex items-center gap-2">
+                <a
+                  href={`/settings/export?board=${activeBoard}`}
+                  data-tour="export-button"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#D4E6F1] text-[#5A7A94] text-xs font-medium hover:bg-[#EBF3FB] transition-colors"
+                  title="Export this board to NotebookLM, AI tools, or plain text"
+                >
+                  <span className="text-xs">📤</span> Export
+                </a>
+                <button
+                  onClick={() => setShareBoard(activeBoard)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#D4E6F1] text-[#5A7A94] text-xs font-medium hover:bg-[#EBF3FB] transition-colors"
+                >
+                  <Share2 size={13} /> {t('shareBoard')}
+                </button>
+              </div>
             </div>
           )
         })()}
@@ -1557,10 +1687,15 @@ export default function Dashboard() {
           </button>
           {BOARDS.map(b => {
             const locked = !isPro && !activeBoards.includes(b.id)
+            const isMeal = b.id === 'meal'
             return (
               <button
                 key={b.id}
-                onClick={() => locked ? setShowUpgrade(true) : setActiveBoard(b.id)}
+                onClick={() => {
+                  if (locked) { setShowUpgrade(true); return }
+                  if (isMeal) { router.push('/settings/meal'); return }
+                  setActiveBoard(b.id)
+                }}
                 className={`flex-1 flex flex-col items-center justify-center gap-0.5 h-full transition-all ${activeBoard === b.id ? 'text-white' : locked ? 'text-white/20' : 'text-white/40'}`}
               >
                 <span
@@ -1569,7 +1704,7 @@ export default function Dashboard() {
                 >
                   {locked ? '🔒' : b.letter}
                 </span>
-                <span className="text-[10px] font-medium truncate max-w-[40px]">{b.label.replace('Board','')}</span>
+                <span className="text-[10px] font-medium truncate max-w-[40px]">{boardLabel(b.id).replace('Board','')}</span>
               </button>
             )
           })}
@@ -1578,7 +1713,7 @@ export default function Dashboard() {
 
       {/* ── MODALS ── */}
       {showAdd      && <AddModal    defaultBoard={activeBoard === 'all' ? 'event' : activeBoard} onSave={(item, rule) => addItem(item, rule)} onClose={() => setShowAdd(false)} />}
-      {detail       && <DetailModal item={detail} onUpdate={u => updateItem(detail.id, u)} onDelete={() => deleteItem(detail.id)} onClose={() => setDetail(null)} />}
+      {detail       && <DetailModal item={detail} onUpdate={u => updateItem(detail.id, u)} onDelete={() => deleteItem(detail.id)} onClose={() => setDetail(null)} boardNames={boardNames} />}
       {shareBoard   && <ShareModal  board={shareBoard} onClose={() => setShareBoard(null)} />}
       {showUpgrade  && <UpgradeModal onClose={() => setShowUpgrade(false)} itemCount={items.length} />}
 
@@ -1616,6 +1751,42 @@ export default function Dashboard() {
           }} />
         </div>
       )}
+
+      {/* Global Search Modal */}
+      {searchOpen && (
+        <GlobalSearch
+          onSelectItem={(board, itemId) => {
+            setActiveBoard(board as any)
+            // Small delay so board switches before item opens
+            setTimeout(() => {
+              const item = items.find(i => i.id === itemId)
+              if (item) setSelectedItem(item)
+            }, 100)
+          }}
+          onClose={() => setSearchOpen(false)}
+        />
+      )}
+
+      {/* PWA Install Banner */}
+      <PWAManager />
+
+      {/* Cmd+K / Ctrl+K to open search */}
+      <KeyboardShortcut onSearch={() => setSearchOpen(true)} />
     </div>
   )
+}
+
+// Lightweight component to handle Cmd+K without adding an effect to the main component
+function KeyboardShortcut({ onSearch }: { onSearch: () => void }) {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        onSearch()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onSearch])
+  return null
 }
