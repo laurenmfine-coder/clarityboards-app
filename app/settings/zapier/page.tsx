@@ -20,20 +20,25 @@ export default function ZapierSettingsPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const t = session?.access_token ?? null;
-      setToken(t);
-      if (!t) { setLoading(false); return; }
-      fetch("/api/zapier/keys", { headers: { Authorization: `Bearer ${t}` } })
-        .then(r => r.json())
-        .then(d => { setKeyInfo(d); setLoading(false); })
-        .catch(() => setLoading(false));
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) { setLoading(false); return; }
+      // Get the session for the token
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        const t = session?.access_token ?? null;
+        setToken(t);
+        if (!t) { setLoading(false); return; }
+        fetch("/api/zapier/keys", { headers: { Authorization: `Bearer ${t}` } })
+          .then(r => r.json())
+          .then(d => { setKeyInfo(d); setLoading(false); })
+          .catch(() => setLoading(false));
+      });
     });
   }, []);
 
   const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
   const generate = async () => {
+    if (generating) return;
     setGenerating(true);
     const res = await fetch("/api/zapier/keys", { method: "POST", headers: authHeaders });
     const data = await res.json();

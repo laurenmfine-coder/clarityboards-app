@@ -14,10 +14,16 @@ const adminSupabase = createClient(
 
 async function getUserFromRequest(req: NextRequest) {
   const authHeader = req.headers.get("authorization") ?? "";
-  const token = authHeader.replace("Bearer ", "").trim();
-  if (!token) return null;
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : authHeader.trim();
+  
+  if (!token) {
+    console.log("[zapier/keys] No authorization header");
+    return null;
+  }
 
-  const { data: { user } } = await adminSupabase.auth.getUser(token);
+  console.log("[zapier/keys] Token prefix:", token.substring(0, 20));
+  const { data: { user }, error } = await adminSupabase.auth.getUser(token);
+  if (error) console.log("[zapier/keys] getUser error:", error.message);
   return user ?? null;
 }
 
