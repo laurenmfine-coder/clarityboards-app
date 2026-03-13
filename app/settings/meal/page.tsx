@@ -697,6 +697,7 @@ function MealDetailModal({ item, onStatusChange, onDelete, onClose, onIngredient
   const [reparsing, setReparsing] = useState(false);
   const [reparseStatus, setReparseStatus] = useState<string | null>(null);
   const [localIngredients, setLocalIngredients] = useState<string[]>(item.ingredients ?? []);
+  const [localStatus, setLocalStatus] = useState(item.status);
 
   const reparseIngredients = async () => {
     if (!item.recipe_url) return;
@@ -726,7 +727,7 @@ function MealDetailModal({ item, onStatusChange, onDelete, onClose, onIngredient
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 50, display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
-      <div style={{ background: "white", width: "100%", maxWidth: 480, borderRadius: "20px 20px 0 0", padding: "24px 20px 32px", fontFamily: "'DM Sans',sans-serif", maxHeight: "85dvh", overflowY: "auto" }}>
+      <div style={{ background: "white", width: "100%", maxWidth: 480, borderRadius: "20px 20px 0 0", padding: "24px 20px 32px", fontFamily: "'DM Sans',sans-serif", maxHeight: "90dvh", overflowY: "auto", paddingBottom: "env(safe-area-inset-bottom, 32px)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
           <div>
             <div style={{ fontSize: 17, fontWeight: 700, color: "#1A2B3C" }}>{item.title}</div>
@@ -758,8 +759,8 @@ function MealDetailModal({ item, onStatusChange, onDelete, onClose, onIngredient
           <div style={{ fontSize: 11, fontWeight: 600, color: "#9AABBD", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Status</div>
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
             {["planned","prepped","cooked","done"].map(s => (
-              <button key={s} onClick={() => onStatusChange(s)}
-                style={{ padding: "6px 14px", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 600, background: item.status === s ? "#C0392B" : "#F4F7FA", color: item.status === s ? "white" : "#5A7A94" }}>
+              <button key={s} onClick={() => { setLocalStatus(s); onStatusChange(s); }}
+                style={{ padding: "6px 14px", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 600, background: localStatus === s ? "#C0392B" : "#F4F7FA", color: localStatus === s ? "white" : "#5A7A94" }}>
                 {s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
