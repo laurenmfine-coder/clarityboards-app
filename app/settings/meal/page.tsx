@@ -103,13 +103,18 @@ export default function MealPlannerPage() {
     setItems(prev => prev.map(i => i.id === id ? { ...i, status } : i));
   };
 
+  const updateIngredients = async (id: string, ingredients: string[]) => {
+    await supabase.from("items").update({ ingredients }).eq("id", id);
+    setItems(prev => prev.map(i => i.id === id ? { ...i, ingredients } : i));
+  };
+
   const deleteMeal = async (id: string) => {
     await supabase.from("items").delete().eq("id", id);
     setItems(prev => prev.filter(i => i.id !== id));
     setDetailItem(null);
   };
 
-  const groceryList = [...new Set(items.flatMap(i => (i.ingredients ?? []).filter(Boolean)))].sort();
+  const groceryList = [...new Set(items.flatMap(i => (i.ingredients ?? []).filter((x): x is string => Boolean(x))))].sort();
   const slotMeals = (date: string, mealType: MealType) => items.filter(i => i.date === date && i.meal_type === mealType);
   const weekLabel = weekDates.length ? `${fmtShort(weekDates[0])} – ${fmtShort(weekDates[6])}` : "";
 
@@ -225,7 +230,7 @@ export default function MealPlannerPage() {
       </div>
 
       {addModal && <AddMealModal date={addModal.date} mealType={addModal.meal_type} onSave={addMeal} onClose={() => setAddModal(null)} />}
-      {detailItem && <MealDetailModal item={detailItem} onStatusChange={s => updateStatus(detailItem.id, s)} onDelete={() => deleteMeal(detailItem.id)} onClose={() => setDetailItem(null)} />}
+      {detailItem && <MealDetailModal item={detailItem} onStatusChange={s => updateStatus(detailItem.id, s)} onDelete={() => deleteMeal(detailItem.id)} onClose={() => setDetailItem(null)} onIngredientsUpdate={updateIngredients} />}
     </div>
   );
 }
@@ -615,6 +620,34 @@ function AddMealModal({ date, mealType, onSave, onClose }: {
   const [recipeUrl, setRecipeUrl] = useState("");
   const [servings, setServings] = useState("");
   const [type, setType] = useState<MealType>(mealType);
+  const [parsing, setParsing] = useState(false);
+  const [parseStatus, setParseStatus] = useState<string | null>(null);
+
+  const handleSave = async () => {
+    if (!title.trim()) return;
+    const url = recipeUrl.trim();
+    if (!url) { onSave(title, type, date, "", servings, []); return; }
+
+    // Auto-parse ingredients from URL
+    setParsing(true);
+    setParseStatus("Fetching ingredients…");
+    try {
+      const res = await fetch("/api/recipes?action=import-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      const data = await res.json();
+      const ingredients: string[] = data.recipe?.ingredients ?? [];
+      const parsedTitle = title.trim() || data.recipe?.title || title;
+      const parsedServings = servings || String(data.recipe?.servings ?? "");
+      setParseStatus(ingredients.length > 0 ? `✓ Found ${ingredients.length} ingredients` : "No ingredients found — saved URL only");
+      setTimeout(() => onSave(parsedTitle, type, date, url, parsedServings, ingredients), 600);
+    } catch {
+      setParseStatus("Couldn't parse URL — saved without ingredients");
+      setTimeout(() => onSave(title, type, date, url, servings, []), 800);
+    }
+  };
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 50, display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
@@ -635,13 +668,16 @@ function AddMealModal({ date, mealType, onSave, onClose }: {
           ))}
         </div>
         <input autoFocus value={title} onChange={e => setTitle(e.target.value)} placeholder="Meal name…" style={inputStyle} />
-        <input value={recipeUrl} onChange={e => setRecipeUrl(e.target.value)} placeholder="Recipe URL (optional)" style={inputStyle} />
+        <input value={recipeUrl} onChange={e => setRecipeUrl(e.target.value)} placeholder="Recipe URL (optional — ingredients auto-imported)" style={inputStyle} />
         <input type="number" value={servings} onChange={e => setServings(e.target.value)} placeholder="Servings" min={1} style={{ ...inputStyle, width: "50%" }} />
+        {parseStatus && (
+          <div style={{ fontSize: 12, color: parseStatus.startsWith("✓") ? "#27AE60" : "#9AABBD", marginTop: 8, textAlign: "center" }}>{parseStatus}</div>
+        )}
         <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-          <button onClick={onClose} style={{ flex: 1, padding: "12px", borderRadius: 12, border: "1px solid #E8EDF5", background: "white", color: "#5A7A94", fontWeight: 600, cursor: "pointer", fontSize: 14 }}>Cancel</button>
-          <button onClick={() => { if (title.trim()) onSave(title, type, date, recipeUrl, servings, []); }}
-            style={{ flex: 2, padding: "12px", borderRadius: 12, border: "none", background: "#C0392B", color: "white", fontWeight: 700, cursor: "pointer", fontSize: 14 }}>
-            Add to Plan
+          <button onClick={onClose} disabled={parsing} style={{ flex: 1, padding: "12px", borderRadius: 12, border: "1px solid #E8EDF5", background: "white", color: "#5A7A94", fontWeight: 600, cursor: "pointer", fontSize: 14 }}>Cancel</button>
+          <button onClick={handleSave} disabled={parsing || !title.trim()}
+            style={{ flex: 2, padding: "12px", borderRadius: 12, border: "none", background: parsing ? "#9AABBD" : "#C0392B", color: "white", fontWeight: 700, cursor: parsing ? "not-allowed" : "pointer", fontSize: 14 }}>
+            {parsing ? "Importing…" : "Add to Plan"}
           </button>
         </div>
       </div>
@@ -652,11 +688,42 @@ function AddMealModal({ date, mealType, onSave, onClose }: {
 // ─────────────────────────────────────────────────────────────────────────────
 // MEAL DETAIL MODAL
 // ─────────────────────────────────────────────────────────────────────────────
-function MealDetailModal({ item, onStatusChange, onDelete, onClose }: {
+function MealDetailModal({ item, onStatusChange, onDelete, onClose, onIngredientsUpdate }: {
   item: MealItem; onStatusChange: (s: string) => void;
   onDelete: () => void; onClose: () => void;
+  onIngredientsUpdate?: (id: string, ingredients: string[]) => void;
 }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [reparsing, setReparsing] = useState(false);
+  const [reparseStatus, setReparseStatus] = useState<string | null>(null);
+  const [localIngredients, setLocalIngredients] = useState<string[]>(item.ingredients ?? []);
+
+  const reparseIngredients = async () => {
+    if (!item.recipe_url) return;
+    setReparsing(true);
+    setReparseStatus("Fetching ingredients…");
+    try {
+      const res = await fetch("/api/recipes?action=import-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: item.recipe_url }),
+      });
+      const data = await res.json();
+      const ingredients: string[] = data.recipe?.ingredients ?? [];
+      if (ingredients.length > 0) {
+        setLocalIngredients(ingredients);
+        setReparseStatus(`✓ Found ${ingredients.length} ingredients`);
+        onIngredientsUpdate?.(item.id, ingredients);
+      } else {
+        setReparseStatus("No ingredients found on that page");
+      }
+    } catch {
+      setReparseStatus("Couldn't reach that URL");
+    } finally {
+      setReparsing(false);
+    }
+  };
+
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 50, display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
       <div style={{ background: "white", width: "100%", maxWidth: 480, borderRadius: "20px 20px 0 0", padding: "24px 20px 32px", fontFamily: "'DM Sans',sans-serif", maxHeight: "85dvh", overflowY: "auto" }}>
@@ -668,12 +735,24 @@ function MealDetailModal({ item, onStatusChange, onDelete, onClose }: {
           <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#9AABBD" }}>×</button>
         </div>
         {item.servings && <div style={{ fontSize: 13, color: "#5A7A94", marginBottom: 8 }}>👤 {item.servings} servings</div>}
-        {item.recipe_url && <a href={item.recipe_url} target="_blank" rel="noreferrer" style={{ display: "block", fontSize: 13, color: "#C0392B", marginBottom: 12, wordBreak: "break-all" }}>🔗 View Recipe ↗</a>}
-        {item.ingredients?.length > 0 && (
+        {item.recipe_url && (
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+            <a href={item.recipe_url} target="_blank" rel="noreferrer" style={{ flex: 1, fontSize: 13, color: "#C0392B", wordBreak: "break-all" }}>🔗 View Recipe ↗</a>
+            <button onClick={reparseIngredients} disabled={reparsing}
+              style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, color: reparsing ? "#9AABBD" : "#1B4F8A", background: "#EBF3FB", border: "none", borderRadius: 8, padding: "5px 10px", cursor: reparsing ? "not-allowed" : "pointer" }}>
+              {reparsing ? "Parsing…" : "↻ Re-parse"}
+            </button>
+          </div>
+        )}
+        {reparseStatus && <div style={{ fontSize: 11, color: reparseStatus.startsWith("✓") ? "#27AE60" : "#9AABBD", marginBottom: 10 }}>{reparseStatus}</div>}
+        {localIngredients.length > 0 && (
           <div style={{ marginBottom: 16 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: "#1A2B3C", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Ingredients</div>
-            <div style={{ fontSize: 12, color: "#5A7A94", lineHeight: 2 }}>{item.ingredients.slice(0, 8).join(" · ")}{item.ingredients.length > 8 ? ` + ${item.ingredients.length - 8} more` : ""}</div>
+            <div style={{ fontSize: 12, color: "#5A7A94", lineHeight: 2 }}>{localIngredients.slice(0, 8).join(" · ")}{localIngredients.length > 8 ? ` + ${localIngredients.length - 8} more` : ""}</div>
           </div>
+        )}
+        {!localIngredients.length && item.recipe_url && (
+          <div style={{ fontSize: 12, color: "#9AABBD", marginBottom: 16 }}>No ingredients yet — tap ↻ Re-parse to import from the recipe URL.</div>
         )}
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: "#9AABBD", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Status</div>

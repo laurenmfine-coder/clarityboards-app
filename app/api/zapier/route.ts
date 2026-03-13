@@ -25,8 +25,7 @@ const adminSupabase = createClient(
 
 async function getUserFromApiKey(req: NextRequest): Promise<string | null> {
   const authHeader = req.headers.get("authorization") ?? "";
-  const url = new URL(req.url);
-  const apiKey = authHeader.replace("Bearer ", "").trim() || url.searchParams.get("api_key") || "";
+  const apiKey = authHeader.replace("Bearer ", "").trim();
   if (!apiKey) return null;
 
   const keyHash = createHash("sha256").update(apiKey).digest("hex");
@@ -131,9 +130,9 @@ export async function POST(req: NextRequest) {
 
     const { board, title, date, notes, status } = body;
 
-    if (!board || !["event","study","activity","career","task"].includes(board)) {
+    if (!board || !["meal","event","study","activity","career","task"].includes(board)) {
       return NextResponse.json(
-        { error: "board is required and must be one of: event, study, activity, career, task" },
+        { error: "board is required and must be one of: meal, event, study, activity, career, task" },
         { status: 400 }
       );
     }
