@@ -1404,6 +1404,14 @@ export default function Dashboard() {
                         Zapier Integration
                       </a>
                       <a
+                        href="/settings/watch"
+                        onClick={() => setShowSettings(false)}
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
+                      >
+                        <span className="text-sm">👁️</span>
+                        Watch &amp; Alert
+                      </a>
+                      <a
                         href="/settings/notifications"
                         onClick={() => setShowSettings(false)}
                         className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"

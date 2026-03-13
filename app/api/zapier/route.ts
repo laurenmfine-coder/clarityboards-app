@@ -130,9 +130,9 @@ export async function POST(req: NextRequest) {
 
     const { board, title, date, notes, status } = body;
 
-    if (!board || !["meal","event","study","activity","career","task"].includes(board)) {
+    if (!board || !["event","study","activity","career","task"].includes(board)) {
       return NextResponse.json(
-        { error: "board is required and must be one of: meal, event, study, activity, career, task" },
+        { error: "board is required and must be one of: event, study, activity, career, task" },
         { status: 400 }
       );
     }
