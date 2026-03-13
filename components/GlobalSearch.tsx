@@ -161,7 +161,7 @@ export default function GlobalSearch({ onSelectItem, onClose }: GlobalSearchProp
                     display: "inline-block", width: 20, height: 20, borderRadius: 6,
                     background: board?.color ?? "#9AABBD",
                     color: "white", fontSize: 10, fontWeight: 800,
-                    display: "flex", alignItems: "center", justifyContent: "center",
+                    alignItems: "center", justifyContent: "center",
                     flexShrink: 0,
                   } as any}>{board?.letter ?? "?"}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: board?.color ?? "#9AABBD", textTransform: "uppercase", letterSpacing: 0.5 }}>{board?.label ?? item.board}</span>
