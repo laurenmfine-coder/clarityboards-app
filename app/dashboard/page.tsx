@@ -1750,7 +1750,7 @@ export default function Dashboard() {
             // Small delay so board switches before item opens
             setTimeout(() => {
               const item = items.find(i => i.id === itemId)
-              if (item) setSelectedItem(item)
+              if (item) setDetail(item)
             }, 100)
           }}
           onClose={() => setSearchOpen(false)}
