@@ -9,20 +9,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-async function authFetch(url: string, options: RequestInit = {}) {
-  const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token ?? "";
-  return fetch(url, {
-    ...options,
-    headers: {
-      ...(options.headers ?? {}),
-      Authorization: `Bearer ${token}`,
-    },
-  });
-}
-
 export default function ZapierSettingsPage() {
   const router = useRouter();
+  const [token, setToken] = useState<string | null>(null);
   const [keyInfo, setKeyInfo] = useState<{ exists: boolean; prefix?: string; last_used?: string; created_at?: string } | null>(null);
   const [newKey, setNewKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,15 +20,22 @@ export default function ZapierSettingsPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    authFetch("/api/zapier/keys")
-      .then(r => r.json())
-      .then(d => { setKeyInfo(d); setLoading(false); })
-      .catch(() => setLoading(false));
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const t = session?.access_token ?? null;
+      setToken(t);
+      if (!t) { setLoading(false); return; }
+      fetch("/api/zapier/keys", { headers: { Authorization: `Bearer ${t}` } })
+        .then(r => r.json())
+        .then(d => { setKeyInfo(d); setLoading(false); })
+        .catch(() => setLoading(false));
+    });
   }, []);
+
+  const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
   const generate = async () => {
     setGenerating(true);
-    const res = await authFetch("/api/zapier/keys", { method: "POST" });
+    const res = await fetch("/api/zapier/keys", { method: "POST", headers: authHeaders });
     const data = await res.json();
     if (data.api_key) {
       setNewKey(data.api_key);
@@ -51,7 +47,7 @@ export default function ZapierSettingsPage() {
   const revoke = async () => {
     if (!confirm("Revoke your API key? Any active Zaps will stop working until you reconnect with a new key.")) return;
     setRevoking(true);
-    await authFetch("/api/zapier/keys", { method: "DELETE" });
+    await fetch("/api/zapier/keys", { method: "DELETE", headers: authHeaders });
     setKeyInfo({ exists: false });
     setNewKey(null);
     setRevoking(false);
