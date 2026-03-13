@@ -124,10 +124,11 @@ async function importFromUrl(url: string) {
 }
 
 async function extractViaSpoonacular(url: string) {
-  const endpoint = `https://api.spoonacular.com/recipes/extract?url=${encodeURIComponent(url)}&forceExtraction=false&analyze=false&apiKey=${SPOONACULAR_KEY}`
+  const endpoint = `https://api.spoonacular.com/recipes/extract?url=${encodeURIComponent(url)}&forceExtraction=true&analyze=false&apiKey=${SPOONACULAR_KEY}`
   const res = await fetch(endpoint)
   if (!res.ok) throw new Error(`Spoonacular extract error: ${res.status}`)
   const data = await res.json()
+  if (!data.title && !data.extendedIngredients?.length) throw new Error('Spoonacular returned empty recipe')
 
   return {
     title: data.title,
@@ -143,12 +144,44 @@ async function extractViaSpoonacular(url: string) {
 
 async function extractViaClaude(url: string) {
   // Fetch the page HTML
-  const pageRes = await fetch(url, {
-    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Clarityboards/1.0)' },
-  })
-  const html = await pageRes.text()
+  let html = ''
+  try {
+    const pageRes = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+      },
+    })
+    html = await pageRes.text()
+  } catch {
+    throw new Error('Could not fetch recipe page. Try pasting the URL directly from your browser.')
+  }
 
-  // Strip HTML to get readable text (keep first 8000 chars)
+  // Try to extract JSON-LD structured recipe data first (most recipe sites have this)
+  const jsonLdMatch = html.match(/<script[^>]+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi)
+  if (jsonLdMatch) {
+    for (const block of jsonLdMatch) {
+      try {
+        const json = JSON.parse(block.replace(/<script[^>]*>|<\/script>/gi, '').trim())
+        const recipe = Array.isArray(json) ? json.find((r: any) => r['@type'] === 'Recipe') : json['@type'] === 'Recipe' ? json : json['@graph']?.find((r: any) => r['@type'] === 'Recipe')
+        if (recipe) {
+          return {
+            title: recipe.name ?? '',
+            image: typeof recipe.image === 'string' ? recipe.image : recipe.image?.url ?? '',
+            sourceUrl: url,
+            readyInMinutes: parseInt(recipe.totalTime?.replace(/\D/g, '') ?? '0') || undefined,
+            servings: parseInt(recipe.recipeYield ?? '0') || undefined,
+            ingredients: (recipe.recipeIngredient ?? []) as string[],
+            instructions: (recipe.recipeInstructions ?? []).map((s: any) => typeof s === 'string' ? s : s.text ?? '') as string[],
+            summary: recipe.description ?? '',
+          }
+        }
+      } catch { continue }
+    }
+  }
+
+  // Fallback: strip HTML and ask Claude
   const text = html
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
@@ -163,7 +196,7 @@ async function extractViaClaude(url: string) {
     max_tokens: 1024,
     messages: [{
       role: 'user',
-      content: `Extract the recipe from this webpage text. Return ONLY valid JSON, no markdown, no preamble.
+      content: `Extract the recipe from this webpage text. Return ONLY valid JSON, no markdown, no explanation, no preamble. If you cannot find a recipe, return {"title":"","ingredients":[],"instructions":[]}.
 
 JSON format:
 {
@@ -181,9 +214,13 @@ ${text}`,
   })
 
   const raw = response.content[0].type === 'text' ? response.content[0].text : '{}'
-  const clean = raw.replace(/```json|```/g, '').trim()
-  const parsed = JSON.parse(clean)
-  return { ...parsed, sourceUrl: url }
+  try {
+    const clean = raw.replace(/```json|```/g, '').trim()
+    const parsed = JSON.parse(clean)
+    return { ...parsed, sourceUrl: url }
+  } catch {
+    throw new Error('Could not parse recipe from that page. Try the Import URL tab and paste a different recipe link.')
+  }
 }
 
 // ── Main handler ─────────────────────────────────────────────────────────────
