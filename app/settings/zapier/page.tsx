@@ -7,16 +7,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
-
-const sb = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 export default function ZapierSettingsPage() {
   const router = useRouter();
-  const [token, setToken] = useState<string | null>(null);
   const [keyInfo, setKeyInfo] = useState<{ exists: boolean; prefix?: string; last_used?: string; created_at?: string } | null>(null);
   const [newKey, setNewKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,37 +18,15 @@ export default function ZapierSettingsPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    // Token passed via URL from dashboard (cross-domain session workaround)
-    const params = new URLSearchParams(window.location.search);
-    const urlToken = params.get("t");
-    if (urlToken) {
-      // Clean token from URL without reload
-      window.history.replaceState({}, "", "/settings/zapier");
-      setToken(urlToken);
-      fetch("/api/zapier/keys", { headers: { Authorization: `Bearer ${urlToken}` } })
-        .then(r => r.json())
-        .then(d => { setKeyInfo(d); setLoading(false); })
-        .catch(() => setLoading(false));
-      return;
-    }
-    // Fallback: try supabase session
-    sb.auth.getSession().then(({ data: { session } }) => {
-      const t = session?.access_token ?? null;
-      setToken(t);
-      if (!t) { setLoading(false); return; }
-      fetch("/api/zapier/keys", { headers: { Authorization: `Bearer ${t}` } })
-        .then(r => r.json())
-        .then(d => { setKeyInfo(d); setLoading(false); })
-        .catch(() => setLoading(false));
-    });
+    fetch("/api/zapier/keys")
+      .then(r => r.json())
+      .then(d => { setKeyInfo(d); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
-  const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
-
   const generate = async () => {
-    if (generating) return;
     setGenerating(true);
-    const res = await fetch("/api/zapier/keys", { method: "POST", headers: authHeaders });
+    const res = await fetch("/api/zapier/keys", { method: "POST" });
     const data = await res.json();
     if (data.api_key) {
       setNewKey(data.api_key);
@@ -67,7 +38,7 @@ export default function ZapierSettingsPage() {
   const revoke = async () => {
     if (!confirm("Revoke your API key? Any active Zaps will stop working until you reconnect with a new key.")) return;
     setRevoking(true);
-    await fetch("/api/zapier/keys", { method: "DELETE", headers: authHeaders });
+    await fetch("/api/zapier/keys", { method: "DELETE" });
     setKeyInfo({ exists: false });
     setNewKey(null);
     setRevoking(false);
@@ -98,20 +69,20 @@ export default function ZapierSettingsPage() {
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 24 }}>
           <div style={{ width: 48, height: 48, borderRadius: 14, background: "linear-gradient(135deg, #FF4A00, #FF6D3B)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, boxShadow: "0 4px 16px rgba(255,74,0,0.3)" }}>⚡</div>
           <div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: "#1A2B3C" }}>Connect to Zapier</div>
-            <div style={{ fontSize: 13, color: "#5A7A94", marginTop: 2 }}>Automate Clarityboards with 6,000+ apps</div>
+            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: "#1A2B3C" }}>Zapier Integration</div>
+            <div style={{ fontSize: 13, color: "#5A7A94", marginTop: 2 }}>For power users — connect Clarityboards to apps you already use</div>
           </div>
         </div>
 
         {/* What you can do */}
         <div style={{ background: "#EBF3FB", borderRadius: 14, padding: "16px 18px", marginBottom: 20, border: "1px solid #1B4F8A15" }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#1B4F8A", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 12 }}>What you can automate</div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "#1B4F8A", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 12 }}>Works great if you already use Zapier</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {[
-              { icon: "📦", label: "Amazon ships an order", arrow: "→", result: "TaskBoard item created with delivery date" },
-              { icon: "✈️", label: "Kayak price drops", arrow: "→", result: "EventBoard alert item created" },
-              { icon: "🛒", label: "Instacart order placed", arrow: "→", result: "TaskBoard item added" },
-              { icon: "📅", label: "New Clarityboards item created", arrow: "→", result: "Slack message, email, Google Sheet row, anything" },
+              { icon: "📧", label: "Gmail email labeled 'Action needed'", arrow: "→", result: "TaskBoard item created from subject line" },
+              { icon: "📅", label: "Google Calendar event added", arrow: "→", result: "EventBoard item created with date" },
+              { icon: "📊", label: "New Google Sheets row added", arrow: "→", result: "Item created in any board" },
+              { icon: "🔔", label: "New Clarityboards item created", arrow: "→", result: "Slack, email, Google Sheet — anything" },
             ].map((row, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
                 <span>{row.icon}</span>
@@ -137,7 +108,7 @@ export default function ZapierSettingsPage() {
             <div>
               <div style={{ background: "#1A2B3C", borderRadius: 10, padding: "14px 16px", marginBottom: 12, display: "flex", alignItems: "center", gap: 12 }}>
                 <code style={{ flex: 1, fontSize: 12, color: "#7ECFEA", fontFamily: "'DM Mono', monospace", wordBreak: "break-all" }}>{newKey}</code>
-                <button onClick={copy} style={{ background: copied ? "#27AE60" : "#2874A6", border: "none", borderRadius: 8, padding: "7px 14px", fontSize: 12, fontWeight: 700, color: "white", cursor: "pointer", flexShrink: 0, fontFamily: "'DM Sans', sans-serif" }}>
+                <button onClick={copy} style={{ background: copied ? "#27AE60" : "#1B4F8A", border: "none", borderRadius: 8, padding: "7px 14px", fontSize: 12, fontWeight: 700, color: "white", cursor: "pointer", flexShrink: 0, fontFamily: "'DM Sans', sans-serif" }}>
                   {copied ? "✓ Copied" : "Copy"}
                 </button>
               </div>
@@ -182,11 +153,11 @@ export default function ZapierSettingsPage() {
         <div style={{ background: "white", borderRadius: 14, border: "1px solid #E8EDF5", padding: "20px", marginTop: 16 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: "#1A2B3C", marginBottom: 14 }}>How to connect in Zapier</div>
           {[
-            "Go to zapier.com and create a free account if you don't have one",
-            "Click \"Create Zap\" and search for Clarityboards in the app list",
-            "Choose a trigger (e.g. \"New Item in Clarityboards\") or action (\"Create Item\")",
-            "When prompted to connect your account, paste your API key from above",
-            "Choose which board and test the connection — you're live",
+            "Go to zapier.com and sign in (free account works for simple automations)",
+            "Click Create Zap and choose your trigger app (e.g. Gmail, Google Calendar, Sheets)",
+            "For the Action, choose Webhooks by Zapier → POST",
+            "Set the URL to clarityboards.com/api/zapier?action=create and add your API key as a Bearer token header",
+            "Map your trigger data to the board, title, and date fields — then turn it on",
           ].map((step, i) => (
             <div key={i} style={{ display: "flex", gap: 12, marginBottom: i < 4 ? 12 : 0 }}>
               <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#FF4A00", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
@@ -197,10 +168,10 @@ export default function ZapierSettingsPage() {
 
         {/* Zapier link */}
         <div style={{ textAlign: "center", marginTop: 20 }}>
-          <a href="https://zapier.com/apps/clarityboards" target="_blank" rel="noopener noreferrer"
-            style={{ fontSize: 13, color: "#FF4A00", fontWeight: 600, textDecoration: "none" }}>
-            Open Zapier → Clarityboards ↗
-          </a>
+          <div style={{ background: "#EBF3FB", borderRadius: 12, padding: "14px 16px", textAlign: "left" }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#1B4F8A", marginBottom: 4 }}>💡 Not a Zapier user?</div>
+            <div style={{ fontSize: 12, color: "#5A7A94", lineHeight: 1.6 }}>Try <strong>Watch &amp; Alert</strong> instead — it monitors prices, appointments, and page changes automatically with no third-party account needed.</div>
+          </div>
         </div>
       </div>
     </div>

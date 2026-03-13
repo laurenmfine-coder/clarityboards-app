@@ -159,7 +159,7 @@ export default function WatchPage() {
 
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 14, background: "linear-gradient(135deg, #1B4F8A, #2874A6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, boxShadow: "0 4px 16px rgba(27,79,138,0.3)" }}>👁️</div>
+          <div style={{ width: 48, height: 48, borderRadius: 14, background: "#1B4F8A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, boxShadow: "0 4px 16px rgba(27,79,138,0.3)" }}>👁️</div>
           <div>
             <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: "#1A2B3C" }}>Watch & Alert</div>
             <div style={{ fontSize: 13, color: "#5A7A94", marginTop: 2 }}>Set it and forget it — we'll notify you when things change</div>
@@ -168,7 +168,7 @@ export default function WatchPage() {
 
         {/* Add button */}
         <button onClick={() => setShowAdd(true)}
-          style={{ width: "100%", padding: "13px", borderRadius: 12, border: "none", background: "linear-gradient(135deg, #1B4F8A, #2874A6)", fontSize: 14, fontWeight: 700, color: "white", cursor: "pointer", marginBottom: 20, boxShadow: "0 3px 14px rgba(27,79,138,0.3)" }}>
+          style={{ width: "100%", padding: "13px", borderRadius: 12, border: "none", background: "#1B4F8A", fontSize: 14, fontWeight: 700, color: "white", cursor: "pointer", marginBottom: 20, boxShadow: "0 3px 14px rgba(27,79,138,0.3)" }}>
           + Add Watch
         </button>
 
@@ -231,7 +231,7 @@ function WatchCard({ watch, checking, checkMsg, onDelete, onTogglePause, onCheck
 
       {expanded && (
         <div style={{ padding: "0 16px 16px", borderTop: "1px solid #F4F7FA" }}>
-          <a href={watch.url} target="_blank" rel="noreferrer" style={{ display: "block", fontSize: 12, color: "#2874A6", marginTop: 10, marginBottom: 10, wordBreak: "break-all" }}>🔗 {watch.url}</a>
+          <a href={watch.url} target="_blank" rel="noreferrer" style={{ display: "block", fontSize: 12, color: "#1B4F8A", marginTop: 10, marginBottom: 10, wordBreak: "break-all" }}>🔗 {watch.url}</a>
           {watch.current_text && <div style={{ fontSize: 12, color: "#5A7A94", marginBottom: 10, background: "#F4F7FA", borderRadius: 8, padding: "8px 10px" }}>{watch.current_text}</div>}
           {checkMsg && <div style={{ fontSize: 12, color: "#27AE60", marginBottom: 10, fontWeight: 600 }}>{checkMsg}</div>}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
