@@ -18,6 +18,8 @@ import {
   Phone, Settings, RefreshCw, MapPin, Tag, Flag, Sparkles
 } from 'lucide-react'
 import RecurringPicker, { RecurRule } from '@/components/RecurringPicker'
+import PWAManager from '@/components/PWAManager'
+import GlobalSearch from '@/components/GlobalSearch'
 
 // ── Helpers ──────────────────────────────────────────────
 const fmt = (d: string | null) => {
@@ -1300,7 +1302,7 @@ export default function Dashboard() {
 
             {/* Right actions */}
             <div className="flex items-center gap-2 flex-shrink-0">
-              <button onClick={() => setSearchOpen(s => !s)} className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+              <button onClick={() => setSearchOpen(true)} className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors" title="Search all boards (⌘K)">
                 <Search size={16} />
               </button>
               <button
@@ -1387,6 +1389,30 @@ export default function Dashboard() {
                       >
                         <span className="text-sm">📤</span>
                         Export &amp; Connect
+                      </a>
+                      <a
+                        href="/settings/zapier"
+                        onClick={() => setShowSettings(false)}
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
+                      >
+                        <span className="text-sm">⚡</span>
+                        Zapier Integration
+                      </a>
+                      <a
+                        href="/settings/notifications"
+                        onClick={() => setShowSettings(false)}
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
+                      >
+                        <span className="text-sm">🔔</span>
+                        Notifications
+                      </a>
+                      <a
+                        href="/settings/templates"
+                        onClick={() => setShowSettings(false)}
+                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
+                      >
+                        <span className="text-sm">📋</span>
+                        Templates
                       </a>
                       <a
                         href="/settings/language"
@@ -1715,6 +1741,42 @@ export default function Dashboard() {
           }} />
         </div>
       )}
+
+      {/* Global Search Modal */}
+      {searchOpen && (
+        <GlobalSearch
+          onSelectItem={(board, itemId) => {
+            setActiveBoard(board as any)
+            // Small delay so board switches before item opens
+            setTimeout(() => {
+              const item = items.find(i => i.id === itemId)
+              if (item) setSelectedItem(item)
+            }, 100)
+          }}
+          onClose={() => setSearchOpen(false)}
+        />
+      )}
+
+      {/* PWA Install Banner */}
+      <PWAManager />
+
+      {/* Cmd+K / Ctrl+K to open search */}
+      <KeyboardShortcut onSearch={() => setSearchOpen(true)} />
     </div>
   )
+}
+
+// Lightweight component to handle Cmd+K without adding an effect to the main component
+function KeyboardShortcut({ onSearch }: { onSearch: () => void }) {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        onSearch()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onSearch])
+  return null
 }
