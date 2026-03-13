@@ -24,9 +24,6 @@ create table if not exists public.items (
   -- Feature #7: iCal inbound import
   ical_uid      text,
   ical_sub_id   uuid,
-  -- Feature #6: Google Calendar two-way sync
-  gcal_event_id    text,
-  gcal_calendar_id text,
   created_at    timestamptz not null default now()
 );
 
@@ -125,32 +122,6 @@ create policy "Users can delete their own subscriptions"
 alter table public.items
   add constraint if not exists items_ical_sub_fk
   foreign key (ical_sub_id) references public.ical_subscriptions(id);
-
--- ── GCal sync tokens table (Feature #6) ──────────────────────────────────────
-create table if not exists public.gcal_sync_tokens (
-  id            uuid        primary key default gen_random_uuid(),
-  user_id       uuid        not null references auth.users(id) on delete cascade,
-  calendar_id   text        not null default 'primary',
-  sync_token    text,
-  last_synced   timestamptz,
-  created_at    timestamptz not null default now(),
-  unique (user_id, calendar_id)
-);
-
-alter table public.gcal_sync_tokens enable row level security;
-
-create policy "Users can view their own gcal tokens"
-  on public.gcal_sync_tokens for select using (auth.uid() = user_id);
-create policy "Users can insert their own gcal tokens"
-  on public.gcal_sync_tokens for insert with check (auth.uid() = user_id);
-create policy "Users can update their own gcal tokens"
-  on public.gcal_sync_tokens for update using (auth.uid() = user_id);
-create policy "Users can delete their own gcal tokens"
-  on public.gcal_sync_tokens for delete using (auth.uid() = user_id);
-
-create index if not exists items_gcal_event_id_idx
-  on public.items (user_id, gcal_event_id)
-  where gcal_event_id is not null;
 
 -- ── Postgres function: create next recurring item (Feature #5) ───────────────
 create or replace function public.create_next_recurring_item(rule_id uuid)
