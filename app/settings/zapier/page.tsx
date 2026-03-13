@@ -7,6 +7,19 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+
+async function authFetch(url: string, options: RequestInit = {}) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token ?? "";
+  return fetch(url, {
+    ...options,
+    headers: {
+      ...(options.headers ?? {}),
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
 
 export default function ZapierSettingsPage() {
   const router = useRouter();
@@ -18,7 +31,7 @@ export default function ZapierSettingsPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    fetch("/api/zapier/keys")
+    authFetch("/api/zapier/keys")
       .then(r => r.json())
       .then(d => { setKeyInfo(d); setLoading(false); })
       .catch(() => setLoading(false));
@@ -26,7 +39,7 @@ export default function ZapierSettingsPage() {
 
   const generate = async () => {
     setGenerating(true);
-    const res = await fetch("/api/zapier/keys", { method: "POST" });
+    const res = await authFetch("/api/zapier/keys", { method: "POST" });
     const data = await res.json();
     if (data.api_key) {
       setNewKey(data.api_key);
@@ -38,7 +51,7 @@ export default function ZapierSettingsPage() {
   const revoke = async () => {
     if (!confirm("Revoke your API key? Any active Zaps will stop working until you reconnect with a new key.")) return;
     setRevoking(true);
-    await fetch("/api/zapier/keys", { method: "DELETE" });
+    await authFetch("/api/zapier/keys", { method: "DELETE" });
     setKeyInfo({ exists: false });
     setNewKey(null);
     setRevoking(false);
