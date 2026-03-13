@@ -13,6 +13,21 @@ export interface BoardConfig {
 
 export const BOARDS: BoardConfig[] = [
   {
+    id: 'meal',
+    label: 'MealBoard',
+    letter: 'M',
+    color: '#C0392B',
+    bg: '#C0392B',
+    lightBg: '#FDEDEC',
+    tagline: 'Meal planning, recipes & grocery prep',
+    statuses: [
+      { value: 'planned',   label: 'Planned' },
+      { value: 'prepped',   label: 'Prepped' },
+      { value: 'cooked',    label: 'Cooked' },
+      { value: 'done',      label: 'Done' },
+    ],
+  },
+  {
     id: 'event',
     label: 'EventBoard',
     letter: 'E',
