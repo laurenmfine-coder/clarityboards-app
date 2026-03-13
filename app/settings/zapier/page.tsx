@@ -7,7 +7,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@supabase/supabase-js";
+
+const sb = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function ZapierSettingsPage() {
   const router = useRouter();
@@ -20,18 +25,15 @@ export default function ZapierSettingsPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { setLoading(false); return; }
-      // Get the session for the token
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        const t = session?.access_token ?? null;
-        setToken(t);
-        if (!t) { setLoading(false); return; }
-        fetch("/api/zapier/keys", { headers: { Authorization: `Bearer ${t}` } })
-          .then(r => r.json())
-          .then(d => { setKeyInfo(d); setLoading(false); })
-          .catch(() => setLoading(false));
-      });
+    sb.auth.getSession().then(({ data: { session } }) => {
+      const t = session?.access_token ?? null;
+      console.log("[zapier page] session token:", t ? t.substring(0, 20) : "NONE");
+      setToken(t);
+      if (!t) { setLoading(false); return; }
+      fetch("/api/zapier/keys", { headers: { Authorization: `Bearer ${t}` } })
+        .then(r => r.json())
+        .then(d => { setKeyInfo(d); setLoading(false); })
+        .catch(() => setLoading(false));
     });
   }, []);
 
