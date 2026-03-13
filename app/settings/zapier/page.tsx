@@ -25,9 +25,27 @@ export default function ZapierSettingsPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    // Supabase stores session in localStorage - read it directly
+    const getToken = (): string | null => {
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.includes("auth-token")) {
+            const raw = localStorage.getItem(key);
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              return parsed?.access_token ?? parsed?.session?.access_token ?? null;
+            }
+          }
+        }
+      } catch {}
+      return null;
+    };
+
+    // Try direct client first, fall back to localStorage
     sb.auth.getSession().then(({ data: { session } }) => {
-      const t = session?.access_token ?? null;
-      console.log("[zapier page] session token:", t ? t.substring(0, 20) : "NONE");
+      const t = session?.access_token ?? getToken();
+      console.log("[zapier page] token source:", session?.access_token ? "session" : t ? "localStorage" : "NONE");
       setToken(t);
       if (!t) { setLoading(false); return; }
       fetch("/api/zapier/keys", { headers: { Authorization: `Bearer ${t}` } })
