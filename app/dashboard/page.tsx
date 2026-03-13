@@ -1391,8 +1391,14 @@ export default function Dashboard() {
                         Export &amp; Connect
                       </a>
                       <a
-                        href="/settings/zapier"
-                        onClick={() => setShowSettings(false)}
+                        href="#"
+                        onClick={async (e) => { 
+                          e.preventDefault();
+                          setShowSettings(false);
+                          const { data: { session } } = await supabase.auth.getSession();
+                          const t = session?.access_token ?? "";
+                          window.location.href = `/settings/zapier?t=${encodeURIComponent(t)}`;
+                        }}
                         className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#1A2B3C] hover:bg-[#EBF3FB] transition-colors"
                       >
                         <span className="text-sm">⚡</span>

@@ -25,27 +25,22 @@ export default function ZapierSettingsPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    // Supabase stores session in localStorage - read it directly
-    const getToken = (): string | null => {
-      try {
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key && key.includes("auth-token")) {
-            const raw = localStorage.getItem(key);
-            if (raw) {
-              const parsed = JSON.parse(raw);
-              return parsed?.access_token ?? parsed?.session?.access_token ?? null;
-            }
-          }
-        }
-      } catch {}
-      return null;
-    };
-
-    // Try direct client first, fall back to localStorage
+    // Token passed via URL from dashboard (cross-domain session workaround)
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get("t");
+    if (urlToken) {
+      // Clean token from URL without reload
+      window.history.replaceState({}, "", "/settings/zapier");
+      setToken(urlToken);
+      fetch("/api/zapier/keys", { headers: { Authorization: `Bearer ${urlToken}` } })
+        .then(r => r.json())
+        .then(d => { setKeyInfo(d); setLoading(false); })
+        .catch(() => setLoading(false));
+      return;
+    }
+    // Fallback: try supabase session
     sb.auth.getSession().then(({ data: { session } }) => {
-      const t = session?.access_token ?? getToken();
-      console.log("[zapier page] token source:", session?.access_token ? "session" : t ? "localStorage" : "NONE");
+      const t = session?.access_token ?? null;
       setToken(t);
       if (!t) { setLoading(false); return; }
       fetch("/api/zapier/keys", { headers: { Authorization: `Bearer ${t}` } })
