@@ -1286,7 +1286,7 @@ export default function Dashboard() {
               </button>
               {BOARDS.map(b => {
                 const locked = !isPro && !activeBoards.includes(b.id)
-                const isMeal = b.id === 'meal'
+                const isMeal = (b.id as string) === 'meal'
                 return (
                   <button
                     key={b.id}
@@ -1687,7 +1687,7 @@ export default function Dashboard() {
           </button>
           {BOARDS.map(b => {
             const locked = !isPro && !activeBoards.includes(b.id)
-            const isMeal = b.id === 'meal'
+            const isMeal = (b.id as string) === 'meal'
             return (
               <button
                 key={b.id}
