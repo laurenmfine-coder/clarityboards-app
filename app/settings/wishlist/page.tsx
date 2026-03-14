@@ -548,27 +548,61 @@ function AddItemModal({listId,onSave,onClose}:{listId:string;onSave:(d:Partial<W
         body:JSON.stringify({url:raw.trim()})
       });
       const d = await r.json();
-      const gotTitle = !!(d.title && !title);
-      const gotImage = !!d.image;
+
+      // Detect access-denied / bot-protection responses
+      const blockedPhrases = [
+        'access to this page has been denied',
+        'access denied',
+        'please enable cookies',
+        'cloudflare',
+        'robot or human',
+        'just a moment',
+        'verify you are human',
+        'security check',
+        'ddos protection',
+      ];
+      const titleLower = (d.title ?? '').toLowerCase();
+      const isBlocked = d.blocked || blockedPhrases.some((p:string) => titleLower.includes(p));
+
+      const gotTitle = !!(d.title && !title && !isBlocked);
+      const gotImage = !!(d.image && !isBlocked);
       const gotPrice = !!(d.price);
 
       if (gotTitle) setTitle(d.title);
       if (gotImage) setCover(d.image);
       if (gotPrice) { setPrice(String(d.price)); setNeedsPrice(false); }
 
-      const gotSomething = gotTitle || gotImage || gotPrice;
-      setFetchedOk(gotSomething);
-
-      if (gotSomething && !gotPrice) {
-        // Partial import — highlight price field
-        setNeedsPrice(true);
-        const parts = [gotTitle?'name':'', gotImage?'photo':''].filter(Boolean);
-        setFetchSt(`Imported ${parts.join(' + ')} — please add the price`);
-      } else if (gotSomething) {
-        const parts = [gotTitle?'Name':'', gotImage?'Photo':'', gotPrice?'Price':''].filter(Boolean);
-        setFetchSt(`Imported: ${parts.join(', ')}`);
+      if (isBlocked) {
+        // Check which retailer it is for a helpful message
+        const blockedRetailers: Record<string,string> = {
+          'anthropologie.com': 'Anthropologie',
+          'freepeople.com': 'Free People',
+          'urbanoutfitters.com': 'Urban Outfitters',
+          'asos.com': 'ASOS',
+          'net-a-porter.com': 'Net-a-Porter',
+        };
+        let hostname = '';
+        try { hostname = new URL(raw.trim()).hostname.replace('www.',''); } catch {}
+        const retailerName = Object.entries(blockedRetailers).find(([k]) => hostname.endsWith(k))?.[1];
+        setFetchSt(retailerName
+          ? `${retailerName} blocks automated imports — enter the name and price manually`
+          : 'This retailer blocks automated imports — enter details manually'
+        );
+        setFetchedOk(false);
       } else {
-        setFetchSt('No product data found — fill in manually');
+        const gotSomething = gotTitle || gotImage || gotPrice;
+        setFetchedOk(gotSomething);
+
+        if (gotSomething && !gotPrice) {
+          setNeedsPrice(true);
+          const parts = [gotTitle?'name':'', gotImage?'photo':''].filter(Boolean);
+          setFetchSt(`Imported ${parts.join(' + ')} — please add the price`);
+        } else if (gotSomething) {
+          const parts = [gotTitle?'Name':'', gotImage?'Photo':'', gotPrice?'Price':''].filter(Boolean);
+          setFetchSt(`Imported: ${parts.join(', ')}`);
+        } else {
+          setFetchSt('No product data found — fill in manually');
+        }
       }
     } catch { setFetchSt('Could not fetch URL — enter details manually'); }
     setFetching(false);

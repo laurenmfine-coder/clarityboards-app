@@ -43,20 +43,93 @@ async function getUser(req: NextRequest) {
 }
 
 // ── Fetch product data from any retail URL ─────────────────
+// Strategy 0: Microlink (headless browser service) — for Cloudflare-blocked retailers
 // Strategy 1: Direct fetch with browser-like headers
-// Strategy 2: JSON-LD structured data (works for many retailers)
-// Strategy 3: Claude extraction from whatever HTML we get
-// Strategy 4: Manual entry fallback (return what we got)
+// Strategy 2: JSON-LD structured data
+// Strategy 3: Standard OG meta tags
+// Strategy 4: Claude extraction fallback
 async function fetchProductData(url: string): Promise<{
   title: string | null; image: string | null;
   price: number | null; currency: string; description: string | null;
+  blocked?: boolean;
 }> {
   const empty = { title: null, image: null, price: null, currency: 'USD', description: null }
 
-  // Detect retailer for site-specific strategies
   const host = (() => { try { return new URL(url).hostname.replace('www.','') } catch { return '' } })()
 
-  // Build headers that look like a real browser
+  // Retailers that use Cloudflare Bot Management — direct fetch always fails
+  // Use microlink.io (free, headless browser, no key needed) as Strategy 0
+  const NEEDS_MICROLINK = [
+    'anthropologie.com',
+    'freepeople.com',
+    'urbanoutfitters.com',
+    'loft.com',
+    'anntaylor.com',
+    'whbm.com',
+    'whitehouseblackmarket.com',
+    'asos.com',
+    'net-a-porter.com',
+    'matchesfashion.com',
+    'ssense.com',
+    'farfetch.com',
+    'saksfifthavenue.com',
+    'bloomingdales.com',
+    'macys.com',
+    'nordstromrack.com',
+  ]
+
+  const tryMicrolink = NEEDS_MICROLINK.some(b => host.endsWith(b))
+
+  // ── Strategy 0: Microlink ─────────────────────────────────
+  // Free tier: 1000 req/month, no API key, works on Vercel
+  // Uses a real headless browser so bypasses Cloudflare challenges
+  if (tryMicrolink) {
+    try {
+      const mlUrl = `https://api.microlink.io?url=${encodeURIComponent(url)}&palette=false&audio=false&video=false&iframe=false`
+      const res = await fetch(mlUrl, {
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(15000),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        if (data.status === 'success' && data.data) {
+          const d = data.data
+          const title  = d.title ?? d.og?.title ?? null
+          const image  = d.image?.url ?? d.og?.image ?? null
+          const price  = d.price ?? null
+          const desc   = d.description ?? d.og?.description ?? null
+
+          // If microlink got at least the title or image, return it
+          if (title || image) {
+            return {
+              title:       title ? String(title).trim().replace(/\s*[\|–—-]\s*[^|–—-]{3,40}$/, '').trim() : null,
+              image:       image ? String(image) : null,
+              price:       price ? parseFloat(String(price).replace(/[^0-9.]/g, '')) : null,
+              currency:    'USD',
+              description: desc ? String(desc).slice(0, 200) : null,
+            }
+          }
+        }
+      }
+    } catch {}
+    // Microlink failed or returned no data — return blocked signal
+    // so the UI knows to prompt manual entry
+    return { ...empty, blocked: true }
+  }
+
+  // Phrases that indicate a bot-protection challenge page was returned
+  const BLOCKED_PHRASES = [
+    'access to this page has been denied',
+    'access denied',
+    'please enable cookies',
+    'verify you are human',
+    'just a moment',
+    'checking your browser',
+    'robot or human',
+    'ddos protection',
+    'security check',
+    'enable javascript and cookies',
+  ]
   const headers: Record<string,string> = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
@@ -81,8 +154,18 @@ async function fetchProductData(url: string): Promise<{
       redirect: 'follow',
     })
     html = await res.text()
+    // Detect bot-protection challenge pages by status or content
+    if (res.status === 403 || res.status === 429 || res.status === 503) {
+      return { ...empty, blocked: true }
+    }
   } catch {
     return empty
+  }
+
+  // Check if the page content is a bot-protection challenge
+  const htmlSnippet = html.slice(0, 3000).toLowerCase()
+  if (BLOCKED_PHRASES.some(p => htmlSnippet.includes(p)) && html.length < 15000) {
+    return { ...empty, blocked: true }
   }
 
   let title: string | null = null
