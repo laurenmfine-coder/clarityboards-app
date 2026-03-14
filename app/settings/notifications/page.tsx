@@ -1,189 +1,217 @@
-"use client";
+'use client'
 
-/**
- * Clarityboards — Notification Settings (Feature #5 complete)
- * File: app/settings/notifications/page.tsx
- */
+import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-
-export default function NotificationsPage() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [prefs, setPrefs] = useState({
-    digest_enabled: false,
-    digest_time: "07:00",
-    push_enabled: false,
-    push_due_today: true,
-    push_overdue: true,
-  });
-  const [pushSupported, setPushSupported] = useState(false);
-  const [pushPermission, setPushPermission] = useState<NotificationPermission>("default");
-  const [pushSubscribed, setPushSubscribed] = useState(false);
-  const [pushLoading, setPushLoading] = useState(false);
-
-  useEffect(() => {
-    const supported = "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
-    setPushSupported(supported);
-    if ("Notification" in window) setPushPermission(Notification.permission);
-    if (supported) {
-      navigator.serviceWorker.ready.then(reg => {
-        reg.pushManager.getSubscription().then(sub => setPushSubscribed(!!sub));
-      });
-    }
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) { router.push("/login"); return; }
-      const { data } = await supabase.from("notification_prefs").select("*").eq("user_id", user.id).single();
-      if (data) setPrefs({ digest_enabled: data.digest_enabled, digest_time: data.digest_time, push_enabled: data.push_enabled, push_due_today: data.push_due_today, push_overdue: data.push_overdue });
-      setLoading(false);
-    });
-  }, []);
-
-  const subscribePush = async () => {
-    setPushLoading(true);
-    try {
-      const permission = await Notification.requestPermission();
-      setPushPermission(permission);
-      if (permission !== "granted") { setPushLoading(false); return; }
-      const keyRes = await fetch("/api/push");
-      const { publicKey } = await keyRes.json();
-      if (!publicKey) throw new Error("Push not configured");
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(publicKey) });
-      const { data: { session } } = await supabase.auth.getSession();
-      await fetch("/api/push?action=subscribe", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` }, body: JSON.stringify({ subscription: sub.toJSON() }) });
-      setPushSubscribed(true);
-      setPrefs(p => ({ ...p, push_enabled: true }));
-    } catch (err) {
-      console.error("[push]", err);
-      alert("Failed to enable push notifications. Check browser settings.");
-    }
-    setPushLoading(false);
-  };
-
-  const unsubscribePush = async () => {
-    setPushLoading(true);
-    try {
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.getSubscription();
-      if (sub) {
-        const { data: { session } } = await supabase.auth.getSession();
-        await fetch("/api/push?action=unsubscribe", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` }, body: JSON.stringify({ endpoint: sub.endpoint }) });
-        await sub.unsubscribe();
-      }
-      setPushSubscribed(false);
-      setPrefs(p => ({ ...p, push_enabled: false }));
-    } catch (err) { console.error("[push]", err); }
-    setPushLoading(false);
-  };
-
-  const save = async () => {
-    setSaving(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    await supabase.from("notification_prefs").upsert({ user_id: user.id, ...prefs, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
-    setSaving(false); setSaved(true); setTimeout(() => setSaved(false), 2000);
-  };
-
-  const Toggle = ({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) => (
-    <button onClick={() => onChange(!value)} style={{ width: 44, height: 26, borderRadius: 13, border: "none", cursor: "pointer", background: value ? "#1B4F8A" : "#D5DDE8", position: "relative", transition: "background 0.2s", flexShrink: 0 }}>
-      <div style={{ position: "absolute", top: 3, left: value ? 21 : 3, width: 20, height: 20, borderRadius: "50%", background: "white", transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.2)" }} />
-    </button>
-  );
-
-  return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", minHeight: "100vh", background: "#FAFAF8" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap'); * { box-sizing: border-box; }`}</style>
-            <nav style={{ background: '#1A1714', borderBottom: '0.5px solid rgba(255,255,255,0.06)', position: 'sticky', top: 0, zIndex: 30 }}>
-        <div style={{ maxWidth: 680, margin: '0 auto', padding: '0 24px', height: 54, display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={() => router.push('/dashboard')}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: 13, fontWeight: 300, padding: 0 }}>
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 12L6 8l4-4"/></svg>
-            Dashboard
-          </button>
-          <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.12)' }}/>
-          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: 'white', fontSize: 19, fontWeight: 400, letterSpacing: '0.01em' }}>
-            Notifications
-          </span>
-        </div>
-      </nav>
-      <div style={{ maxWidth: 560, margin: "0 auto", padding: "28px 16px 80px" }}>
-        {loading ? <div style={{ textAlign: "center", color: "#9AABBD", paddingTop: 40 }}>Loading…</div> : (
-          <>
-            {/* Daily Digest */}
-            <div style={{ background: "white", borderRadius: 8, border: "1px solid #E8EDF5", overflow: "hidden", marginBottom: 16 }}>
-              <div style={{ padding: "16px 20px", borderBottom: prefs.digest_enabled ? "1px solid #F0F4F8" : "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}><span style={{ fontSize: 18 }}>📧</span><span style={{ fontSize: 14, fontWeight: 700, color: "#1A1714" }}>Daily Digest Email</span></div>
-                  <div style={{ fontSize: 12, color: "#5C5650", marginTop: 3 }}>A summary of what's due today and tomorrow</div>
-                </div>
-                <Toggle value={prefs.digest_enabled} onChange={v => setPrefs(p => ({ ...p, digest_enabled: v }))} />
-              </div>
-              {prefs.digest_enabled && (
-                <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 13, color: "#5C5650" }}>Send at</span>
-                  <input type="time" value={prefs.digest_time} onChange={e => setPrefs(p => ({ ...p, digest_time: e.target.value }))} style={{ fontSize: 13, fontWeight: 600, color: "#1A1714", border: "1px solid #E8EDF5", borderRadius: 8, padding: "6px 10px", background: "#F7FAFE", fontFamily: "inherit" }} />
-                </div>
-              )}
-            </div>
-
-            {/* Push Notifications */}
-            <div style={{ background: "white", borderRadius: 8, border: "1px solid #E8EDF5", overflow: "hidden", marginBottom: 16 }}>
-              <div style={{ padding: "16px 20px", borderBottom: (prefs.push_enabled && pushSubscribed) ? "1px solid #F0F4F8" : "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}><span style={{ fontSize: 18 }}>🔔</span><span style={{ fontSize: 14, fontWeight: 700, color: "#1A1714" }}>Push Notifications</span></div>
-                  <div style={{ fontSize: 12, color: "#5C5650", marginTop: 3 }}>
-                    {!pushSupported ? "Not supported in this browser" : pushPermission === "denied" ? "Blocked — enable in browser settings" : pushSubscribed ? "Active on this device" : "Get reminders on this device"}
-                  </div>
-                </div>
-                {pushSupported && pushPermission !== "denied" && (
-                  pushSubscribed ? (
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <Toggle value={prefs.push_enabled} onChange={v => setPrefs(p => ({ ...p, push_enabled: v }))} />
-                      <button onClick={unsubscribePush} disabled={pushLoading} style={{ background: "none", border: "1px solid #E8EDF5", borderRadius: 8, padding: "5px 10px", fontSize: 11, color: "#9AABBD", cursor: "pointer", fontFamily: "inherit" }}>{pushLoading ? "…" : "Remove"}</button>
-                    </div>
-                  ) : (
-                    <button onClick={subscribePush} disabled={pushLoading} style={{ background: "#1A1714", border: "none", borderRadius: 8, padding: "7px 14px", fontSize: 12, fontWeight: 700, color: "white", cursor: pushLoading ? "wait" : "pointer", fontFamily: "inherit", opacity: pushLoading ? 0.7 : 1 }}>{pushLoading ? "Enabling…" : "Enable"}</button>
-                  )
-                )}
-              </div>
-              {prefs.push_enabled && pushSubscribed && (
-                <div style={{ padding: "4px 0" }}>
-                  {[{ key: "push_due_today", label: "Items due today", icon: "📅" }, { key: "push_overdue", label: "Overdue items", icon: "⚠️" }].map(({ key, label, icon }) => (
-                    <div key={key} style={{ padding: "12px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}><span style={{ fontSize: 16 }}>{icon}</span><span style={{ fontSize: 13, color: "#1A1714" }}>{label}</span></div>
-                      <Toggle value={(prefs as any)[key]} onChange={v => setPrefs(p => ({ ...p, [key]: v }))} />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {pushSupported && !pushSubscribed && pushPermission !== "denied" && (
-              <div style={{ background: "#EBF3FB", borderRadius: 12, padding: "12px 16px", marginBottom: 16, fontSize: 12, color: "#5C5650", lineHeight: 1.5 }}>
-                💡 Works on Chrome, Edge, Firefox, and Android. On iPhone, add Clarityboards to your Home Screen first (Safari → Share → Add to Home Screen).
-              </div>
-            )}
-
-            <button onClick={save} disabled={saving} style={{ width: "100%", padding: "14px", borderRadius: 12, border: "none", background: saved ? "#27AE60" : "#1A1714", fontSize: 14, fontWeight: 700, color: "white", cursor: saving ? "not-allowed" : "pointer", transition: "background 0.2s", fontFamily: "inherit" }}>
-              {saved ? "✓ Saved" : saving ? "Saving…" : "Save Preferences"}
-            </button>
-          </>
-        )}
-      </div>
-    </div>
-  );
+const T = {
+  ivory:  '#F7F4F0',
+  ink:    '#1A1714',
+  sub:    '#6B6059',
+  muted:  '#9C8878',
+  border: '#C8BFB5',
+  sand:   '#EDE8E2',
+  accent: '#2874A6',
+  sans:   "'DM Sans', system-ui, sans-serif",
+  serif:  "'Cormorant Garamond', Georgia, serif",
 }
 
-function urlBase64ToUint8Array(base64String: string) {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
-  return outputArray;
+const TIMING_OPTIONS = [
+  { value: 10,    label: '10 minutes before' },
+  { value: 15,    label: '15 minutes before' },
+  { value: 30,    label: '30 minutes before' },
+  { value: 60,    label: '1 hour before' },
+  { value: 120,   label: '2 hours before' },
+  { value: 360,   label: '6 hours before' },
+  { value: 1440,  label: '1 day before' },
+  { value: 2880,  label: '2 days before' },
+  { value: 10080, label: '1 week before' },
+]
+
+const CHANNEL_OPTIONS = [
+  { value: 'email', label: 'Email only' },
+  { value: 'sms',   label: 'SMS only' },
+  { value: 'both',  label: 'Email + SMS' },
+]
+
+type Prefs = {
+  reminder_enabled:      boolean
+  reminder_channel:      string
+  reminder_default_mins: number
+  reminder_phone:        string
+  quiet_hours_enabled:   boolean
+  quiet_start:           string
+  quiet_end:             string
+  digest_enabled:        boolean
+  digest_time:           string
+}
+
+const DEFAULT_PREFS: Prefs = {
+  reminder_enabled:      false,
+  reminder_channel:      'email',
+  reminder_default_mins: 60,
+  reminder_phone:        '',
+  quiet_hours_enabled:   false,
+  quiet_start:           '22:00',
+  quiet_end:             '07:00',
+  digest_enabled:        false,
+  digest_time:           '07:00',
+}
+
+export default function NotificationsPage() {
+  const router = useRouter()
+  const [prefs,      setPrefs]      = useState<Prefs>(DEFAULT_PREFS)
+  const [loading,    setLoading]    = useState(true)
+  const [saving,     setSaving]     = useState(false)
+  const [saved,      setSaved]      = useState(false)
+  const [userId,     setUserId]     = useState<string | null>(null)
+  const [phoneError, setPhoneError] = useState('')
+
+  const loadPrefs = useCallback(async (uid: string) => {
+    const { data } = await supabase.from('notification_prefs').select('*').eq('user_id', uid).single()
+    if (data) setPrefs({ ...DEFAULT_PREFS, ...data, reminder_phone: data.reminder_phone ?? '' })
+    setLoading(false)
+  }, [])
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) { router.push('/'); return }
+      setUserId(data.user.id)
+      loadPrefs(data.user.id)
+    })
+  }, [loadPrefs, router])
+
+  const set = (key: keyof Prefs, val: any) => { setPrefs(p => ({ ...p, [key]: val })); setSaved(false) }
+
+  const save = async () => {
+    if (!userId) return
+    if (prefs.reminder_phone && !/^\+[1-9]\d{7,14}$/.test(prefs.reminder_phone)) {
+      setPhoneError('Enter phone in E.164 format: +15551234567'); return
+    }
+    setPhoneError(''); setSaving(true)
+    await supabase.from('notification_prefs').upsert({
+      user_id:               userId,
+      reminder_enabled:      prefs.reminder_enabled,
+      reminder_channel:      prefs.reminder_channel,
+      reminder_default_mins: prefs.reminder_default_mins,
+      reminder_phone:        prefs.reminder_phone || null,
+      quiet_hours_enabled:   prefs.quiet_hours_enabled,
+      quiet_start:           prefs.quiet_start,
+      quiet_end:             prefs.quiet_end,
+      digest_enabled:        prefs.digest_enabled,
+      digest_time:           prefs.digest_time,
+      updated_at:            new Date().toISOString(),
+    }, { onConflict: 'user_id' })
+    setSaving(false); setSaved(true); setTimeout(() => setSaved(false), 2500)
+  }
+
+  if (loading) return <div style={{ minHeight: '100vh', background: '#F7F4F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'DM Sans',sans-serif", color: '#9C8878', fontSize: 14 }}>Loading…</div>
+
+  const needsPhone = prefs.reminder_channel === 'sms' || prefs.reminder_channel === 'both'
+  const sel: React.CSSProperties = { padding: '7px 10px', borderRadius: 8, border: '1px solid #C8BFB5', background: '#F7F4F0', fontSize: 13, fontFamily: "'DM Sans',sans-serif", color: '#1A1714', cursor: 'pointer', outline: 'none' }
+  const inp: React.CSSProperties = { ...sel, width: '100%' }
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#F7F4F0', fontFamily: "'DM Sans',system-ui,sans-serif", color: '#1A1714' }}>
+      <nav style={{ background: '#1A1714', padding: '0 20px', height: 52, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={() => router.push('/dashboard')} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6, fontFamily: "'DM Sans',sans-serif", padding: 0 }}>← Dashboard</button>
+        <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12 }}>·</span>
+        <span style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", color: 'rgba(255,255,255,0.8)', fontSize: 16, fontWeight: 400 }}>Notifications</span>
+      </nav>
+
+      <div style={{ maxWidth: 560, margin: '0 auto', padding: '32px 20px 80px' }}>
+        <h1 style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 28, fontWeight: 400, color: '#1A1714', marginBottom: 6 }}>Notification Settings</h1>
+        <p style={{ fontSize: 13, color: '#6B6059', marginBottom: 32, lineHeight: 1.6 }}>Set your default reminder preferences. Override these on any individual item.</p>
+
+        <Card title="Reminders" sub="Get notified before events and due dates">
+          <Row label="Enable reminders"><Toggle value={prefs.reminder_enabled} onChange={v => set('reminder_enabled', v)} /></Row>
+          {prefs.reminder_enabled && (<>
+            <Row label="Default timing" sub="How long before an event to notify you">
+              <select value={prefs.reminder_default_mins} onChange={e => set('reminder_default_mins', Number(e.target.value))} style={sel}>
+                {TIMING_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </Row>
+            <Row label="Channel">
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {CHANNEL_OPTIONS.map(o => (
+                  <button key={o.value} onClick={() => set('reminder_channel', o.value)}
+                    style={{ padding: '6px 14px', borderRadius: 20, fontSize: 12, fontWeight: 500, fontFamily: "'DM Sans',sans-serif", cursor: 'pointer', border: '1px solid ' + (prefs.reminder_channel === o.value ? '#2874A6' : '#C8BFB5'), background: prefs.reminder_channel === o.value ? '#2874A6' : 'transparent', color: prefs.reminder_channel === o.value ? 'white' : '#6B6059', transition: 'all 0.15s' }}>
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </Row>
+            {needsPhone && (
+              <Row label="Phone number" sub="Include country code: +15551234567">
+                <input type="tel" value={prefs.reminder_phone} onChange={e => { set('reminder_phone', e.target.value); setPhoneError('') }} placeholder="+15551234567" style={{ ...inp, borderColor: phoneError ? '#C0392B' : '#C8BFB5' }} />
+                {phoneError && <div style={{ fontSize: 11, color: '#C0392B', marginTop: 4 }}>{phoneError}</div>}
+              </Row>
+            )}
+          </>)}
+        </Card>
+
+        <Card title="Quiet Hours" sub="No reminders will be sent during this window">
+          <Row label="Enable quiet hours"><Toggle value={prefs.quiet_hours_enabled} onChange={v => set('quiet_hours_enabled', v)} /></Row>
+          {prefs.quiet_hours_enabled && (
+            <Row label="Window">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <input type="time" value={prefs.quiet_start} onChange={e => set('quiet_start', e.target.value)} style={{ ...sel, width: 'auto' }} />
+                <span style={{ fontSize: 13, color: '#6B6059' }}>to</span>
+                <input type="time" value={prefs.quiet_end} onChange={e => set('quiet_end', e.target.value)} style={{ ...sel, width: 'auto' }} />
+              </div>
+              <div style={{ fontSize: 11, color: '#9C8878', marginTop: 6 }}>Overnight ranges work — e.g. 10:00 PM to 7:00 AM</div>
+            </Row>
+          )}
+        </Card>
+
+        <Card title="Daily Digest" sub="Morning summary of what's due today">
+          <Row label="Send daily digest email"><Toggle value={prefs.digest_enabled} onChange={v => set('digest_enabled', v)} /></Row>
+          {prefs.digest_enabled && (
+            <Row label="Digest time">
+              <input type="time" value={prefs.digest_time} onChange={e => set('digest_time', e.target.value)} style={{ ...sel, width: 'auto' }} />
+            </Row>
+          )}
+        </Card>
+
+        <button onClick={save} disabled={saving}
+          style={{ width: '100%', padding: '13px', borderRadius: 10, border: 'none', background: saved ? '#2D7D52' : '#1A1714', color: 'white', fontSize: 14, fontWeight: 500, fontFamily: "'DM Sans',sans-serif", cursor: saving ? 'default' : 'pointer', transition: 'background 0.3s', opacity: saving ? 0.7 : 1 }}>
+          {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save preferences'}
+        </button>
+        <p style={{ fontSize: 11, color: '#9C8878', textAlign: 'center', marginTop: 16, lineHeight: 1.6 }}>Override these defaults on any individual item from the item detail view.</p>
+      </div>
+    </div>
+  )
+}
+
+function Card({ title, sub, children }: { title: string; sub: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginBottom: 20, background: 'white', borderRadius: 12, border: '0.5px solid #C8BFB5', overflow: 'hidden' }}>
+      <div style={{ padding: '12px 16px 10px', borderBottom: '0.5px solid #EDE8E2' }}>
+        <div style={{ fontSize: 13, fontWeight: 500, color: '#1A1714', marginBottom: 2 }}>{title}</div>
+        <div style={{ fontSize: 11, color: '#9C8878' }}>{sub}</div>
+      </div>
+      <div style={{ padding: '4px 0' }}>{children}</div>
+    </div>
+  )
+}
+
+function Row({ label, sub, children }: { label: string; sub?: string; children: React.ReactNode }) {
+  return (
+    <div style={{ padding: '10px 16px', borderBottom: '0.5px solid #EDE8E2', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 13, color: '#1A1714' }}>{label}</div>
+        {sub && <div style={{ fontSize: 11, color: '#9C8878', marginTop: 2, lineHeight: 1.5 }}>{sub}</div>}
+      </div>
+      <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>{children}</div>
+    </div>
+  )
+}
+
+function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button onClick={() => onChange(!value)}
+      style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', background: value ? '#2874A6' : '#C8BFB5', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}>
+      <div style={{ position: 'absolute', top: 3, left: value ? 21 : 3, width: 16, height: 16, borderRadius: '50%', background: 'white', transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
+    </button>
+  )
 }

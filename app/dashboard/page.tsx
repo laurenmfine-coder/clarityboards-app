@@ -524,6 +524,19 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
   const [newTag,       setNewTag]       = useState('')
   const [tags,         setTags]         = useState<string[]>((item as any)._tags ?? [])
 
+  // Reminder override state
+  const [reminderOverride, setReminderOverride] = useState<boolean>((item as any).reminder_override ?? false)
+  const [reminderMins,     setReminderMins]     = useState<number>((item as any).reminder_mins ?? 60)
+  const [reminderChannel,  setReminderChannel]  = useState<string>((item as any).reminder_channel ?? 'email')
+  const saveReminder = () => {
+    onUpdate({
+      reminder_override: reminderOverride,
+      reminder_mins:     reminderOverride ? reminderMins : null,
+      reminder_channel:  reminderOverride ? reminderChannel : null,
+      reminder_sent_at:  null,  // reset so new reminder fires
+    } as any)
+  }
+
   const saveTitle    = () => { if (editTitle.trim() && editTitle !== item.title) onUpdate({ title: editTitle.trim() }) }
   const saveDate     = () => { const v = editDate || null; if (v !== item.date) onUpdate({ date: v }) }
   const saveNotes    = () => { const v = editNotes.trim() || null; if (v !== item.notes) onUpdate({ notes: v }) }
@@ -773,6 +786,52 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
               )}
           </div>
         </div>
+
+        {/* Reminder override */}
+        {!isReadOnly && (
+          <div>
+            <Label><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ display: 'inline', marginRight: 4 }}><path d="M8 2a4 4 0 014 4c0 4 2 5 2 5H2s2-1 2-5a4 4 0 014-4z"/><path d="M6.5 13a1.5 1.5 0 003 0"/></svg>Reminder</Label>
+            <div style={{ background: T.sand, borderRadius: 8, padding: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: reminderOverride ? 12 : 0 }}>
+                <div style={{ fontSize: 12, color: T.sub, fontFamily: T.sans }}>
+                  {reminderOverride ? 'Custom reminder' : 'Using your default settings'}
+                </div>
+                <button onClick={() => { setReminderOverride(!reminderOverride); setTimeout(saveReminder, 0) }}
+                  style={{ fontSize: 11, fontWeight: 500, padding: '4px 10px', borderRadius: 20, border: `1px solid ${T.border}`, background: reminderOverride ? T.accent : 'transparent', color: reminderOverride ? 'white' : T.sub, cursor: 'pointer', fontFamily: T.sans, transition: 'all 0.15s' }}>
+                  {reminderOverride ? 'Custom ✓' : 'Customize'}
+                </button>
+              </div>
+              {reminderOverride && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: T.muted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Timing</div>
+                    <select value={reminderMins} onChange={e => { setReminderMins(Number(e.target.value)); saveReminder() }}
+                      style={{ width: '100%', padding: '7px 10px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.ivory, fontSize: 12, fontFamily: T.sans, color: T.ink, cursor: 'pointer' }}>
+                      {[{v:10,l:'10 min before'},{v:15,l:'15 min before'},{v:30,l:'30 min before'},{v:60,l:'1 hour before'},{v:120,l:'2 hours before'},{v:360,l:'6 hours before'},{v:1440,l:'1 day before'},{v:2880,l:'2 days before'},{v:10080,l:'1 week before'}].map(o => (
+                        <option key={o.v} value={o.v}>{o.l}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: T.muted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Channel</div>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      {[{v:'email',l:'Email'},{v:'sms',l:'SMS'},{v:'both',l:'Both'}].map(o => (
+                        <button key={o.v} onClick={() => { setReminderChannel(o.v); saveReminder() }}
+                          style={{ flex: 1, padding: '6px 0', borderRadius: 6, fontSize: 11, fontWeight: 500, fontFamily: T.sans, cursor: 'pointer', border: `1px solid ${reminderChannel === o.v ? T.accent : T.border}`, background: reminderChannel === o.v ? T.accent : 'transparent', color: reminderChannel === o.v ? 'white' : T.sub, transition: 'all 0.15s' }}>
+                          {o.l}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <button onClick={saveReminder}
+                    style={{ marginTop: 4, padding: '7px', borderRadius: 6, border: 'none', background: T.ink, color: 'white', fontSize: 11, fontWeight: 500, fontFamily: T.sans, cursor: 'pointer' }}>
+                    Save reminder
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Move to board */}
         <div>
