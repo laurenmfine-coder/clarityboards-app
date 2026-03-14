@@ -732,20 +732,32 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
           </div>
         </div>
 
-        {/* Delete */}
+        {/* Archive or Delete item */}
         {confirmDelete ? (
           <div style={{ background: '#FDF6F3', borderRadius: 12, padding: 14 }}>
-            <div style={{ fontFamily: T.serif, fontSize: 16, color: T.ink, marginBottom: 12 }}>Remove this item?</div>
+            <div style={{ fontFamily: T.serif, fontSize: 16, color: T.ink, marginBottom: 6 }}>Permanently delete this item?</div>
+            <div style={{ fontSize: 12, color: T.sub, marginBottom: 12, fontFamily: T.sans }}>This cannot be undone. Consider archiving instead — you can restore it later.</div>
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setConfirmDelete(false)} style={ghostBtn}>Cancel</button>
-              <button onClick={onDelete} style={primaryBtn('#C0392B')}>Delete</button>
+              <button onClick={onDelete} style={primaryBtn('#C0392B')}>Delete permanently</button>
             </div>
           </div>
         ) : (
-          <button onClick={() => setConfirmDelete(true)}
-            style={{ width: '100%', padding: '11px', borderRadius: 10, border: `1px solid ${T.border}`, background: 'transparent', color: T.muted, fontSize: 13, cursor: 'pointer', fontFamily: T.sans }}>
-            Delete item
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {/* Archive whole item — moves to a future archived items view */}
+            <button onClick={() => {
+              onUpdate({ status: 'done' } as any)
+              archiveAllDone()
+              onClose()
+            }}
+              style={{ flex: 1, padding: '11px', borderRadius: 10, border: `1px solid ${T.border}`, background: 'transparent', color: T.sub, fontSize: 13, cursor: 'pointer', fontFamily: T.sans, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+              <Archive size={13} strokeWidth={1.5} /> Archive item
+            </button>
+            <button onClick={() => setConfirmDelete(true)}
+              style={{ flex: 1, padding: '11px', borderRadius: 10, border: `1px solid #E8C8C8`, background: 'transparent', color: '#C0392B', fontSize: 13, cursor: 'pointer', fontFamily: T.sans }}>
+              Delete item
+            </button>
+          </div>
         )}
       </div>
     </BottomSheet>
@@ -1376,7 +1388,7 @@ export default function Dashboard() {
       {/* STATS STRIP */}
       <div style={{ background: T.ivory, borderBottom: `0.5px solid ${T.border}` }}>
         <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 28, height: 50, overflowX: 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 28, height: 50, overflowX: 'auto', paddingRight: 4 }}>
             {[
               { label: t('thisWeek'),    value: thisWeek,     color: T.accent },
               { label: t('rsvpsNeeded'),value: rsvpNeed,      color: '#8B6914' },
@@ -1417,10 +1429,14 @@ export default function Dashboard() {
                   </button>
                 ))}
               </div>
-              {user?.user_metadata?.avatar_url && (
-                <img src={user.user_metadata.avatar_url} alt="" style={{ width: 26, height: 26, borderRadius: '50%', border: `0.5px solid ${T.border}` }} />
+              {user?.user_metadata?.avatar_url ? (
+                <img src={user.user_metadata.avatar_url} alt="" style={{ width: 28, height: 28, borderRadius: '50%', border: `1.5px solid ${T.border}`, flexShrink: 0, display: 'block', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: WARM.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'white', fontSize: 12, fontWeight: 600, fontFamily: T.sans }}>
+                  {(user?.user_metadata?.full_name ?? user?.email ?? 'U')[0].toUpperCase()}
+                </div>
               )}
-              <span style={{ fontSize: 12, color: T.sub, fontWeight: 300 }}>{user?.user_metadata?.full_name?.split(' ')[0] ?? t('welcome')}</span>
+              <span style={{ fontSize: 12, color: T.sub, fontWeight: 400 }}>{user?.user_metadata?.full_name?.split(' ')[0] ?? t('welcome')}</span>
             </div>
           </div>
         </div>
