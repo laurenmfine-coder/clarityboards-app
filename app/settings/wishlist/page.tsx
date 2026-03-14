@@ -21,7 +21,7 @@ interface WishItem {
   priority: Priority; status: ItemStatus;
   purchased_by: string | null; watch_id: string | null;
 }
-type ListType  = 'birthday'|'christmas'|'registry'|'grocery'|'home'|'general';
+type ListType  = 'birthday'|'holiday'|'registry'|'grocery'|'home'|'custom'|'general';
 type Priority  = 'high'|'medium'|'low';
 type ItemStatus = 'want'|'purchased'|'received';
 
@@ -34,12 +34,13 @@ const T = {
 };
 
 const LIST_TYPES: Record<ListType,{emoji:string;label:string;color:string}> = {
-  birthday:  {emoji:'🎂',label:'Birthday',    color:'#C17A5A'},
-  christmas: {emoji:'🎄',label:'Christmas',   color:'#2C6E8A'},
-  registry:  {emoji:'💍',label:'Registry',    color:'#9B6B9E'},
-  grocery:   {emoji:'🛒',label:'Grocery',     color:'#5C8B6A'},
-  home:      {emoji:'🏠',label:'Home',        color:'#8B6B3C'},
-  general:   {emoji:'✦', label:'General',     color:'#6B6B8A'},
+  birthday: {emoji:'🎂',label:'Birthday',  color:'#C17A5A'},
+  holiday:  {emoji:'🎄',label:'Holiday',   color:'#2C6E8A'},
+  registry: {emoji:'💍',label:'Registry',  color:'#9B6B9E'},
+  grocery:  {emoji:'🛒',label:'Grocery',   color:'#5C8B6A'},
+  home:     {emoji:'🏠',label:'Home',      color:'#8B6B3C'},
+  custom:   {emoji:'✏️', label:'Custom',   color:'#6B6B8A'},
+  general:  {emoji:'✦', label:'General',   color:'#6B6B8A'},
 };
 const PRIORITY_STYLES: Record<Priority,{emoji:string;label:string;bg:string;text:string}> = {
   high:   {emoji:'🔴',label:'High',  bg:'#FADBD8',text:'#8B2020'},
@@ -357,7 +358,7 @@ function EmptyLists({onAdd}:{onAdd:()=>void}) {
           <div key={key} style={{background:'white',borderRadius:12,border:'1px solid #EDE9E3',padding:'16px 14px',textAlign:'left'}}>
             <div style={{fontSize:24,marginBottom:6}}>{lt.emoji}</div>
             <div style={{fontFamily:T.serif,fontSize:15,color:T.ink,fontWeight:500}}>{lt.label}</div>
-            <div style={{fontSize:11,color:T.sub,marginTop:2}}>{key==='birthday'?'Share with family':key==='christmas'?'Track who bought what':key==='registry'?'Wedding, baby, graduation':key==='grocery'?'Save for later':key==='home'?'Furniture & decor':'Anything you want'}</div>
+            <div style={{fontSize:11,color:T.sub,marginTop:2}}>{key==='birthday'?'Share with family':key==='holiday'?'Track who bought what':key==='registry'?'Wedding, baby, graduation':key==='grocery'?'Save for later':key==='home'?'Furniture & decor':'Anything you want'}</div>
           </div>
         ))}
       </div>
@@ -372,7 +373,7 @@ function EmptyItems({listType,onAdd}:{listType:ListType;onAdd:()=>void}) {
   const lt = LIST_TYPES[listType];
   const examples: Record<ListType,string[]> = {
     birthday: ['Loft dress','WHBM blazer','Amazon Echo'],
-    christmas: ['AirPods','Le Creuset pot','Candle set'],
+    holiday: ['AirPods','Le Creuset pot','Candle set'],
     registry:  ['KitchenAid mixer','Pottery Barn throw','Cuisinart set'],
     grocery:   ['Organic olive oil','Truffle salt','Specialty cheese'],
     home:      ['CB2 lamp','Article sofa','West Elm rug'],
@@ -400,25 +401,56 @@ function AddListModal({onSave,onClose}:{onSave:(d:Partial<Wishlist>)=>void;onClo
   const [name,setName]       = useState('');
   const [type,setType]       = useState<ListType>('birthday');
   const [desc,setDesc]       = useState('');
+  const [customEmoji,setCustomEmoji] = useState('⭐');
+
+  const handleTypeChange = (t: ListType) => {
+    setType(t);
+    // Auto-fill name when switching types (only if name is empty or was auto-set)
+    if (!name || Object.values(LIST_TYPES).some(lt => lt.label === name)) {
+      setName(t === 'custom' ? '' : LIST_TYPES[t].label + ' Wish List');
+    }
+  };
+
+  const effectiveEmoji = type === 'custom' ? customEmoji : LIST_TYPES[type].emoji;
+  const effectiveColor = LIST_TYPES[type].color;
+
   return (
     <Modal onClose={onClose} title="Create a Wish List">
       <SLabel>List Type</SLabel>
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,marginBottom:18}}>
         {(Object.entries(LIST_TYPES) as [ListType,any][]).map(([key,lt])=>(
-          <button key={key} onClick={()=>setType(key)}
+          <button key={key} onClick={()=>handleTypeChange(key)}
             style={{padding:'10px 8px',borderRadius:10,border:`1.5px solid ${type===key?T.purple:T.border}`,background:type===key?T.purpleLight:'white',cursor:'pointer',textAlign:'center',fontFamily:T.sans,transition:'all 0.15s'}}>
             <div style={{fontSize:20,marginBottom:3}}>{lt.emoji}</div>
             <div style={{fontSize:11,fontWeight:700,color:type===key?T.purple:T.ink}}>{lt.label}</div>
           </button>
         ))}
       </div>
+
+      {/* Custom emoji picker — only shown for Custom type */}
+      {type === 'custom' && (
+        <div style={{marginBottom:14}}>
+          <SLabel>Pick an Emoji</SLabel>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:8}}>
+            {['⭐','💜','🎯','🏋️','📚','🎮','✈️','🍳','🌿','💄','👗','👟','🎵','🎨','🐾','💎'].map(e=>(
+              <button key={e} onClick={()=>setCustomEmoji(e)}
+                style={{width:36,height:36,borderRadius:8,border:`1.5px solid ${customEmoji===e?T.purple:T.border}`,background:customEmoji===e?T.purpleLight:'white',cursor:'pointer',fontSize:18,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                {e}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <SLabel>List Name *</SLabel>
-      <input value={name} onChange={e=>setName(e.target.value)} placeholder={`e.g. Lauren's Birthday 2026`} style={SI}/>
+      <input value={name} onChange={e=>setName(e.target.value)}
+        placeholder={type==='custom'?'e.g. Running Gear, Book Club…':`e.g. Lauren's ${LIST_TYPES[type].label} 2026`}
+        style={SI}/>
       <SLabel>Description (optional)</SLabel>
       <input value={desc} onChange={e=>setDesc(e.target.value)} placeholder="For family to reference…" style={SI}/>
       <div style={{display:'flex',gap:10,marginTop:8}}>
         <button onClick={onClose} style={GBtn}>Cancel</button>
-        <button onClick={()=>{if(!name.trim())return;onSave({name,list_type:type,description:desc||null,color:LIST_TYPES[type].color});}}
+        <button onClick={()=>{if(!name.trim())return;onSave({name,list_type:type,description:desc||null,color:effectiveColor});}}
           disabled={!name.trim()}
           style={{...PBtn,flex:2,background:T.purple,opacity:!name.trim()?0.5:1,cursor:!name.trim()?'not-allowed':'pointer'}}>
           Create List
@@ -679,8 +711,8 @@ function ShareModal({list,shareUrl,copied,onCopy,onToggle,onClose}:{list:Wishlis
 // ── Shared Components ──────────────────────────────────────
 function Modal({children,onClose,title}:{children:React.ReactNode;onClose:()=>void;title:string}) {
   return (
-    <div style={{position:'fixed',inset:0,background:'rgba(44,35,24,0.55)',zIndex:50,display:'flex',alignItems:'flex-end',justifyContent:'center'}}>
-      <div style={{background:T.ivory,width:'100%',maxWidth:520,borderRadius:'20px 20px 0 0',padding:'10px 24px 44px',maxHeight:'92dvh',overflowY:'auto'}}>
+    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(44,35,24,0.55)',zIndex:50,display:'flex',alignItems:'flex-end',justifyContent:'center'}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:T.ivory,width:'100%',maxWidth:520,borderRadius:'20px 20px 0 0',padding:'10px 24px 44px',maxHeight:'92dvh',overflowY:'auto'}}>
         <div style={{width:36,height:4,borderRadius:2,background:T.border,margin:'0 auto 20px'}}/>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}>
           <div style={{fontFamily:T.serif,fontSize:22,color:T.ink,fontWeight:500}}>{title}</div>

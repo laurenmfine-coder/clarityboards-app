@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS public.wishlists (
   user_id      uuid        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   name         text        NOT NULL,
   list_type    text        NOT NULL DEFAULT 'general'
-               CHECK (list_type IN ('birthday','christmas','registry','grocery','home','general')),
+               CHECK (list_type IN ('birthday','holiday','registry','grocery','home','custom','general')),
   description  text,
   share_token  text        UNIQUE DEFAULT encode(gen_random_bytes(16), 'hex'),
   is_public    boolean     NOT NULL DEFAULT false,
