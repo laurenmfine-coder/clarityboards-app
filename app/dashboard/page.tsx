@@ -449,17 +449,14 @@ function AllDonePrompt({ item, onArchiveAll, onKeep, onClose }: { item: Item; on
 
 // ─── Notes Field (markdown read / plain write) ───────────
 function renderMarkdown(text: string): string {
-  return text
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code style="background:#EDE8E2;padding:1px 4px;border-radius:3px;font-size:0.9em">$1</code>')
-    .replace(/\[(.+?)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:#2874A6">$1</a>')
-    .replace(/^[-*]\s+(.+)$/gm, '<li style="margin-left:16px;margin-bottom:2px">$1</li>')
-    .replace(/(<li[^>]*>.*<\/li>
-?)+/g, (m) => `<ul style="padding:0;list-style:disc;margin:4px 0">${m}</ul>`)
-    .replace(/
-/g, '<br/>')
+  const e = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  const b = e.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  const i = b.replace(/\*(.+?)\*/g, '<em>$1</em>')
+  const c = i.replace(/`([^`]+)`/g, '<code style="background:#EDE8E2;padding:1px 4px;border-radius:3px;font-size:0.9em">$1</code>')
+  const l = c.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#2874A6;text-decoration:underline">$1</a>')
+  const p = l.replace(/^[-*]\s+(.+)$/gm, '<li style="margin-left:16px;margin-bottom:2px">$1</li>')
+  const u = p.replace(/(<li[^>]*>[\s\S]*?<\/li>)+/g, (m: string) => '<ul style="padding:0;list-style:disc;margin:4px 0">' + m + '</ul>')
+  return u.replace(/\n/g, '<br/>')
 }
 
 function NotesField({ value, onChange, onSave, readOnly, sheetInput, T }: {
