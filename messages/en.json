@@ -361,7 +361,27 @@
     "replayTour": "↩ Replay tour",
     "welcomeTitle": "Welcome to",
     "welcomeApp": "Clarityboards",
-    "welcomeBody": "One platform for every part of your busy life. Let's take a quick tour — it only takes 60 seconds."
+    "welcomeBody": "One platform for every part of your busy life. Let's take a quick tour — it only takes 60 seconds.",
+    "recurring": {
+      "title": "Recurring items",
+      "body": "Set any item to repeat — daily, weekly, monthly, or custom. Open an item, set a date, and a Repeat picker appears. Clarityboards creates the next occurrence automatically every night.",
+      "cta": "Got it →"
+    },
+    "move": {
+      "title": "Move items between boards",
+      "body": "Things shift. An activity becomes a task, a study item becomes a career move. Open any item and scroll to \"Move to Board\" — one tap and it lands in the right place.",
+      "cta": "Handy →"
+    },
+    "ical": {
+      "title": "Calendar sync",
+      "body": "Subscribe to any .ics calendar (TeamSnap, school, sports leagues) under Settings → Subscribe to Calendars. Events appear automatically in the right board. Google Calendar two-way sync is also available.",
+      "cta": "Nice →"
+    },
+    "export": {
+      "title": "Export & Connect",
+      "body": "Your Clarityboards data works great in AI tools. Use Export & Connect to send any board to NotebookLM, ChatGPT, Claude, or Obsidian — as Markdown, plain text, or a ready-to-paste AI prompt.",
+      "cta": "Brilliant →"
+    }
   },
   "settingsPhone": {
     "back": "Back to dashboard",
