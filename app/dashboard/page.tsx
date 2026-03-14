@@ -533,7 +533,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
 
   return (
     <>
-    <BottomSheet onClose={onClose} maxWidth={520}>
+      <BottomSheet onClose={onClose} maxWidth={520}>
       {/* Header with color band */}
       <div style={{ marginBottom: 20, paddingBottom: 18, borderBottom: `1px solid ${T.border}` }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
@@ -739,32 +739,29 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
           </div>
         </div>
 
-        {/* Archive or Delete item — hidden for viewer-role shared items */}
-        {!isReadOnly && (confirmDelete ? (
-          <div style={{ background: '#FDF6F3', borderRadius: 12, padding: 14 }}>
-            <div style={{ fontFamily: T.serif, fontSize: 16, color: T.ink, marginBottom: 6 }}>Permanently delete this item?</div>
-            <div style={{ fontSize: 12, color: T.sub, marginBottom: 12, fontFamily: T.sans }}>This cannot be undone. Consider archiving instead — you can restore it later.</div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => setConfirmDelete(false)} style={ghostBtn}>Cancel</button>
-              <button onClick={onDelete} style={primaryBtn('#C0392B')}>Delete permanently</button>
+        {/* Archive or Delete — hidden for viewer-role shared items */}
+        {!isReadOnly && (
+          confirmDelete ? (
+            <div style={{ background: '#FDF6F3', borderRadius: 12, padding: 14 }}>
+              <div style={{ fontFamily: T.serif, fontSize: 16, color: T.ink, marginBottom: 6 }}>Permanently delete this item?</div>
+              <div style={{ fontSize: 12, color: T.sub, marginBottom: 12, fontFamily: T.sans }}>This cannot be undone. Consider archiving instead — you can restore it later.</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setConfirmDelete(false)} style={ghostBtn}>Cancel</button>
+                <button onClick={onDelete} style={primaryBtn('#C0392B')}>Delete permanently</button>
+              </div>
             </div>
-          </div>
-        ) : !isReadOnly ? (
-          <div style={{ display: 'flex', gap: 8 }}>
-            {/* Archive whole item — moves to a future archived items view */}
-            <button onClick={() => {
-              onUpdate({ status: 'done' } as any)
-              archiveAllDone()
-              onClose()
-            }}
-              style={{ flex: 1, padding: '11px', borderRadius: 10, border: `1px solid ${T.border}`, background: 'transparent', color: T.sub, fontSize: 13, cursor: 'pointer', fontFamily: T.sans, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-              <Archive size={13} strokeWidth={1.5} /> Archive item
-            </button>
-            <button onClick={() => setConfirmDelete(true)}
-              style={{ flex: 1, padding: '11px', borderRadius: 10, border: `1px solid #E8C8C8`, background: 'transparent', color: '#C0392B', fontSize: 13, cursor: 'pointer', fontFamily: T.sans }}>
-              Delete item
-            </button>
-          </div>
+          ) : (
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => { onUpdate({ status: 'done' } as any); archiveAllDone(); onClose() }}
+                style={{ flex: 1, padding: '11px', borderRadius: 10, border: `1px solid ${T.border}`, background: 'transparent', color: T.sub, fontSize: 13, cursor: 'pointer', fontFamily: T.sans, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                <Archive size={13} strokeWidth={1.5} /> Archive item
+              </button>
+              <button onClick={() => setConfirmDelete(true)}
+                style={{ flex: 1, padding: '11px', borderRadius: 10, border: `1px solid #E8C8C8`, background: 'transparent', color: '#C0392B', fontSize: 13, cursor: 'pointer', fontFamily: T.sans }}>
+                Delete item
+              </button>
+            </div>
+          )
         )}
       </div>
     </BottomSheet>
