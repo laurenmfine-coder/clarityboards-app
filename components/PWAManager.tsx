@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -63,7 +63,7 @@ export default function PWAManager() {
   if (!showBanner || dismissed) return null;
 
   return (
-    <React.Fragment>
+    <div style={{ position: "relative", zIndex: 9997 }}>
       {/* Warm banner */
       <div style={{
         position: "fixed",
@@ -169,6 +169,6 @@ export default function PWAManager() {
           </div>
         </div>
       )}
-    </React.Fragment>
+    </div>
   );
 }
