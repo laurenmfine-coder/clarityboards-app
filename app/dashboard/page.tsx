@@ -460,6 +460,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
 }) {
   const t = useTranslations('dashboard')
   const cfg = BOARD_MAP[item.board]
+  const isReadOnly = !!(item as any)._shared && (item as any)._shared_role === 'viewer'
   const [newTask, setNewTask] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingText, setEditingText] = useState('')
@@ -512,12 +513,13 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
   const deleteArchived = (archivedId: string) => { onUpdate({ checklist_archive: (item.checklist_archive ?? []).filter(a => a.id !== archivedId) }) }
 
   const toggleCheck = (id: string) => {
+    if (isReadOnly) return
     const updated = item.checklist.map(c => c.id === id ? { ...c, done: !c.done } : c)
     onUpdate({ checklist: updated })
     if (updated.every(c => c.done) && updated.length > 0) setTimeout(() => setShowAllDonePrompt(true), 200)
   }
   const addTask = () => {
-    if (!newTask.trim()) return
+    if (isReadOnly || !newTask.trim()) return
     onUpdate({ checklist: [...item.checklist, { id: Date.now().toString(), text: newTask.trim(), done: false }] })
     setNewTask('')
   }
@@ -542,7 +544,10 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
               style={{ fontFamily: T.serif, fontSize: 22, color: T.ink, fontWeight: 500, background: 'transparent', border: 'none', outline: 'none', width: '100%', borderBottom: `1px solid transparent`, padding: '0 0 2px' }}
               onFocus={e => e.currentTarget.style.borderBottomColor = T.border}
             />
-            <div style={{ fontSize: 11, color: T.sub, marginTop: 2 }}>{boardNames[item.board] || cfg?.label}</div>
+            <div style={{ fontSize: 11, color: T.sub, marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+              {boardNames[item.board] || cfg?.label}
+              {isReadOnly && <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 3, background: '#FEF3CD', color: '#8B6914', letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>View only</span>}
+            </div>
           </div>
           <button onClick={onClose} style={closeBtn}>×</button>
         </div>
@@ -581,8 +586,8 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
           <Label>Update Status</Label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {cfg?.statuses.map(s => (
-              <button key={s.value} onClick={() => onUpdate({ status: s.value })}
-                style={{ padding: '5px 13px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 600, fontFamily: T.sans, transition: 'all 0.15s',
+              <button key={s.value} onClick={() => { if (!isReadOnly) onUpdate({ status: s.value }) }}
+                style={{ padding: '5px 13px', borderRadius: 20, border: 'none', cursor: isReadOnly ? 'default' : 'pointer', opacity: isReadOnly && item.status !== s.value ? 0.35 : 1, fontSize: 11, fontWeight: 600, fontFamily: T.sans, transition: 'all 0.15s',
                   background: item.status === s.value ? cfg.color : T.sand,
                   color: item.status === s.value ? '#fff' : T.sub,
                 }}>{s.label}</button>
@@ -699,19 +704,21 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
                 )}
               </div>
             ))}
-            {item.checklist.some(c => c.done) && (
+            {!isReadOnly && item.checklist.some(c => c.done) && (
               <button onClick={archiveAllDone}
                 style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 8, border: `1px dashed ${T.border}`, background: 'transparent', color: T.sub, fontSize: 11, cursor: 'pointer', fontFamily: T.sans, marginTop: 4 }}>
                 <Archive size={11} /> Archive all completed items
               </button>
             )}
-            <div style={{ display: 'flex', gap: 8, marginTop: 4, paddingTop: 10, borderTop: `1px solid ${T.border}` }}>
+            {!isReadOnly && (
+                <div style={{ display: 'flex', gap: 8, marginTop: 4, paddingTop: 10, borderTop: `1px solid ${T.border}` }}>
               <input value={newTask} onChange={e => setNewTask(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && addTask()}
                 placeholder="Add a task… (press Enter)"
                 style={{ ...sheetInput, marginBottom: 0, flex: 1 }} />
               <button onClick={addTask} style={primaryBtn(cfg?.color ?? T.ink)}>Add</button>
             </div>
+              )}
           </div>
         </div>
 
@@ -732,8 +739,8 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
           </div>
         </div>
 
-        {/* Archive or Delete item */}
-        {confirmDelete ? (
+        {/* Archive or Delete item — hidden for viewer-role shared items */}
+        {!isReadOnly && (confirmDelete ? (
           <div style={{ background: '#FDF6F3', borderRadius: 12, padding: 14 }}>
             <div style={{ fontFamily: T.serif, fontSize: 16, color: T.ink, marginBottom: 6 }}>Permanently delete this item?</div>
             <div style={{ fontSize: 12, color: T.sub, marginBottom: 12, fontFamily: T.sans }}>This cannot be undone. Consider archiving instead — you can restore it later.</div>
@@ -742,7 +749,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
               <button onClick={onDelete} style={primaryBtn('#C0392B')}>Delete permanently</button>
             </div>
           </div>
-        ) : (
+        ) : !isReadOnly ? (
           <div style={{ display: 'flex', gap: 8 }}>
             {/* Archive whole item — moves to a future archived items view */}
             <button onClick={() => {
@@ -788,6 +795,7 @@ function ItemCard({ item, onClick, onSwipeComplete, isFirst = false, cardDensity
 }) {
   const t = useTranslations('dashboard')
   const cfg = BOARD_MAP[item.board]
+  const isReadOnly = !!(item as any)._shared && (item as any)._shared_role === 'viewer'
   const pct = progress(item.checklist)
   const startX = useRef(0)
   const [swipeX, setSwipeX] = useState(0)
@@ -1355,6 +1363,7 @@ export default function Dashboard() {
                         { href: '/settings/notifications', label: 'Notifications',  icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 2a4 4 0 014 4c0 4 2 5 2 5H2s2-1 2-5a4 4 0 014-4z"/><path d="M6.5 13a1.5 1.5 0 003 0"/></svg> },
                         { href: '/settings/export',        label: 'Export & Connect',icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 10V2M5 5l3-3 3 3M4 10v4h8v-4"/></svg> },
                         { href: '/settings/language',      label: t('language'),    icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 2c-1.5 2-1.5 8 0 12M8 2c1.5 2 1.5 8 0 12M2 8h12"/></svg> },
+                        { href: '/settings/install',      label: 'Install App',    icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="2" width="10" height="12" rx="1.5"/><path d="M6 13h4"/><path d="M8 5v4M6 7l2 2 2-2"/></svg> },
                       ].map(item => (
                         <a key={item.href} href={item.href} onClick={() => setShowSettings(false)} className="cb-settings-item"
                           style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', fontSize: 13, fontWeight: 400, color: T.ink, textDecoration: 'none', transition: 'background 0.1s' }}>
@@ -1372,6 +1381,17 @@ export default function Dashboard() {
                   </>
                 )}
               </div>
+
+              {/* Avatar — always visible in nav, never clipped */}
+              <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.12)', margin: '0 4px', flexShrink: 0 }} />
+              {user?.user_metadata?.avatar_url ? (
+                <img src={user.user_metadata.avatar_url} alt=""
+                  style={{ width: 28, height: 28, borderRadius: '50%', border: '1.5px solid rgba(255,255,255,0.2)', flexShrink: 0, display: 'block', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: WARM.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'white', fontSize: 12, fontWeight: 600, fontFamily: T.sans, border: '1.5px solid rgba(255,255,255,0.15)' }}>
+                  {(user?.user_metadata?.full_name ?? user?.email ?? 'U')[0].toUpperCase()}
+                </div>
+              )}
             </div>
           </div>
 
@@ -1429,14 +1449,6 @@ export default function Dashboard() {
                   </button>
                 ))}
               </div>
-              {user?.user_metadata?.avatar_url ? (
-                <img src={user.user_metadata.avatar_url} alt="" style={{ width: 28, height: 28, borderRadius: '50%', border: `1.5px solid ${T.border}`, flexShrink: 0, display: 'block', objectFit: 'cover' }} />
-              ) : (
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: WARM.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'white', fontSize: 12, fontWeight: 600, fontFamily: T.sans }}>
-                  {(user?.user_metadata?.full_name ?? user?.email ?? 'U')[0].toUpperCase()}
-                </div>
-              )}
-              <span style={{ fontSize: 12, color: T.sub, fontWeight: 400 }}>{user?.user_metadata?.full_name?.split(' ')[0] ?? t('welcome')}</span>
             </div>
           </div>
         </div>
@@ -1549,7 +1561,7 @@ export default function Dashboard() {
       )}
 
       <PWAManager />
-      <KeyboardShortcut onSearch={() => setSearchOpen(true)} />
+      <KeyboardShortcut onSearch={() => setSearchOpen(true)} onQuickAdd={() => setShowAdd(true)} />
     </div>
   )
 }
@@ -1608,11 +1620,14 @@ const closeBtn: React.CSSProperties = {
   padding: 0, lineHeight: 1, flexShrink: 0,
 }
 
-function KeyboardShortcut({ onSearch }: { onSearch: () => void }) {
+function KeyboardShortcut({ onSearch, onQuickAdd }: { onSearch: () => void; onQuickAdd: () => void }) {
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); onSearch() } }
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); onSearch() }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'j') { e.preventDefault(); onQuickAdd() }
+    }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [onSearch])
+  }, [onSearch, onQuickAdd])
   return null
 }
