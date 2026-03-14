@@ -2,12 +2,6 @@
 export default function LandingPage() {
   return (
     <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: '#F7F4F0', color: '#1A1714', minHeight: '100vh' }}>
-      <style>{`
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap');
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'DM Sans', system-ui, sans-serif; background: #F7F4F0; color: #1A1714; -webkit-font-smoothing: antialiased; }
-a { color: inherit; text-decoration: none; }
-`}</style>
 
       {/* Nav */}
       <nav style={{ background: '#1A1714', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 10 }}>
