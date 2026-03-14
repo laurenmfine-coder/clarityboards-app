@@ -791,7 +791,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
           </div>
         </div>
 
-        {/* Archive or Delete — hidden for viewer-role shared items */}
+        {/* Archive or Delete — sticky footer, hidden for viewer-role shared items */}
         {!isReadOnly && (
           confirmDelete ? (
             <div style={{ background: '#FDF6F3', borderRadius: 12, padding: 14 }}>
@@ -803,7 +803,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
               </div>
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8, position: 'sticky', bottom: 0, background: T.ivory, paddingBottom: 8, paddingTop: 8, marginTop: 4 }}>
               <button onClick={() => { onUpdate({ status: 'done' } as any); archiveAllDone(); onClose() }}
                 style={{ flex: 1, padding: '11px', borderRadius: 10, border: `1px solid ${T.border}`, background: 'transparent', color: T.sub, fontSize: 13, cursor: 'pointer', fontFamily: T.sans, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                 <Archive size={13} strokeWidth={1.5} /> Archive item
@@ -1634,9 +1634,13 @@ export default function Dashboard() {
 function BottomSheet({ children, onClose, maxWidth = 480 }: { children: React.ReactNode; onClose: () => void; maxWidth?: number }) {
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(26,23,20,0.55)', zIndex: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-      <div style={{ background: T.ivory, width: '100%', maxWidth, borderRadius: '16px 16px 0 0', padding: '10px 24px 40px', maxHeight: '92dvh', overflowY: 'auto', paddingBottom: 'max(40px, env(safe-area-inset-bottom, 40px))' }}>
-        <div style={{ width: 32, height: 3, borderRadius: 2, background: T.border, margin: '0 auto 20px' }} />
-        {children}
+      <div style={{ background: T.ivory, width: '100%', maxWidth, borderRadius: '16px 16px 0 0', maxHeight: '92dvh', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '10px 24px 0' }}>
+          <div style={{ width: 32, height: 3, borderRadius: 2, background: T.border, margin: '0 auto 20px' }} />
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px', paddingBottom: 'max(40px, env(safe-area-inset-bottom, 40px))' }}>
+          {children}
+        </div>
       </div>
     </div>
   )
