@@ -1179,3 +1179,62 @@ export default function Dashboard() {
     </div>
   )
 }
+
+// ── Shared helpers ────────────────────────────────────────
+
+function BottomSheet({ children, onClose, maxWidth = 480 }: { children: React.ReactNode; onClose: () => void; maxWidth?: number }) {
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(26,23,20,0.55)', zIndex: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+      <div style={{ background: T.ivory, width: '100%', maxWidth, borderRadius: '16px 16px 0 0', padding: '10px 24px 40px', maxHeight: '92dvh', overflowY: 'auto', paddingBottom: 'max(40px, env(safe-area-inset-bottom, 40px))' }}>
+        <div style={{ width: 32, height: 3, borderRadius: 2, background: T.border, margin: '0 auto 20px' }} />
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function NavIconBtn({ children, onClick, title, className }: { children: React.ReactNode; onClick: () => void; title?: string; className?: string }) {
+  return (
+    <button onClick={onClick} title={title}
+      style={{ width: 30, height: 30, borderRadius: 6, border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.45)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, transition: 'all 0.15s', fontFamily: T.sans }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'white' }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.45)' }}
+    >{children}</button>
+  )
+}
+
+function Label({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
+  return (
+    <div style={{ fontSize: 10, fontWeight: 600, color: T.sub, textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4, fontFamily: T.sans, ...style }}>
+      {children}
+    </div>
+  )
+}
+
+const sheetInput: React.CSSProperties = {
+  width: '100%', padding: '10px 13px', borderRadius: 6, border: `1px solid ${T.border}`,
+  fontSize: 13, fontFamily: T.sans, color: T.ink, marginBottom: 10, outline: 'none', background: T.ivory,
+}
+const primaryBtn = (bg: string): React.CSSProperties => ({
+  width: '100%', padding: '12px 16px', borderRadius: 6, border: 'none',
+  background: bg, color: 'white', fontWeight: 600, fontSize: 13,
+  cursor: 'pointer', fontFamily: T.sans,
+})
+const ghostBtn: React.CSSProperties = {
+  flex: 1, padding: '12px', borderRadius: 6, border: `1px solid ${T.border}`,
+  background: 'transparent', color: T.sub, fontWeight: 500, fontSize: 13,
+  cursor: 'pointer', fontFamily: T.sans,
+}
+const closeBtn: React.CSSProperties = {
+  background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: T.sub,
+  padding: 0, lineHeight: 1, flexShrink: 0,
+}
+
+function KeyboardShortcut({ onSearch }: { onSearch: () => void }) {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); onSearch() } }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onSearch])
+  return null
+}
