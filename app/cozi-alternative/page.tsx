@@ -32,43 +32,43 @@ a { color: inherit; text-decoration: none; }
         <div style={{ maxWidth: 720, margin: '0 auto', padding: '52px 24px' }}>
           <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(22px,3vw,32px)', fontWeight: 400, color: '#1A1714', marginBottom: 32, textAlign: 'center' }}>Sound familiar?</h2>
           
-              <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:20px">
-                <div style="width:32px;height:32px;border-radius:50%;background:#EBF3FB;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
+                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#EBF3FB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1B4F8A" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style="font-size:15px;font-weight:500;color:#1A1714;margin-bottom:3px">Opened Cozi and saw a paywall where your calendar used to be</div>
-                  <div style="font-size:13px;color:#6B6059;line-height:1.6">Your kids' schedules, school events, sports seasons — all locked unless you pay $39/year with a week's notice.</div>
+                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Opened Cozi and saw a paywall where your calendar used to be</div>
+                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Your kids' schedules, school events, sports seasons — all locked unless you pay $39/year with a week's notice.</div>
                 </div>
               </div>
 
-              <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:20px">
-                <div style="width:32px;height:32px;border-radius:50%;background:#EBF3FB;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
+                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#EBF3FB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1B4F8A" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style="font-size:15px;font-weight:500;color:#1A1714;margin-bottom:3px">Tried to get your data out and couldn't</div>
-                  <div style="font-size:13px;color:#6B6059;line-height:1.6">Cozi has no CSV export, no calendar file download. Years of family planning, held hostage.</div>
+                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Tried to get your data out and couldn't</div>
+                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Cozi has no CSV export, no calendar file download. Years of family planning, held hostage.</div>
                 </div>
               </div>
 
-              <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:20px">
-                <div style="width:32px;height:32px;border-radius:50%;background:#EBF3FB;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
+                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#EBF3FB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1B4F8A" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style="font-size:15px;font-weight:500;color:#1A1714;margin-bottom:3px">Your partner ignores the app because it looks dated</div>
-                  <div style="font-size:13px;color:#6B6059;line-height:1.6">If it doesn't feel good to open, people don't open it. Cozi's interface hasn't changed in a decade.</div>
+                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Your partner ignores the app because it looks dated</div>
+                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>If it doesn't feel good to open, people don't open it. Cozi's interface hasn't changed in a decade.</div>
                 </div>
               </div>
 
-              <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:20px">
-                <div style="width:32px;height:32px;border-radius:50%;background:#EBF3FB;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
+                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#EBF3FB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1B4F8A" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style="font-size:15px;font-weight:500;color:#1A1714;margin-bottom:3px">Anyone in the family can accidentally delete anything</div>
-                  <div style="font-size:13px;color:#6B6059;line-height:1.6">Cozi has no permission levels. One wrong tap by a child and a month of events is gone.</div>
+                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Anyone in the family can accidentally delete anything</div>
+                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Cozi has no permission levels. One wrong tap by a child and a month of events is gone.</div>
                 </div>
               </div>
         </div>
@@ -79,36 +79,36 @@ a { color: inherit; text-decoration: none; }
         <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(22px,3vw,32px)', fontWeight: 400, color: '#1A1714', marginBottom: 32, textAlign: 'center' }}>What makes Clarityboards different</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16 }}>
           
-              <div style="background:white;border:0.5px solid #C8BFB5;border-radius:12px;padding:20px">
-                <div style="width:36px;height:36px;border-radius:8px;background:#EBF3FB;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
+                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#EBF3FB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B4F8A" strokeWidth="1.5"><path d="M3 4h18v16H3zM16 2v4M8 2v4M3 10h18"/></svg>
                 </div>
-                <div style="font-size:14px;font-weight:500;color:#1A1714;margin-bottom:6px">Full calendar, always</div>
-                <div style="font-size:13px;color:#6B6059;line-height:1.6">No 30-day limit. See your entire year — summer camp, school plays, sports seasons — on the free tier.</div>
+                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Full calendar, always</div>
+                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>No 30-day limit. See your entire year — summer camp, school plays, sports seasons — on the free tier.</div>
               </div>
 
-              <div style="background:white;border:0.5px solid #C8BFB5;border-radius:12px;padding:20px">
-                <div style="width:36px;height:36px;border-radius:8px;background:#EBF3FB;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
+                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#EBF3FB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B4F8A" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 </div>
-                <div style="font-size:14px;font-weight:500;color:#1A1714;margin-bottom:6px">Real permission levels</div>
-                <div style="font-size:13px;color:#6B6059;line-height:1.6">Viewer or contributor. No one can delete your events unless you give them permission.</div>
+                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Real permission levels</div>
+                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Viewer or contributor. No one can delete your events unless you give them permission.</div>
               </div>
 
-              <div style="background:white;border:0.5px solid #C8BFB5;border-radius:12px;padding:20px">
-                <div style="width:36px;height:36px;border-radius:8px;background:#EBF3FB;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
+                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#EBF3FB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B4F8A" strokeWidth="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                 </div>
-                <div style="font-size:14px;font-weight:500;color:#1A1714;margin-bottom:6px">Your data is always yours</div>
-                <div style="font-size:13px;color:#6B6059;line-height:1.6">Export everything as CSV or Markdown at any time, at any plan level. No lock-in.</div>
+                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Your data is always yours</div>
+                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Export everything as CSV or Markdown at any time, at any plan level. No lock-in.</div>
               </div>
 
-              <div style="background:white;border:0.5px solid #C8BFB5;border-radius:12px;padding:20px">
-                <div style="width:36px;height:36px;border-radius:8px;background:#EBF3FB;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
+                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#EBF3FB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B4F8A" strokeWidth="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2"/></svg>
                 </div>
-                <div style="font-size:14px;font-weight:500;color:#1A1714;margin-bottom:6px">An interface people actually open</div>
-                <div style="font-size:13px;color:#6B6059;line-height:1.6">Warm, calm, editorial. The kind of design that makes a partner say 'what app is that?' and actually start using it.</div>
+                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>An interface people actually open</div>
+                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Warm, calm, editorial. The kind of design that makes a partner say 'what app is that?' and actually start using it.</div>
               </div>
         </div>
       </div>
@@ -135,40 +135,40 @@ a { color: inherit; text-decoration: none; }
             </thead>
             <tbody>
               
-                  <tr style="border-bottom:0.5px solid #EDE8E2">
-                    <td style="padding:10px 12px;font-size:13px;color:#1A1714;font-weight:500">Full calendar (free)</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#3B6D11;font-weight:500">✓</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#854F0B;font-weight:500">✗ 30-day limit</td>
+                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Full calendar (free)</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ 30-day limit</td>
                   </tr>
 
-                  <tr style="border-bottom:0.5px solid #EDE8E2">
-                    <td style="padding:10px 12px;font-size:13px;color:#1A1714;font-weight:500">Data export</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#854F0B;font-weight:500">✓ CSV + Markdown</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#854F0B;font-weight:500">✗ None</td>
+                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Data export</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✓ CSV + Markdown</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ None</td>
                   </tr>
 
-                  <tr style="border-bottom:0.5px solid #EDE8E2">
-                    <td style="padding:10px 12px;font-size:13px;color:#1A1714;font-weight:500">Permission levels</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#854F0B;font-weight:500">✓ Viewer/Editor</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#854F0B;font-weight:500">✗ Anyone can delete</td>
+                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Permission levels</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✓ Viewer/Editor</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ Anyone can delete</td>
                   </tr>
 
-                  <tr style="border-bottom:0.5px solid #EDE8E2">
-                    <td style="padding:10px 12px;font-size:13px;color:#1A1714;font-weight:500">No ads</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#3B6D11;font-weight:500">✓</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#854F0B;font-weight:500">✗ Ad-supported free</td>
+                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>No ads</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ Ad-supported free</td>
                   </tr>
 
-                  <tr style="border-bottom:0.5px solid #EDE8E2">
-                    <td style="padding:10px 12px;font-size:13px;color:#1A1714;font-weight:500">Board sharing</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#3B6D11;font-weight:500">✓</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#3B6D11;font-weight:500">✓</td>
+                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Board sharing</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
                   </tr>
 
-                  <tr style="border-bottom:0.5px solid #EDE8E2">
-                    <td style="padding:10px 12px;font-size:13px;color:#1A1714;font-weight:500">No bait-and-switch pricing</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#3B6D11;font-weight:500">✓</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#A32D2D;font-weight:500">✗</td>
+                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>No bait-and-switch pricing</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#A32D2D', fontWeight: '500' }}}>✗</td>
                   </tr>
             </tbody>
           </table>

@@ -32,43 +32,43 @@ a { color: inherit; text-decoration: none; }
         <div style={{ maxWidth: 720, margin: '0 auto', padding: '52px 24px' }}>
           <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(22px,3vw,32px)', fontWeight: 400, color: '#1A1714', marginBottom: 32, textAlign: 'center' }}>The freelancer's productivity paradox</h2>
           
-              <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:20px">
-                <div style="width:32px;height:32px;border-radius:50%;background:#EBF5FB;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
+                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#EBF5FB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#2874A6" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style="font-size:15px;font-weight:500;color:#1A1714;margin-bottom:3px">Your project management tool was built for teams of 20</div>
-                  <div style="font-size:13px;color:#6B6059;line-height:1.6">Asana, Jira, Monday — overkill for one person. You spend more time maintaining the system than doing the work.</div>
+                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Your project management tool was built for teams of 20</div>
+                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Asana, Jira, Monday — overkill for one person. You spend more time maintaining the system than doing the work.</div>
                 </div>
               </div>
 
-              <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:20px">
-                <div style="width:32px;height:32px;border-radius:50%;background:#EBF5FB;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
+                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#EBF5FB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#2874A6" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style="font-size:15px;font-weight:500;color:#1A1714;margin-bottom:3px">Client updates require you to write a separate email</div>
-                  <div style="font-size:13px;color:#6B6059;line-height:1.6">You update Asana for yourself, then write an email for the client. Same information, written twice.</div>
+                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Client updates require you to write a separate email</div>
+                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>You update Asana for yourself, then write an email for the client. Same information, written twice.</div>
                 </div>
               </div>
 
-              <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:20px">
-                <div style="width:32px;height:32px;border-radius:50%;background:#EBF5FB;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
+                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#EBF5FB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#2874A6" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style="font-size:15px;font-weight:500;color:#1A1714;margin-bottom:3px">Todoist is fast but everything lives in one flat list</div>
-                  <div style="font-size:13px;color:#6B6059;line-height:1.6">No structure by client. No way to see 'everything for Acme Corp.' Just a long list of tasks from everywhere.</div>
+                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Todoist is fast but everything lives in one flat list</div>
+                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>No structure by client. No way to see 'everything for Acme Corp.' Just a long list of tasks from everywhere.</div>
                 </div>
               </div>
 
-              <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:20px">
-                <div style="width:32px;height:32px;border-radius:50%;background:#EBF5FB;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
+                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#EBF5FB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#2874A6" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style="font-size:15px;font-weight:500;color:#1A1714;margin-bottom:3px">Dark mode is not optional at 11pm</div>
-                  <div style="font-size:13px;color:#6B6059;line-height:1.6">Blinding white interfaces at night are a real quality-of-life issue for freelancers who work late.</div>
+                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Dark mode is not optional at 11pm</div>
+                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Blinding white interfaces at night are a real quality-of-life issue for freelancers who work late.</div>
                 </div>
               </div>
         </div>
@@ -79,36 +79,36 @@ a { color: inherit; text-decoration: none; }
         <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(22px,3vw,32px)', fontWeight: 400, color: '#1A1714', marginBottom: 32, textAlign: 'center' }}>What makes Clarityboards different</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16 }}>
           
-              <div style="background:white;border:0.5px solid #C8BFB5;border-radius:12px;padding:20px">
-                <div style="width:36px;height:36px;border-radius:8px;background:#EBF5FB;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
+                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#EBF5FB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2874A6" strokeWidth="1.5"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 3H8L6 7h12l-2-4z"/></svg>
                 </div>
-                <div style="font-size:14px;font-weight:500;color:#1A1714;margin-bottom:6px">WorkBoard structured by client</div>
-                <div style="font-size:13px;color:#6B6059;line-height:1.6">Each client as a pinned item at the top. Their projects, deadlines, and notes inside. One board that gives you the full picture.</div>
+                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>WorkBoard structured by client</div>
+                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Each client as a pinned item at the top. Their projects, deadlines, and notes inside. One board that gives you the full picture.</div>
               </div>
 
-              <div style="background:white;border:0.5px solid #C8BFB5;border-radius:12px;padding:20px">
-                <div style="width:36px;height:36px;border-radius:8px;background:#EBF5FB;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
+                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#EBF5FB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2874A6" strokeWidth="1.5"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
                 </div>
-                <div style="font-size:14px;font-weight:500;color:#1A1714;margin-bottom:6px">Share a view with clients</div>
-                <div style="font-size:13px;color:#6B6059;line-height:1.6">Generate a read-only link to your WorkBoard. Clients see project status in real time — no more 'quick status update?' emails.</div>
+                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Share a view with clients</div>
+                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Generate a read-only link to your WorkBoard. Clients see project status in real time — no more 'quick status update?' emails.</div>
               </div>
 
-              <div style="background:white;border:0.5px solid #C8BFB5;border-radius:12px;padding:20px">
-                <div style="width:36px;height:36px;border-radius:8px;background:#EBF5FB;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
+                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#EBF5FB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2874A6" strokeWidth="1.5"><path d="M12 5v14M5 12h14"/></svg>
                 </div>
-                <div style="font-size:14px;font-weight:500;color:#1A1714;margin-bottom:6px">⌘J anywhere to capture instantly</div>
-                <div style="font-size:13px;color:#6B6059;line-height:1.6">New client request comes in on a call? Hit Cmd+J, type it, done. No context switch, no lost thought.</div>
+                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>⌘J anywhere to capture instantly</div>
+                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>New client request comes in on a call? Hit Cmd+J, type it, done. No context switch, no lost thought.</div>
               </div>
 
-              <div style="background:white;border:0.5px solid #C8BFB5;border-radius:12px;padding:20px">
-                <div style="width:36px;height:36px;border-radius:8px;background:#EBF5FB;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
+                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#EBF5FB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2874A6" strokeWidth="1.5"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
                 </div>
-                <div style="font-size:14px;font-weight:500;color:#1A1714;margin-bottom:6px">Dark mode, properly warm</div>
-                <div style="font-size:13px;color:#6B6059;line-height:1.6">Not the harsh gray-on-black of most dark modes. Clarityboards dark mode uses deep warm ink tones that are genuinely comfortable to work in.</div>
+                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Dark mode, properly warm</div>
+                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Not the harsh gray-on-black of most dark modes. Clarityboards dark mode uses deep warm ink tones that are genuinely comfortable to work in.</div>
               </div>
         </div>
       </div>
@@ -135,40 +135,40 @@ a { color: inherit; text-decoration: none; }
             </thead>
             <tbody>
               
-                  <tr style="border-bottom:0.5px solid #EDE8E2">
-                    <td style="padding:10px 12px;font-size:13px;color:#1A1714;font-weight:500">Client-structured view</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#3B6D11;font-weight:500">✓</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#854F0B;font-weight:500">✗ Flat list only</td>
+                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Client-structured view</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ Flat list only</td>
                   </tr>
 
-                  <tr style="border-bottom:0.5px solid #EDE8E2">
-                    <td style="padding:10px 12px;font-size:13px;color:#1A1714;font-weight:500">Client read-only sharing</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#3B6D11;font-weight:500">✓</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#A32D2D;font-weight:500">✗</td>
+                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Client read-only sharing</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#A32D2D', fontWeight: '500' }}}>✗</td>
                   </tr>
 
-                  <tr style="border-bottom:0.5px solid #EDE8E2">
-                    <td style="padding:10px 12px;font-size:13px;color:#1A1714;font-weight:500">⌘J quick-add</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#3B6D11;font-weight:500">✓</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#854F0B;font-weight:500">✓ Global hotkey</td>
+                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>⌘J quick-add</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✓ Global hotkey</td>
                   </tr>
 
-                  <tr style="border-bottom:0.5px solid #EDE8E2">
-                    <td style="padding:10px 12px;font-size:13px;color:#1A1714;font-weight:500">Warm dark mode</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#3B6D11;font-weight:500">✓</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#854F0B;font-weight:500">~ Functional</td>
+                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Warm dark mode</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>~ Functional</td>
                   </tr>
 
-                  <tr style="border-bottom:0.5px solid #EDE8E2">
-                    <td style="padding:10px 12px;font-size:13px;color:#1A1714;font-weight:500">Project archive</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#3B6D11;font-weight:500">✓</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#A32D2D;font-weight:500">✗</td>
+                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Project archive</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#A32D2D', fontWeight: '500' }}}>✗</td>
                   </tr>
 
-                  <tr style="border-bottom:0.5px solid #EDE8E2">
-                    <td style="padding:10px 12px;font-size:13px;color:#1A1714;font-weight:500">Price</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#854F0B;font-weight:500">Free · $99/yr</td>
-                    <td style="padding:10px 12px;font-size:13px;text-align:center;color:#854F0B;font-weight:500">$48/yr Pro</td>
+                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Price</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>Free · $99/yr</td>
+                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>$48/yr Pro</td>
                   </tr>
             </tbody>
           </table>
