@@ -13,6 +13,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useGoogleCalendarSync } from "@/lib/useGoogleCalendarSync";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -85,6 +86,7 @@ function StatusPill({ connected }: { connected: boolean }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function GCalSyncPanel() {
+  const router = useRouter();
   const { pullEvents, syncing, lastSynced, error } = useGoogleCalendarSync();
 
   const [connected] = useState(true); // In production: derive from session.provider_token existence
