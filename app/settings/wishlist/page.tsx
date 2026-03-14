@@ -358,7 +358,7 @@ function EmptyLists({onAdd}:{onAdd:()=>void}) {
           <div key={key} style={{background:'white',borderRadius:12,border:'1px solid #EDE9E3',padding:'16px 14px',textAlign:'left'}}>
             <div style={{fontSize:24,marginBottom:6}}>{lt.emoji}</div>
             <div style={{fontFamily:T.serif,fontSize:15,color:T.ink,fontWeight:500}}>{lt.label}</div>
-            <div style={{fontSize:11,color:T.sub,marginTop:2}}>{key==='birthday'?'Share with family':key==='holiday'?'Track who bought what':key==='registry'?'Wedding, baby, graduation':key==='grocery'?'Save for later':key==='home'?'Furniture & decor':'Anything you want'}</div>
+            <div style={{fontSize:11,color:T.sub,marginTop:2}}>{key==='birthday'?'Share with family':key==='holiday'?'Track who bought what':key==='registry'?'Wedding, baby, graduation':key==='grocery'?'Save for later':key==='home'?'Furniture & decor':key==='custom'?'Create your own category':'Anything you want'}</div>
           </div>
         ))}
       </div>
@@ -373,11 +373,12 @@ function EmptyItems({listType,onAdd}:{listType:ListType;onAdd:()=>void}) {
   const lt = LIST_TYPES[listType];
   const examples: Record<ListType,string[]> = {
     birthday: ['Loft dress','WHBM blazer','Amazon Echo'],
-    holiday: ['AirPods','Le Creuset pot','Candle set'],
-    registry:  ['KitchenAid mixer','Pottery Barn throw','Cuisinart set'],
-    grocery:   ['Organic olive oil','Truffle salt','Specialty cheese'],
-    home:      ['CB2 lamp','Article sofa','West Elm rug'],
-    general:   ['Anything you want','Any product URL','Price watched automatically'],
+    holiday:  ['AirPods','Le Creuset pot','Candle set'],
+    registry: ['KitchenAid mixer','Pottery Barn throw','Cuisinart set'],
+    grocery:  ['Organic olive oil','Truffle salt','Specialty cheese'],
+    home:     ['CB2 lamp','Article sofa','West Elm rug'],
+    custom:   ['Anything you want','Any product URL','Price watched automatically'],
+    general:  ['Anything you want','Any product URL','Price watched automatically'],
   };
   return (
     <div style={{textAlign:'center',padding:'48px 20px'}}>
