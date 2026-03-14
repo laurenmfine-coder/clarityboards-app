@@ -1,12 +1,13 @@
 'use client';
 export default function LandingPage() {
+  const wrapStyle = {
+    fontFamily: "'DM Sans', system-ui, sans-serif" as const,
+    background: '#F7F4F0' as const,
+    color: '#1A1714' as const,
+    minHeight: '100vh' as const,
+  }
   return (
-    <div style={{
-      fontFamily: "'DM Sans', system-ui, sans-serif",
-      background: '#F7F4F0',
-      color: '#1A1714',
-      minHeight: "100vh"
-    }}>
+    <div style={wrapStyle}>
 
       {/* Nav */}
       <nav style={{ background: '#1A1714', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 10 }}>
