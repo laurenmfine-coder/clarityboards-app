@@ -182,7 +182,7 @@ const BOARD_COLORS: Record<string, string> = {
   event: "#1B4F8A", study: "#2E9E8F", activity: "#E67E22", career: "#8E44AD", task: "#27AE60",
 };
 const BOARD_LABELS: Record<string, string> = {
-  event: "EventBoard", study: "StudyBoard", activity: "ActivityBoard", career: "CareerBoard", task: "TaskBoard",
+  event: "EventBoard", study: "StudyBoard", activity: "ActivityBoard", career: "WorkBoard", task: "TaskBoard",
 };
 
 export default function TemplatesPage() {

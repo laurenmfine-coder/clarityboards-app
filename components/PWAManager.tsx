@@ -67,39 +67,38 @@ export default function PWAManager() {
     <div
       style={{
         position: "fixed",
-        bottom: 20,
+        bottom: "calc(64px + env(safe-area-inset-bottom, 0px))",
         left: "50%",
         transform: "translateX(-50%)",
         zIndex: 9999,
         width: "calc(100% - 32px)",
-        maxWidth: 420,
-        background: "#1A2B3C",
-        borderRadius: 16,
+        maxWidth: 400,
+        background: "#1A1714",
+        borderRadius: 12,
         padding: "14px 16px",
         display: "flex",
         alignItems: "center",
         gap: 12,
-        boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
-        animation: "slideUp 0.3s ease",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
+        border: "0.5px solid rgba(255,255,255,0.08)",
+        animation: "slideUp 0.28s cubic-bezier(0.32,0.72,0,1)",
       }}
     >
-      <style>{`@keyframes slideUp { from { transform: translateX(-50%) translateY(20px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }`}</style>
-      <div style={{ fontSize: 28, flexShrink: 0 }}>📱</div>
-      <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "white", marginBottom: 2 }}>Add to Home Screen</div>
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", lineHeight: 1.4 }}>Open Clarityboards like an app — no browser bar</div>
+      <style>{`@keyframes slideUp { from { transform: translateX(-50%) translateY(16px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }`}</style>
+      <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(139,107,82,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8B6B52" strokeWidth="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
       </div>
-      <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-        <button
-          onClick={dismiss}
-          style={{ background: "rgba(255,255,255,0.1)", border: "none", borderRadius: 8, padding: "7px 11px", fontSize: 12, color: "rgba(255,255,255,0.6)", cursor: "pointer", fontFamily: "inherit" }}
-        >
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "white", marginBottom: 2, fontFamily: "'DM Sans', system-ui, sans-serif" }}>Add to your home screen</div>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", lineHeight: 1.4, fontFamily: "'DM Sans', system-ui, sans-serif" }}>Open Clarityboards like an app, no browser bar</div>
+      </div>
+      <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+        <button onClick={dismiss}
+          style={{ background: "rgba(255,255,255,0.08)", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 6, padding: "6px 10px", fontSize: 12, color: "rgba(255,255,255,0.5)", cursor: "pointer", fontFamily: "'DM Sans', system-ui, sans-serif" }}>
           Later
         </button>
-        <button
-          onClick={install}
-          style={{ background: "#2874A6", border: "none", borderRadius: 8, padding: "7px 14px", fontSize: 12, fontWeight: 700, color: "white", cursor: "pointer", fontFamily: "inherit" }}
-        >
+        <button onClick={install}
+          style={{ background: "#8B6B52", border: "none", borderRadius: 6, padding: "6px 14px", fontSize: 12, fontWeight: 600, color: "white", cursor: "pointer", fontFamily: "'DM Sans', system-ui, sans-serif", letterSpacing: "0.01em" }}>
           Add
         </button>
       </div>
