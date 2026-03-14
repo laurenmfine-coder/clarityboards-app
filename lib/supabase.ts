@@ -1,25 +1,11 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js'
 
-let _supabase: SupabaseClient | null = null
+const supabaseUrl  = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseKey  = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-export function getSupabase() {
-  if (!_supabase) {
-    _supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
-  }
-  return _supabase
-}
+export const supabase = createClient(supabaseUrl, supabaseKey)
 
-// Proxy object so existing `supabase.xxx` calls still work
-export const supabase = new Proxy({} as SupabaseClient, {
-  get(_target, prop) {
-    return (getSupabase() as any)[prop]
-  }
-})
-
-export type Board = 'event' | 'study' | 'activity' | 'career' | 'task' | 'meal' | 'travel' | 'wishlist'
+export type Board = 'event' | 'study' | 'activity' | 'career' | 'task'
 
 export interface Item {
   id: string

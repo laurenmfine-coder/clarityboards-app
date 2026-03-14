@@ -222,14 +222,18 @@ function OnboardingTour({ onComplete }: { onComplete: () => void }) {
   const [activeBoard, setActiveBoard] = useState('event')
 
   const TOUR_STEPS = [
-    { id: 'welcome',  target: null,                          position: 'center', title: t('welcome.title'),  body: t('welcome.body'),  cta: t('welcome.cta'),  icon: '✦', color: '#1B4F8A' },
-    { id: 'boards',   target: "[data-tour='board-tabs']",    position: 'bottom', title: t('boards.title'),   body: t('boards.body'),   cta: t('boards.cta'),   icon: '🗂️', color: '#1B4F8A' },
-    { id: 'add-item', target: "[data-tour='add-button']",    position: 'left',   title: t('addItem.title'),  body: t('addItem.body'),  cta: t('addItem.cta'),  icon: '➕', color: '#2E9E8F' },
-    { id: 'checklist',target: "[data-tour='checklist']",     position: 'top',    title: t('checklist.title'),body: t('checklist.body'),cta: t('checklist.cta'),icon: '☑️', color: '#E67E22' },
-    { id: 'status',   target: "[data-tour='status-badge']",  position: 'bottom', title: t('status.title'),   body: t('status.body'),   cta: t('status.cta'),   icon: '🏷️', color: '#8E44AD' },
-    { id: 'unified',  target: "[data-tour='unified-feed']",  position: 'top',    title: t('unified.title'),  body: t('unified.body'),  cta: t('unified.cta'),  icon: '🔀', color: '#1B4F8A' },
-    { id: 'upgrade',  target: "[data-tour='upgrade-banner']",position: 'top',    title: t('upgrade.title'),  body: t('upgrade.body'),  cta: t('upgrade.cta'),  icon: '⭐', color: '#27AE60' },
-    { id: 'done',     target: null,                          position: 'center', title: t('done.title'),     body: t('done.body'),     cta: t('done.cta'),     icon: '🎉', color: '#1B4F8A' },
+    { id: 'welcome',   target: null,                           position: 'center', title: t('welcome.title'),   body: t('welcome.body'),   cta: t('welcome.cta'),   icon: '✦',  color: '#1B4F8A' },
+    { id: 'boards',    target: "[data-tour='board-tabs']",     position: 'bottom', title: t('boards.title'),    body: t('boards.body'),    cta: t('boards.cta'),    icon: '🗂️', color: '#1B4F8A' },
+    { id: 'add-item',  target: "[data-tour='add-button']",     position: 'left',   title: t('addItem.title'),   body: t('addItem.body'),   cta: t('addItem.cta'),   icon: '➕',  color: '#2E9E8F' },
+    { id: 'checklist', target: "[data-tour='checklist']",      position: 'top',    title: t('checklist.title'), body: t('checklist.body'), cta: t('checklist.cta'), icon: '☑️', color: '#E67E22' },
+    { id: 'status',    target: "[data-tour='status-badge']",   position: 'bottom', title: t('status.title'),    body: t('status.body'),    cta: t('status.cta'),    icon: '🏷️', color: '#8E44AD' },
+    { id: 'unified',   target: "[data-tour='unified-feed']",   position: 'top',    title: t('unified.title'),   body: t('unified.body'),   cta: t('unified.cta'),   icon: '🔀',  color: '#1B4F8A' },
+    { id: 'recurring', target: null,                           position: 'center', title: t('recurring.title'), body: t('recurring.body'), cta: t('recurring.cta'), icon: '🔁',  color: '#2E9E8F' },
+    { id: 'move',      target: null,                           position: 'center', title: t('move.title'),      body: t('move.body'),      cta: t('move.cta'),      icon: '↔️', color: '#E67E22' },
+    { id: 'ical',      target: null,                           position: 'center', title: t('ical.title'),      body: t('ical.body'),      cta: t('ical.cta'),      icon: '📅',  color: '#8E44AD' },
+    { id: 'export',    target: null,                           position: 'center', title: t('export.title'),    body: t('export.body'),    cta: t('export.cta'),    icon: '📤',  color: '#27AE60' },
+    { id: 'upgrade',   target: "[data-tour='upgrade-banner']", position: 'top',    title: t('upgrade.title'),   body: t('upgrade.body'),   cta: t('upgrade.cta'),   icon: '⭐',  color: '#27AE60' },
+    { id: 'done',      target: null,                           position: 'center', title: t('done.title'),      body: t('done.body'),      cta: t('done.cta'),      icon: '🎉',  color: '#1B4F8A' },
   ]
 
   const step = TOUR_STEPS[stepIndex]
