@@ -97,7 +97,7 @@ async function fetchProductData(url: string): Promise<{
       /property=["']product:price:amount["'][^>]*content=["']([^"']+)["']/i,
       /content=["']([^"']+)["'][^>]*property=["']product:price:amount["']/i,
       /"price"\s*:\s*"?([\d.]+)"?/,
-      /"offers"\s*:.*?"price"\s*:\s*"?([\d.]+)"?/s,
+      /"offers"[\s\S]*?"price"\s*:\s*"?([\d.]+)"?/,
       /data-price=["']([\d.]+)["']/i,
       /class=["'][^"']*price[^"']*["'][^>]*>\s*\$?\s*([\d,]+\.?\d*)/i,
     ]
