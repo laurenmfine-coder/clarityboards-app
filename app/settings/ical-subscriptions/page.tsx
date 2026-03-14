@@ -176,7 +176,20 @@ export default function ICalSubscriptionsPage() {
   )
 
   return (
-    <div className="min-h-screen background: "#FAFAF8"" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+    <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", minHeight: '100vh', background: '#FAFAF8' }}>
+      <nav style={{ background: '#1A1714', borderBottom: '0.5px solid rgba(255,255,255,0.06)', position: 'sticky', top: 0, zIndex: 30 }}>
+        <div style={{ maxWidth: 680, margin: '0 auto', padding: '0 24px', height: 54, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={() => router.push('/dashboard')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: 13, fontWeight: 300, padding: 0 }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 12L6 8l4-4"/></svg>
+            Dashboard
+          </button>
+          <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.12)' }}/>
+          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: 'white', fontSize: 19, fontWeight: 400, letterSpacing: '0.01em' }}>
+            Subscribe to Calendars
+          </span>
+        </div>
+      </nav>
 
       {/* Header */}
       <div className="bg-[#1A2B3C] px-6 py-4 flex items-center gap-4">
@@ -257,7 +270,7 @@ export default function ICalSubscriptionsPage() {
                             {boardCfg.label}
                           </span>
                         ) : (
-                          <span className="text-xs font-medium px-2 py-0.5 rounded-full background: "#FAFAF8" text-[#5A7A94]">
+                          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#FAFAF8] text-[#5A7A94]">
                             Auto-detect board
                           </span>
                         )}
@@ -280,7 +293,7 @@ export default function ICalSubscriptionsPage() {
                             ? 'bg-red-50 text-red-600'
                             : result.imported > 0
                               ? 'bg-green-50 text-green-700'
-                              : 'background: "#FAFAF8" text-[#5A7A94]'
+                              : 'bg-[#FAFAF8] text-[#5A7A94]'
                         }`}>
                           {result.error ? (
                             <><X size={11} /> Error: {result.error}</>
@@ -337,7 +350,7 @@ export default function ICalSubscriptionsPage() {
 
         {/* Example sources */}
         <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden">
-          <div className="px-5 py-3 border-b border-[#F0ECE4] background: "#FAFAF8"">
+          <div className="px-5 py-3 border-b border-[#F0ECE4] bg-[#FAFAF8]">
             <span className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider">Where to find .ics URLs</span>
           </div>
           {EXAMPLE_URLS.map((ex, i) => (
