@@ -335,6 +335,7 @@ export default function GCalSyncPanel() {
           )}
         </>
       )}
+      </div>
     </div>
   );
 }
