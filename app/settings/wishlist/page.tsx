@@ -1,12 +1,17 @@
 "use client";
 /**
- * Clarityboards — WishlistBoard
+ * Clarityboards — WishlistBoard (v3 — Editorial Retail Redesign)
  * File: app/settings/wishlist/page.tsx
+ *
+ * Aesthetic: Loft / Lou Grey editorial retail — warm ivory, thin serifs,
+ * clean SVG icons, generous whitespace, refined product grid.
+ * No emojis. Professional, shoppable, shareable.
  */
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
+// ── Types ──────────────────────────────────────────────────
 interface Wishlist {
   id: string; user_id: string; name: string;
   list_type: ListType; description: string | null;
@@ -21,38 +26,78 @@ interface WishItem {
   priority: Priority; status: ItemStatus;
   purchased_by: string | null; watch_id: string | null;
 }
-type ListType  = 'birthday'|'holiday'|'registry'|'grocery'|'home'|'custom'|'general';
-type Priority  = 'high'|'medium'|'low';
+type ListType   = 'birthday'|'holiday'|'registry'|'grocery'|'home'|'custom'|'general';
+type Priority   = 'high'|'medium'|'low';
 type ItemStatus = 'want'|'purchased'|'received';
 
-const T = {
-  cream:'#FAF9F7', ivory:'#FFFEF9', sand:'#F2EDE6',
-  border:'#EDE9E3', muted:'#C8B8A8', sub:'#9C8B7A',
-  ink:'#2C2318', purple:'#9B6B9E', purpleLight:'#F5EDF6',
-  serif:"'Cormorant Garamond',Georgia,serif",
-  sans:"'DM Sans',system-ui,sans-serif",
+// ── Design System ──────────────────────────────────────────
+const C = {
+  bg:       '#FAFAF8',
+  surface:  '#FFFFFF',
+  warm:     '#F5F2EE',
+  border:   '#E8E4DF',
+  borderSoft:'#F0EDE8',
+  ink:      '#1A1714',
+  inkMid:   '#5C5650',
+  inkLight: '#9C968F',
+  accent:   '#8B6B52',      // warm cognac — the one color
+  accentBg: '#F7F0EB',
+  success:  '#3D6B52',
+  successBg:'#EDF5F0',
+  serif:    "'Cormorant Garamond', 'Georgia', serif",
+  sans:     "'DM Sans', system-ui, sans-serif",
+  mono:     "'DM Mono', monospace",
 };
 
-const LIST_TYPES: Record<ListType,{emoji:string;label:string;color:string}> = {
-  birthday: {emoji:'🎂',label:'Birthday',  color:'#C17A5A'},
-  holiday:  {emoji:'🎄',label:'Holiday',   color:'#2C6E8A'},
-  registry: {emoji:'💍',label:'Registry',  color:'#9B6B9E'},
-  grocery:  {emoji:'🛒',label:'Grocery',   color:'#5C8B6A'},
-  home:     {emoji:'🏠',label:'Home',      color:'#8B6B3C'},
-  custom:   {emoji:'✏️', label:'Custom',   color:'#6B6B8A'},
-  general:  {emoji:'✦', label:'General',   color:'#6B6B8A'},
-};
-const PRIORITY_STYLES: Record<Priority,{emoji:string;label:string;bg:string;text:string}> = {
-  high:   {emoji:'🔴',label:'High',  bg:'#FADBD8',text:'#8B2020'},
-  medium: {emoji:'🟡',label:'Medium',bg:'#FEF3CD',text:'#8B6914'},
-  low:    {emoji:'🟢',label:'Low',   bg:'#D5F0E0',text:'#1E6B40'},
-};
-const STATUS_STYLES: Record<ItemStatus,{label:string;bg:string;text:string}> = {
-  want:      {label:'Want it',   bg:'#F5EDF6',text:'#9B6B9E'},
-  purchased: {label:'Purchased', bg:'#D5F0E0',text:'#1E6B40'},
-  received:  {label:'Received ✓',bg:'#EAEDED',text:'#717D7E'},
+// ── SVG Icon set (no emojis) ───────────────────────────────
+const Icon = {
+  cake:     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2C12 2 10 5 10 7a2 2 0 004 0c0-2-2-5-2-5z"/><rect x="3" y="9" width="18" height="13" rx="1"/><path d="M3 14h18M7 9V8M12 9V8M17 9V8"/></svg>,
+  holiday:  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 3L8 9h8l-4-6z"/><path d="M9.5 9L6 15h12l-3.5-6"/><path d="M7 15l-2 5h14l-2-5"/><line x1="12" y1="3" x2="12" y2="1"/></svg>,
+  ring:     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="14" r="7"/><path d="M9 14h6M12 11v6"/><path d="M8 7l1.5-3h5L16 7"/></svg>,
+  cart:     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>,
+  home:     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>,
+  tag:      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>,
+  star:     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>,
+  plus:     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+  share:    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
+  eye:      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
+  check:    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20,6 9,17 4,12"/></svg>,
+  arrow:    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>,
+  x:        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+  back:     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>,
+  alert:    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>,
+  edit:     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
+  trash:    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>,
+  copy:     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>,
+  lock:     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>,
+  unlock:   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 019.9-1"/></svg>,
 };
 
+const LIST_TYPES: Record<ListType,{icon:React.ReactNode;label:string;color:string;sub:string}> = {
+  birthday: {icon:Icon.cake,    label:'Birthday',  color:'#8B6B52', sub:'Share with family & friends'},
+  holiday:  {icon:Icon.holiday, label:'Holiday',   color:'#3D6B52', sub:'Track who bought what'},
+  registry: {icon:Icon.ring,    label:'Registry',  color:'#6B528B', sub:'Wedding, baby & graduation'},
+  grocery:  {icon:Icon.cart,    label:'Grocery',   color:'#52788B', sub:'Specialty & pantry items'},
+  home:     {icon:Icon.home,    label:'Home',      color:'#8B7852', sub:'Furniture, decor & more'},
+  custom:   {icon:Icon.tag,     label:'Custom',    color:'#52628B', sub:'Your own category'},
+  general:  {icon:Icon.star,    label:'General',   color:'#5C5650', sub:'Anything you want'},
+};
+
+const PRIORITY_CONFIG: Record<Priority,{label:string;dot:string}> = {
+  high:   {label:'High priority',   dot:'#C0392B'},
+  medium: {label:'Medium priority', dot:'#E67E22'},
+  low:    {label:'Low priority',    dot:'#27AE60'},
+};
+
+const STATUS_CONFIG: Record<ItemStatus,{label:string;bg:string;text:string}> = {
+  want:      {label:'Want',      bg:C.accentBg,   text:C.accent},
+  purchased: {label:'Purchased', bg:C.successBg,  text:C.success},
+  received:  {label:'Received',  bg:'#F0EDE8',    text:C.inkMid},
+};
+
+// ══════════════════════════════════════════════════════════
+// MAIN PAGE
+// ══════════════════════════════════════════════════════════
 export default function WishlistBoardPage() {
   const router = useRouter();
   const [lists, setLists]           = useState<Wishlist[]>([]);
@@ -63,13 +108,13 @@ export default function WishlistBoardPage() {
   const [showAddItem, setShowAddItem]   = useState(false);
   const [detailItem, setDetailItem]     = useState<WishItem|null>(null);
   const [shareModal, setShareModal]     = useState<Wishlist|null>(null);
-  const [copiedToken, setCopiedToken]   = useState(false);
+  const [copied, setCopied]             = useState(false);
 
   useEffect(() => { loadLists(); }, []);
 
   const hdrs = async () => {
-    const { data:{session} } = await supabase.auth.getSession();
-    return { Authorization:`Bearer ${session?.access_token??''}`, 'Content-Type':'application/json' };
+    const {data:{session}} = await supabase.auth.getSession();
+    return {Authorization:`Bearer ${session?.access_token??''}`, 'Content-Type':'application/json'};
   };
   const api = async (method:string, path:string, body?:object) => {
     const h = await hdrs();
@@ -77,21 +122,19 @@ export default function WishlistBoardPage() {
   };
 
   const loadLists = async () => {
-    const { data:{user} } = await supabase.auth.getUser();
+    const {data:{user}} = await supabase.auth.getUser();
     if (!user) { router.push('/login'); return; }
     const r = await api('GET','/api/wishlist?action=lists');
     const d = await r.json();
     setLists(d.lists??[]);
     setLoading(false);
   };
-
   const openList = async (list:Wishlist) => {
     setActiveList(list);
     const r = await api('GET',`/api/wishlist?action=items&listId=${list.id}`);
     const d = await r.json();
     setItems(d.items??[]);
   };
-
   const createList = async (data:Partial<Wishlist>) => {
     const r = await api('POST','/api/wishlist?action=list',data);
     const d = await r.json();
@@ -107,7 +150,6 @@ export default function WishlistBoardPage() {
     setLists(prev=>prev.filter(l=>l.id!==id));
     setActiveList(null); setItems([]);
   };
-
   const addItem = async (data:Partial<WishItem>) => {
     const r = await api('POST','/api/wishlist?action=item',{...data,wishlist_id:activeList?.id});
     const d = await r.json();
@@ -124,219 +166,262 @@ export default function WishlistBoardPage() {
     setItems(prev=>prev.filter(i=>i.id!==id));
     setDetailItem(null);
   };
-
   const toggleShare = async (list:Wishlist) => {
     const r = await api('POST',`/api/wishlist?action=share&id=${list.id}`,{is_public:!list.is_public});
     const d = await r.json();
-    if (d.list) {
-      setLists(prev=>prev.map(l=>l.id===list.id?d.list:l));
-      setShareModal(d.list);
-    }
+    if (d.list) { setLists(prev=>prev.map(l=>l.id===list.id?d.list:l)); setShareModal(d.list); }
   };
-
   const shareUrl = (list:Wishlist) =>
     typeof window!=='undefined' ? `${window.location.origin}/share/wishlist/${list.share_token}` : '';
-
-  const copyShareUrl = (list:Wishlist) => {
+  const copyUrl = (list:Wishlist) => {
     navigator.clipboard.writeText(shareUrl(list));
-    setCopiedToken(true);
-    setTimeout(()=>setCopiedToken(false), 2000);
+    setCopied(true); setTimeout(()=>setCopied(false),2000);
   };
 
-  // Group items by status for display
   const wantItems      = items.filter(i=>i.status==='want');
   const purchasedItems = items.filter(i=>i.status!=='want');
   const lt = activeList ? LIST_TYPES[activeList.list_type] : null;
 
   return (
-    <div style={{fontFamily:T.sans,minHeight:'100vh',background:T.cream}}>
+    <div style={{fontFamily:C.sans,minHeight:'100vh',background:C.bg,color:C.ink}}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
-        *{box-sizing:border-box;}
-        .wcard:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(44,35,24,0.12)!important;}
-        .lcard:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(44,35,24,0.12)!important;}
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+        *{box-sizing:border-box;-webkit-font-smoothing:antialiased;}
+        .item-card{transition:box-shadow 0.2s,transform 0.2s;}
+        .item-card:hover{box-shadow:0 4px 20px rgba(26,23,20,0.10)!important;transform:translateY(-1px);}
+        .list-row:hover{background:#FDFCFA!important;}
+        .btn-ghost:hover{background:${C.warm}!important;}
+        .btn-accent:hover{background:#7A5A42!important;}
+        input:focus,textarea:focus{border-color:${C.accent}!important;outline:none;}
+        .pill-select:hover{border-color:${C.ink}!important;}
+        .pill-select.active{background:${C.ink}!important;color:white!important;border-color:${C.ink}!important;}
       `}</style>
 
-      {/* Nav */}
-      <nav style={{background:T.ink,padding:'0 20px',position:'sticky',top:0,zIndex:30}}>
-        <div style={{maxWidth:960,margin:'0 auto',height:56,display:'flex',alignItems:'center',gap:12}}>
+      {/* ── Top navigation bar ── */}
+      <header style={{borderBottom:`1px solid ${C.border}`,background:C.surface,position:'sticky',top:0,zIndex:40}}>
+        <div style={{maxWidth:1100,margin:'0 auto',padding:'0 24px',height:56,display:'flex',alignItems:'center',gap:16}}>
           <button onClick={()=>{if(activeList){setActiveList(null);setItems([]);}else router.push('/dashboard');}}
-            style={{color:'rgba(255,255,255,0.5)',background:'none',border:'none',cursor:'pointer',fontSize:13,fontFamily:T.sans}}>
-            ← {activeList?'All Lists':'Dashboard'}
+            style={{display:'flex',alignItems:'center',gap:6,color:C.inkMid,background:'none',border:'none',cursor:'pointer',fontFamily:C.sans,fontSize:13,padding:'4px 0'}}>
+            <span style={{color:C.inkLight}}>{Icon.back}</span>
+            <span>{activeList?'All Lists':'Dashboard'}</span>
           </button>
-          <div style={{width:1,height:20,background:'rgba(255,255,255,0.12)'}}/>
-          <span style={{fontFamily:T.serif,color:'white',fontSize:19,fontWeight:500}}>
-            {activeList ? `${lt?.emoji} ${activeList.name}` : '✦ WishlistBoard'}
-          </span>
-          <div style={{marginLeft:'auto',display:'flex',gap:8}}>
+
+          <div style={{width:1,height:20,background:C.border}}/>
+
+          <div style={{flex:1}}>
+            {activeList ? (
+              <div style={{display:'flex',alignItems:'baseline',gap:10}}>
+                <span style={{fontFamily:C.serif,fontSize:20,fontWeight:400,letterSpacing:'0.01em'}}>{activeList.name}</span>
+                {activeList.is_public && (
+                  <span style={{fontSize:11,color:C.success,fontWeight:500,letterSpacing:'0.04em',textTransform:'uppercase'}}>Shared</span>
+                )}
+              </div>
+            ) : (
+              <span style={{fontFamily:C.serif,fontSize:20,fontWeight:400,letterSpacing:'0.01em'}}>Wish Lists</span>
+            )}
+          </div>
+
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
             {activeList && (
               <button onClick={()=>setShareModal(activeList)}
-                style={{padding:'6px 14px',borderRadius:20,border:'none',background:'rgba(255,255,255,0.12)',color:'white',fontWeight:600,fontSize:11,cursor:'pointer',fontFamily:T.sans}}>
-                🔗 Share
+                style={{display:'flex',alignItems:'center',gap:6,padding:'7px 14px',borderRadius:4,border:`1px solid ${C.border}`,background:C.surface,color:C.inkMid,fontFamily:C.sans,fontSize:12,fontWeight:500,cursor:'pointer',letterSpacing:'0.03em',transition:'background 0.15s'}}
+                className="btn-ghost">
+                {Icon.share} Share
               </button>
             )}
             <button onClick={()=>activeList?setShowAddItem(true):setShowAddList(true)}
-              style={{padding:'6px 14px',borderRadius:20,border:'none',background:T.purple,color:'white',fontWeight:700,fontSize:12,cursor:'pointer',fontFamily:T.sans}}>
-              + {activeList?'Add Item':'New List'}
+              style={{display:'flex',alignItems:'center',gap:6,padding:'7px 16px',borderRadius:4,border:'none',background:C.ink,color:'white',fontFamily:C.sans,fontSize:12,fontWeight:500,cursor:'pointer',letterSpacing:'0.03em',transition:'background 0.15s'}}
+              className="btn-accent">
+              {Icon.plus} {activeList?'Add Item':'New List'}
             </button>
           </div>
         </div>
-      </nav>
+      </header>
 
-      <div style={{maxWidth:960,margin:'0 auto',padding:'28px 20px 100px'}}>
+      <main style={{maxWidth:1100,margin:'0 auto',padding:'40px 24px 100px'}}>
 
-        {/* List view */}
+        {/* ── LIST VIEW ── */}
         {!activeList && (
           <>
             {loading ? (
-              <div style={{textAlign:'center',padding:'60px 0',fontFamily:T.serif,fontSize:22,color:T.sub,fontStyle:'italic'}}>Loading…</div>
+              <div style={{textAlign:'center',padding:'80px 0',color:C.inkLight,fontFamily:C.serif,fontSize:20,fontStyle:'italic'}}>Loading…</div>
             ) : lists.length===0 ? (
               <EmptyLists onAdd={()=>setShowAddList(true)}/>
             ) : (
               <>
-                <div style={{fontFamily:T.serif,fontSize:32,color:T.ink,fontWeight:500,marginBottom:6}}>My Wish Lists</div>
-                <div style={{fontSize:13,color:T.sub,fontStyle:'italic',marginBottom:28}}>{lists.length} {lists.length===1?'list':'lists'}</div>
-                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))',gap:16}}>
-                  {lists.map(list=><ListCard key={list.id} list={list} itemCount={0} onClick={()=>openList(list)} onShare={()=>setShareModal(list)}/>)}
-                  <div onClick={()=>setShowAddList(true)}
-                    style={{borderRadius:16,border:`2px dashed ${T.border}`,background:T.ivory,cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:8,padding:'40px 20px',minHeight:180,transition:'all 0.15s',color:T.muted}}
-                    onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.borderColor=T.purple;}}
-                    onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.borderColor=T.border;}}>
-                    <div style={{fontSize:28}}>✦</div>
-                    <div style={{fontFamily:T.serif,fontSize:16,fontStyle:'italic'}}>Create a new list</div>
+                <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:32}}>
+                  <div>
+                    <h1 style={{fontFamily:C.serif,fontSize:36,fontWeight:300,letterSpacing:'0.01em',margin:0,lineHeight:1.1}}>Your Wish Lists</h1>
+                    <p style={{color:C.inkLight,fontSize:13,margin:'6px 0 0',fontWeight:300}}>{lists.length} {lists.length===1?'list':'lists'}</p>
                   </div>
                 </div>
+
+                {/* Lists as clean rows */}
+                <div style={{border:`1px solid ${C.border}`,borderRadius:8,overflow:'hidden',background:C.surface}}>
+                  {lists.map((list,i)=>{
+                    const lt = LIST_TYPES[list.list_type];
+                    return (
+                      <div key={list.id} className="list-row" onClick={()=>openList(list)}
+                        style={{display:'flex',alignItems:'center',gap:16,padding:'18px 24px',borderBottom:i<lists.length-1?`1px solid ${C.borderSoft}`:'none',cursor:'pointer',transition:'background 0.15s'}}>
+                        <div style={{width:36,height:36,borderRadius:4,background:C.warm,display:'flex',alignItems:'center',justifyContent:'center',color:lt.color,flexShrink:0}}>
+                          {lt.icon}
+                        </div>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{fontFamily:C.serif,fontSize:18,fontWeight:400,letterSpacing:'0.01em',marginBottom:2}}>{list.name}</div>
+                          <div style={{fontSize:12,color:C.inkLight,fontWeight:300}}>{lt.label}{list.description?` · ${list.description}`:''}</div>
+                        </div>
+                        <div style={{display:'flex',alignItems:'center',gap:12,flexShrink:0}}>
+                          {list.is_public && (
+                            <div style={{display:'flex',alignItems:'center',gap:4,fontSize:11,color:C.success,fontWeight:500}}>
+                              {Icon.unlock} <span>Shared</span>
+                            </div>
+                          )}
+                          <button onClick={e=>{e.stopPropagation();setShareModal(list);}}
+                            style={{display:'flex',alignItems:'center',gap:4,padding:'5px 10px',border:`1px solid ${C.border}`,borderRadius:4,background:'transparent',color:C.inkMid,fontSize:11,cursor:'pointer',fontFamily:C.sans,transition:'background 0.15s'}}
+                            className="btn-ghost">
+                            {Icon.share}
+                          </button>
+                          <span style={{color:C.inkLight}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 18l6-6-6-6"/></svg></span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <button onClick={()=>setShowAddList(true)}
+                  style={{marginTop:12,width:'100%',padding:'14px',border:`1px dashed ${C.border}`,borderRadius:8,background:'transparent',color:C.inkLight,fontFamily:C.serif,fontSize:15,fontStyle:'italic',fontWeight:300,cursor:'pointer',transition:'all 0.15s',letterSpacing:'0.01em'}}
+                  onMouseEnter={e=>{(e.currentTarget as HTMLButtonElement).style.borderColor=C.accent;(e.currentTarget as HTMLButtonElement).style.color=C.accent;}}
+                  onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.borderColor=C.border;(e.currentTarget as HTMLButtonElement).style.color=C.inkLight;}}>
+                  + Create a new list
+                </button>
               </>
             )}
           </>
         )}
 
-        {/* Items view */}
+        {/* ── ITEMS VIEW ── */}
         {activeList && (
           <>
             {/* List header */}
-            <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:28,paddingBottom:20,borderBottom:`1px solid ${T.border}`}}>
-              <div style={{width:52,height:52,borderRadius:14,background:lt?.color??T.purple,display:'flex',alignItems:'center',justifyContent:'center',fontSize:26}}>
-                {lt?.emoji}
-              </div>
-              <div style={{flex:1}}>
-                <div style={{fontFamily:T.serif,fontSize:26,color:T.ink,fontWeight:500}}>{activeList.name}</div>
-                <div style={{display:'flex',alignItems:'center',gap:8,marginTop:4}}>
-                  <span style={{fontSize:11,fontWeight:700,padding:'2px 8px',borderRadius:20,background:T.purpleLight,color:T.purple}}>{lt?.label}</span>
-                  <span style={{fontSize:12,color:T.sub}}>{items.length} {items.length===1?'item':'items'}</span>
-                  {activeList.is_public && <span style={{fontSize:11,fontWeight:700,padding:'2px 8px',borderRadius:20,background:'#D5F0E0',color:'#1E6B40'}}>🔗 Shared</span>}
+            <div style={{marginBottom:36}}>
+              <div style={{display:'flex',alignItems:'flex-start',gap:16,marginBottom:16}}>
+                <div style={{width:48,height:48,borderRadius:6,background:C.warm,display:'flex',alignItems:'center',justifyContent:'center',color:lt?.color??C.accent,flexShrink:0,marginTop:2}}>
+                  <span style={{transform:'scale(1.2)'}}>{lt?.icon}</span>
+                </div>
+                <div style={{flex:1}}>
+                  <h1 style={{fontFamily:C.serif,fontSize:34,fontWeight:300,letterSpacing:'0.01em',margin:'0 0 4px',lineHeight:1.1}}>{activeList.name}</h1>
+                  <div style={{display:'flex',alignItems:'center',gap:12}}>
+                    <span style={{fontSize:12,color:C.inkLight,fontWeight:300}}>{lt?.label}</span>
+                    {activeList.description && <><span style={{color:C.border}}>·</span><span style={{fontSize:12,color:C.inkLight,fontWeight:300}}>{activeList.description}</span></>}
+                    <span style={{color:C.border}}>·</span>
+                    <span style={{fontSize:12,color:C.inkLight,fontWeight:300}}>{items.length} {items.length===1?'item':'items'}</span>
+                  </div>
                 </div>
               </div>
-              <button onClick={()=>setShowAddItem(true)}
-                style={{padding:'8px 16px',borderRadius:20,border:'none',background:T.purple,color:'white',fontWeight:700,fontSize:12,cursor:'pointer',fontFamily:T.sans}}>
-                + Add Item
-              </button>
-            </div>
 
-            {/* Demo sites callout */}
-            <div style={{background:`linear-gradient(135deg,${T.purpleLight},#EDE9F5)`,border:'1px solid #D9C8DC',borderRadius:14,padding:'14px 18px',marginBottom:24,display:'flex',alignItems:'center',gap:14}}>
-              <span style={{fontSize:22}}>🛍️</span>
-              <div style={{flex:1}}>
-                <div style={{fontFamily:T.serif,fontSize:15,color:T.ink,fontWeight:500}}>Paste any product URL</div>
-                <div style={{fontSize:12,color:T.sub,marginTop:2}}>
-                  Works with Loft, White House Black Market, Amazon, Etsy, Nordstrom, and any retailer. Photo, title, and price import automatically. Price watching starts immediately.
-                </div>
+              {/* URL import hint bar */}
+              <div style={{padding:'12px 16px',background:C.warm,borderRadius:6,border:`1px solid ${C.border}`,display:'flex',alignItems:'center',gap:12}}>
+                <span style={{color:C.accent}}>{Icon.tag}</span>
+                <span style={{fontSize:12,color:C.inkMid,fontWeight:300}}>
+                  Paste any product URL from <strong style={{fontWeight:500}}>Loft, White House Black Market, Nordstrom, Amazon, Etsy</strong> — photo, name and price import automatically. Price tracking starts immediately.
+                </span>
+                <button onClick={()=>setShowAddItem(true)}
+                  style={{marginLeft:'auto',padding:'6px 14px',borderRadius:4,border:'none',background:C.ink,color:'white',fontSize:12,fontFamily:C.sans,fontWeight:500,cursor:'pointer',whiteSpace:'nowrap',flexShrink:0}}>
+                  Add Item
+                </button>
               </div>
             </div>
 
-            {/* Want items */}
-            {wantItems.length===0 && items.length===0 ? (
+            {/* Item grid */}
+            {items.length===0 ? (
               <EmptyItems listType={activeList.list_type} onAdd={()=>setShowAddItem(true)}/>
             ) : (
               <>
                 {wantItems.length>0 && (
-                  <>
-                    <div style={{fontSize:10,fontWeight:700,color:T.muted,textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:14}}>
-                      {wantItems.length} {wantItems.length===1?'item':'items'}
+                  <div style={{marginBottom:48}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:20}}>
+                      <span style={{fontSize:11,fontWeight:500,color:C.inkLight,textTransform:'uppercase',letterSpacing:'0.08em'}}>Available</span>
+                      <span style={{fontSize:11,color:C.inkLight,fontWeight:300}}>({wantItems.length})</span>
                     </div>
-                    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:14,marginBottom:28}}>
+                    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))',gap:1,border:`1px solid ${C.border}`,borderRadius:8,overflow:'hidden'}}>
                       {wantItems.map(item=><WishItemCard key={item.id} item={item} onClick={()=>setDetailItem(item)}/>)}
                     </div>
-                  </>
+                  </div>
                 )}
                 {purchasedItems.length>0 && (
-                  <>
-                    <div style={{fontSize:10,fontWeight:700,color:T.muted,textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:14,paddingTop:8,borderTop:`1px solid ${T.border}`}}>
-                      Purchased / Received
+                  <div>
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:20,paddingTop:8,borderTop:`1px solid ${C.border}`}}>
+                      <span style={{fontSize:11,fontWeight:500,color:C.inkLight,textTransform:'uppercase',letterSpacing:'0.08em'}}>Purchased / Received</span>
+                      <span style={{fontSize:11,color:C.inkLight,fontWeight:300}}>({purchasedItems.length})</span>
                     </div>
-                    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:14}}>
+                    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))',gap:1,border:`1px solid ${C.border}`,borderRadius:8,overflow:'hidden'}}>
                       {purchasedItems.map(item=><WishItemCard key={item.id} item={item} onClick={()=>setDetailItem(item)}/>)}
                     </div>
-                  </>
+                  </div>
                 )}
               </>
             )}
           </>
         )}
-      </div>
+      </main>
 
       {/* Modals */}
-      {showAddList  && <AddListModal onSave={createList} onClose={()=>setShowAddList(false)}/>}
-      {showAddItem  && activeList && <AddItemModal listId={activeList.id} onSave={addItem} onClose={()=>setShowAddItem(false)}/>}
-      {detailItem   && <ItemDetailModal item={detailItem} onUpdate={u=>updateItem(detailItem.id,u)} onDelete={()=>deleteItem(detailItem.id)} onClose={()=>setDetailItem(null)}/>}
-      {shareModal   && (
-        <ShareModal
-          list={shareModal}
-          shareUrl={shareUrl(shareModal)}
-          copied={copiedToken}
-          onCopy={()=>copyShareUrl(shareModal)}
-          onToggle={()=>toggleShare(shareModal)}
-          onClose={()=>setShareModal(null)}/>
-      )}
+      {showAddList && <AddListModal onSave={createList} onClose={()=>setShowAddList(false)}/>}
+      {showAddItem && activeList && <AddItemModal listId={activeList.id} onSave={addItem} onClose={()=>setShowAddItem(false)}/>}
+      {detailItem  && <ItemDetailModal item={detailItem} onUpdate={u=>updateItem(detailItem.id,u)} onDelete={()=>deleteItem(detailItem.id)} onClose={()=>setDetailItem(null)}/>}
+      {shareModal  && <ShareModal list={shareModal} url={shareUrl(shareModal)} copied={copied} onCopy={()=>copyUrl(shareModal)} onToggle={()=>toggleShare(shareModal)} onClose={()=>setShareModal(null)}/>}
     </div>
   );
 }
 
-// ── List Card ──────────────────────────────────────────────
-function ListCard({list,itemCount,onClick,onShare}:{list:Wishlist;itemCount:number;onClick:()=>void;onShare:()=>void}) {
-  const lt = LIST_TYPES[list.list_type];
-  return (
-    <div className="lcard" onClick={onClick} style={{borderRadius:16,background:T.ivory,border:'1px solid #EDE9E3',overflow:'hidden',cursor:'pointer',boxShadow:'0 2px 8px rgba(44,35,24,0.06)',transition:'transform 0.2s,box-shadow 0.2s'}}>
-      <div style={{height:8,background:lt.color}}/>
-      <div style={{padding:'18px 18px 20px'}}>
-        <div style={{fontSize:32,marginBottom:10}}>{lt.emoji}</div>
-        <div style={{fontFamily:T.serif,fontSize:20,color:T.ink,fontWeight:500,marginBottom:4}}>{list.name}</div>
-        <div style={{display:'flex',alignItems:'center',gap:7,flexWrap:'wrap'}}>
-          <span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:20,background:T.purpleLight,color:T.purple}}>{lt.label}</span>
-          {list.is_public && <span style={{fontSize:10,fontWeight:700,padding:'2px 6px',borderRadius:20,background:'#D5F0E0',color:'#1E6B40'}}>🔗 Shared</span>}
-        </div>
-        {list.description && <div style={{fontSize:11,color:T.sub,marginTop:8,fontStyle:'italic'}}>{list.description}</div>}
-      </div>
-    </div>
-  );
-}
-
-// ── Wish Item Card ─────────────────────────────────────────
+// ── Item Card — retail grid style ──────────────────────────
 function WishItemCard({item,onClick}:{item:WishItem;onClick:()=>void}) {
-  const s = STATUS_STYLES[item.status];
-  const p = PRIORITY_STYLES[item.priority];
+  const s = STATUS_CONFIG[item.status];
+  const p = PRIORITY_CONFIG[item.priority];
   const isDone = item.status!=='want';
   return (
-    <div className="wcard" onClick={onClick} style={{borderRadius:12,background:T.ivory,border:'1px solid #EDE9E3',overflow:'hidden',cursor:'pointer',boxShadow:'0 1px 6px rgba(44,35,24,0.06)',transition:'transform 0.2s,box-shadow 0.2s',opacity:isDone?0.65:1}}>
-      {item.cover_image ? (
-        <div style={{height:140,overflow:'hidden',position:'relative'}}>
-          <img src={item.cover_image} alt={item.title} style={{width:'100%',height:'100%',objectFit:'cover'}} onError={e=>{(e.target as HTMLImageElement).parentElement!.style.display='none';}}/>
-          {item.watch_id && <div style={{position:'absolute',top:7,right:7,background:'rgba(44,35,24,0.75)',borderRadius:20,padding:'2px 7px',fontSize:9,fontWeight:700,color:'white'}}>👁️ Watching</div>}
-          {item.price && <div style={{position:'absolute',bottom:7,left:7,background:'rgba(255,255,255,0.92)',borderRadius:20,padding:'3px 9px',fontSize:11,fontWeight:700,color:T.ink}}>${item.price.toFixed(2)}</div>}
-        </div>
-      ) : (
-        <div style={{height:4,background:T.purple}}/>
-      )}
-      <div style={{padding:'10px 12px 13px'}}>
-        <div style={{fontSize:12,fontWeight:600,color:isDone?T.muted:T.ink,lineHeight:1.35,marginBottom:6,textDecoration:isDone?'line-through':'none'}}>{item.title}</div>
-        <div style={{display:'flex',gap:5,alignItems:'center',flexWrap:'wrap'}}>
-          <span style={{fontSize:9,fontWeight:700,padding:'2px 7px',borderRadius:20,background:s.bg,color:s.text}}>{s.label}</span>
-          <span style={{fontSize:9}}>{p.emoji}</span>
-          {!item.cover_image && item.price && <span style={{fontSize:11,fontWeight:700,color:T.ink}}>${item.price.toFixed(2)}</span>}
-        </div>
-        {item.target_price && item.price && item.price>item.target_price && (
-          <div style={{fontSize:10,color:'#5C8B6A',marginTop:5,fontStyle:'italic'}}>🎯 Target: ${item.target_price.toFixed(2)}</div>
+    <div className="item-card" onClick={onClick}
+      style={{background:C.surface,cursor:'pointer',position:'relative',boxShadow:'none',transition:'box-shadow 0.2s,transform 0.2s'}}>
+      {/* Product image */}
+      <div style={{aspectRatio:'3/4',background:C.warm,overflow:'hidden',position:'relative'}}>
+        {item.cover_image ? (
+          <img src={item.cover_image} alt={item.title}
+            style={{width:'100%',height:'100%',objectFit:'cover',opacity:isDone?0.5:1,transition:'opacity 0.2s'}}
+            onError={e=>{(e.target as HTMLImageElement).parentElement!.style.background=C.warm;(e.target as HTMLImageElement).style.display='none';}}/>
+        ) : (
+          <div style={{width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center',color:C.border}}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+          </div>
         )}
+        {/* Priority dot */}
+        <div style={{position:'absolute',top:10,left:10,width:7,height:7,borderRadius:'50%',background:p.dot,boxShadow:'0 0 0 2px white'}}/>
+        {/* Watch badge */}
+        {item.watch_id && (
+          <div style={{position:'absolute',top:10,right:10,background:'rgba(26,23,20,0.75)',backdropFilter:'blur(4px)',borderRadius:3,padding:'3px 6px',display:'flex',alignItems:'center',gap:3,color:'white'}}>
+            <span style={{opacity:0.8}}>{Icon.eye}</span>
+          </div>
+        )}
+        {/* Status overlay for purchased */}
+        {isDone && (
+          <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(255,255,255,0.3)'}}>
+            <div style={{background:'white',borderRadius:3,padding:'5px 10px',fontSize:10,fontWeight:600,letterSpacing:'0.06em',textTransform:'uppercase',color:C.inkMid,boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
+              {s.label}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Product info */}
+      <div style={{padding:'12px 14px 16px'}}>
+        <div style={{fontSize:13,fontWeight:400,color:isDone?C.inkLight:C.ink,lineHeight:1.4,marginBottom:6,overflow:'hidden',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical'}}>{item.title}</div>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          {item.price ? (
+            <span style={{fontFamily:C.serif,fontSize:16,fontWeight:400,color:isDone?C.inkLight:C.ink}}>${item.price.toFixed(2)}</span>
+          ) : <span/>}
+          {item.target_price && item.price && item.price<=item.target_price && (
+            <span style={{fontSize:10,fontWeight:500,color:C.success,letterSpacing:'0.04em'}}>AT TARGET</span>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -345,24 +430,26 @@ function WishItemCard({item,onClick}:{item:WishItem;onClick:()=>void}) {
 // ── Empty States ───────────────────────────────────────────
 function EmptyLists({onAdd}:{onAdd:()=>void}) {
   return (
-    <div style={{maxWidth:680,margin:'0 auto',textAlign:'center',padding:'48px 20px'}}>
-      <div style={{fontSize:52,marginBottom:16}}>✦</div>
-      <div style={{fontFamily:T.serif,fontSize:30,color:T.ink,fontWeight:500,marginBottom:8}}>Your wish lists</div>
-      <div style={{fontSize:14,color:T.sub,fontStyle:'italic',lineHeight:1.8,marginBottom:32}}>
-        Create lists for every occasion — birthday, Christmas,<br/>
-        registry, home, or just things you love. Paste any product URL<br/>
-        and the photo, price, and price watch set up automatically.
+    <div style={{maxWidth:600,margin:'80px auto',textAlign:'center'}}>
+      <div style={{width:56,height:56,borderRadius:8,background:C.warm,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px',color:C.inkMid}}>
+        {Icon.star}
       </div>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(160px,1fr))',gap:10,marginBottom:32}}>
+      <h1 style={{fontFamily:C.serif,fontSize:36,fontWeight:300,letterSpacing:'0.01em',margin:'0 0 12px',lineHeight:1.1}}>Your wish lists</h1>
+      <p style={{color:C.inkMid,fontSize:14,lineHeight:1.7,margin:'0 0 40px',fontWeight:300}}>
+        Create lists for every occasion — birthday, holiday, registry, or home.<br/>
+        Paste any product URL and the photo, price, and price watch set up automatically.
+      </p>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:1,border:`1px solid ${C.border}`,borderRadius:8,overflow:'hidden',marginBottom:32,background:C.border}}>
         {Object.entries(LIST_TYPES).map(([key,lt])=>(
-          <div key={key} style={{background:'white',borderRadius:12,border:'1px solid #EDE9E3',padding:'16px 14px',textAlign:'left'}}>
-            <div style={{fontSize:24,marginBottom:6}}>{lt.emoji}</div>
-            <div style={{fontFamily:T.serif,fontSize:15,color:T.ink,fontWeight:500}}>{lt.label}</div>
-            <div style={{fontSize:11,color:T.sub,marginTop:2}}>{key==='birthday'?'Share with family':key==='holiday'?'Track who bought what':key==='registry'?'Wedding, baby, graduation':key==='grocery'?'Save for later':key==='home'?'Furniture & decor':key==='custom'?'Create your own category':'Anything you want'}</div>
+          <div key={key} style={{background:C.surface,padding:'20px 16px'}}>
+            <div style={{color:lt.color,marginBottom:10}}>{lt.icon}</div>
+            <div style={{fontFamily:C.serif,fontSize:15,fontWeight:400,marginBottom:3,letterSpacing:'0.01em'}}>{lt.label}</div>
+            <div style={{fontSize:11,color:C.inkLight,fontWeight:300,lineHeight:1.4}}>{lt.sub}</div>
           </div>
         ))}
       </div>
-      <button onClick={onAdd} style={{padding:'14px 28px',borderRadius:12,border:'none',background:T.ink,color:'white',fontWeight:700,fontSize:14,cursor:'pointer',fontFamily:T.sans}}>
+      <button onClick={onAdd}
+        style={{padding:'12px 28px',borderRadius:4,border:'none',background:C.ink,color:'white',fontFamily:C.sans,fontWeight:500,fontSize:13,cursor:'pointer',letterSpacing:'0.03em'}}>
         Create your first list
       </button>
     </div>
@@ -371,27 +458,28 @@ function EmptyLists({onAdd}:{onAdd:()=>void}) {
 
 function EmptyItems({listType,onAdd}:{listType:ListType;onAdd:()=>void}) {
   const lt = LIST_TYPES[listType];
-  const examples: Record<ListType,string[]> = {
-    birthday: ['Loft dress','WHBM blazer','Amazon Echo'],
-    holiday:  ['AirPods','Le Creuset pot','Candle set'],
-    registry: ['KitchenAid mixer','Pottery Barn throw','Cuisinart set'],
-    grocery:  ['Organic olive oil','Truffle salt','Specialty cheese'],
-    home:     ['CB2 lamp','Article sofa','West Elm rug'],
-    custom:   ['Anything you want','Any product URL','Price watched automatically'],
-    general:  ['Anything you want','Any product URL','Price watched automatically'],
+  const eg: Record<ListType,string[]> = {
+    birthday:['Loft dress','WHBM blazer','Amazon Echo'],
+    holiday: ['AirPods','Le Creuset pot','Cashmere throw'],
+    registry:['KitchenAid mixer','Pottery Barn duvet','Cuisinart set'],
+    grocery: ['Truffle oil','Specialty cheese','Matcha powder'],
+    home:    ['CB2 lamp','Article sofa','West Elm rug'],
+    custom:  ['Anything you want','Any product URL','Price tracked automatically'],
+    general: ['Anything you want','Any product URL','Price tracked automatically'],
   };
   return (
-    <div style={{textAlign:'center',padding:'48px 20px'}}>
-      <div style={{fontSize:42,marginBottom:12}}>{lt.emoji}</div>
-      <div style={{fontFamily:T.serif,fontSize:24,color:T.ink,fontWeight:500,marginBottom:6}}>Nothing here yet</div>
-      <div style={{fontSize:13,color:T.sub,fontStyle:'italic',lineHeight:1.7,marginBottom:8}}>
-        Paste any product URL and the photo, name and price<br/>import automatically — then price watching starts.
+    <div style={{textAlign:'center',padding:'64px 0'}}>
+      <div style={{width:48,height:48,borderRadius:6,background:C.warm,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 20px',color:lt.color}}>
+        {lt.icon}
       </div>
-      <div style={{fontSize:12,color:T.muted,marginBottom:24}}>
-        Try: {examples[listType].join(' · ')}
+      <div style={{fontFamily:C.serif,fontSize:26,fontWeight:300,letterSpacing:'0.01em',marginBottom:8}}>Nothing here yet</div>
+      <div style={{fontSize:13,color:C.inkMid,lineHeight:1.7,marginBottom:6,fontWeight:300}}>
+        Paste any product URL — photo, name and price import automatically.
       </div>
-      <button onClick={onAdd} style={{padding:'12px 24px',borderRadius:12,border:'none',background:T.purple,color:'white',fontWeight:700,fontSize:13,cursor:'pointer',fontFamily:T.sans}}>
-        + Add your first item
+      <div style={{fontSize:12,color:C.inkLight,marginBottom:28,fontWeight:300}}>{eg[listType].join(' · ')}</div>
+      <button onClick={onAdd}
+        style={{padding:'10px 24px',borderRadius:4,border:`1px solid ${C.ink}`,background:'transparent',color:C.ink,fontFamily:C.sans,fontWeight:500,fontSize:12,cursor:'pointer',letterSpacing:'0.03em'}}>
+        Add your first item
       </button>
     </div>
   );
@@ -399,177 +487,129 @@ function EmptyItems({listType,onAdd}:{listType:ListType;onAdd:()=>void}) {
 
 // ── Add List Modal ─────────────────────────────────────────
 function AddListModal({onSave,onClose}:{onSave:(d:Partial<Wishlist>)=>void;onClose:()=>void}) {
-  const [name,setName]       = useState('');
-  const [type,setType]       = useState<ListType>('birthday');
-  const [desc,setDesc]       = useState('');
-  const [customEmoji,setCustomEmoji] = useState('⭐');
+  const [name,setName]   = useState('');
+  const [type,setType]   = useState<ListType>('birthday');
+  const [desc,setDesc]   = useState('');
 
-  const handleTypeChange = (t: ListType) => {
+  const handleType = (t:ListType) => {
     setType(t);
-    // Auto-fill name when switching types (only if name is empty or was auto-set)
-    if (!name || Object.values(LIST_TYPES).some(lt => lt.label === name)) {
-      setName(t === 'custom' ? '' : LIST_TYPES[t].label + ' Wish List');
-    }
+    if (!name || Object.values(LIST_TYPES).some(lt=>lt.label+' Wish List'===name||lt.label===name))
+      setName(LIST_TYPES[t].label+' Wish List');
   };
 
-  const effectiveEmoji = type === 'custom' ? customEmoji : LIST_TYPES[type].emoji;
-  const effectiveColor = LIST_TYPES[type].color;
-
   return (
-    <Modal onClose={onClose} title="Create a Wish List">
-      <SLabel>List Type</SLabel>
-      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,marginBottom:18}}>
+    <Sheet onClose={onClose} title="Create a Wish List">
+      <FL>List Type</FL>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:8,marginBottom:20}}>
         {(Object.entries(LIST_TYPES) as [ListType,any][]).map(([key,lt])=>(
-          <button key={key} onClick={()=>handleTypeChange(key)}
-            style={{padding:'10px 8px',borderRadius:10,border:`1.5px solid ${type===key?T.purple:T.border}`,background:type===key?T.purpleLight:'white',cursor:'pointer',textAlign:'center',fontFamily:T.sans,transition:'all 0.15s'}}>
-            <div style={{fontSize:20,marginBottom:3}}>{lt.emoji}</div>
-            <div style={{fontSize:11,fontWeight:700,color:type===key?T.purple:T.ink}}>{lt.label}</div>
+          <button key={key} onClick={()=>handleType(key)}
+            style={{padding:'12px 8px',borderRadius:6,border:`1px solid ${type===key?C.ink:C.border}`,background:type===key?C.ink:'transparent',cursor:'pointer',textAlign:'center',fontFamily:C.sans,transition:'all 0.15s'}}>
+            <div style={{color:type===key?'white':lt.color,display:'flex',justifyContent:'center',marginBottom:6}}>{lt.icon}</div>
+            <div style={{fontSize:11,fontWeight:500,color:type===key?'white':C.ink,letterSpacing:'0.02em'}}>{lt.label}</div>
           </button>
         ))}
       </div>
-
-      {/* Custom emoji picker — only shown for Custom type */}
-      {type === 'custom' && (
-        <div style={{marginBottom:14}}>
-          <SLabel>Pick an Emoji</SLabel>
-          <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:8}}>
-            {['⭐','💜','🎯','🏋️','📚','🎮','✈️','🍳','🌿','💄','👗','👟','🎵','🎨','🐾','💎'].map(e=>(
-              <button key={e} onClick={()=>setCustomEmoji(e)}
-                style={{width:36,height:36,borderRadius:8,border:`1.5px solid ${customEmoji===e?T.purple:T.border}`,background:customEmoji===e?T.purpleLight:'white',cursor:'pointer',fontSize:18,display:'flex',alignItems:'center',justifyContent:'center'}}>
-                {e}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <SLabel>List Name *</SLabel>
-      <input value={name} onChange={e=>setName(e.target.value)}
-        placeholder={type==='custom'?'e.g. Running Gear, Book Club…':`e.g. Lauren's ${LIST_TYPES[type].label} 2026`}
-        style={SI}/>
-      <SLabel>Description (optional)</SLabel>
-      <input value={desc} onChange={e=>setDesc(e.target.value)} placeholder="For family to reference…" style={SI}/>
-      <div style={{display:'flex',gap:10,marginTop:8}}>
-        <button onClick={onClose} style={GBtn}>Cancel</button>
-        <button onClick={()=>{if(!name.trim())return;onSave({name,list_type:type,description:desc||null,color:effectiveColor});}}
-          disabled={!name.trim()}
-          style={{...PBtn,flex:2,background:T.purple,opacity:!name.trim()?0.5:1,cursor:!name.trim()?'not-allowed':'pointer'}}>
+      <FL>List Name</FL>
+      <FInput value={name} onChange={e=>setName(e.target.value)} placeholder={`e.g. ${LIST_TYPES[type].label} 2026`}/>
+      <FL>Description (optional)</FL>
+      <FInput value={desc} onChange={e=>setDesc(e.target.value)} placeholder="For family to reference…"/>
+      <div style={{display:'flex',gap:10,marginTop:4}}>
+        <FBtnGhost onClick={onClose}>Cancel</FBtnGhost>
+        <FBtnPrimary onClick={()=>{if(!name.trim())return;onSave({name,list_type:type,description:desc||null,color:LIST_TYPES[type].color});}} disabled={!name.trim()}>
           Create List
-        </button>
+        </FBtnPrimary>
       </div>
-    </Modal>
+    </Sheet>
   );
 }
 
 // ── Add Item Modal ─────────────────────────────────────────
 function AddItemModal({listId,onSave,onClose}:{listId:string;onSave:(d:Partial<WishItem>)=>void;onClose:()=>void}) {
-  const [url,setUrl]             = useState('');
-  const [title,setTitle]         = useState('');
-  const [price,setPrice]         = useState('');
-  const [targetPrice,setTarget]  = useState('');
-  const [priority,setPriority]   = useState<Priority>('medium');
-  const [notes,setNotes]         = useState('');
-  const [cover,setCover]         = useState('');
-  const [fetching,setFetching]   = useState(false);
-  const [fetchSt,setFetchSt]     = useState('');
+  const [url,setUrl]         = useState('');
+  const [title,setTitle]     = useState('');
+  const [price,setPrice]     = useState('');
+  const [target,setTarget]   = useState('');
+  const [priority,setPriority] = useState<Priority>('medium');
+  const [notes,setNotes]     = useState('');
+  const [cover,setCover]     = useState('');
+  const [fetchSt,setFetchSt] = useState('');
+  const [fetching,setFetching] = useState(false);
 
   const fetchProduct = async (raw:string) => {
     if (!raw.trim()) return;
-    setFetching(true); setFetchSt('Fetching product…');
+    setFetching(true); setFetchSt('Importing product…');
     try {
       const r = await fetch('/api/wishlist?action=fetch-product',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:raw.trim()})});
       const d = await r.json();
       if (d.title&&!title) setTitle(d.title);
-      if (d.image) { setCover(d.image); }
+      if (d.image) setCover(d.image);
       if (d.price&&!price) setPrice(String(d.price));
-      if (d.image||d.title) setFetchSt(`✓ ${d.title?'Title':''}${d.image?' · Image':''}${d.price?' · $'+d.price:''} imported`);
-      else setFetchSt('Saved URL — no product data found');
-    } catch { setFetchSt('Could not fetch'); }
+      const parts = [d.title?'Name':'',d.image?'Photo':'',d.price?'Price':''].filter(Boolean);
+      setFetchSt(parts.length ? `Imported: ${parts.join(', ')}` : 'No product data found — fill in manually');
+    } catch { setFetchSt('Could not fetch URL'); }
     setFetching(false);
   };
 
-  const DEMO_URLS = [
-    {label:'Loft',url:'https://www.loft.com'},
-    {label:'WHBM',url:'https://www.whbm.com'},
-    {label:'Nordstrom',url:'https://www.nordstrom.com'},
-    {label:'Etsy',url:'https://www.etsy.com'},
-  ];
-
   return (
-    <Modal onClose={onClose} title="Add to Wish List">
-      <SLabel>Product URL</SLabel>
-      <input value={url} onChange={e=>setUrl(e.target.value)} onBlur={e=>fetchProduct(e.target.value)}
-        placeholder="Paste any product link — Loft, WHBM, Amazon, Etsy…" style={SI}/>
-      {fetchSt && <div style={{fontSize:11,color:fetchSt.startsWith('✓')?'#5C8B6A':'#9C8B7A',marginBottom:10,fontStyle:'italic'}}>{fetchSt}</div>}
-
-      {/* Demo quick links */}
-      {!url && (
-        <div style={{marginBottom:14}}>
-          <div style={{fontSize:10,fontWeight:700,color:T.muted,textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:6}}>Popular stores</div>
-          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-            {DEMO_URLS.map(d=>(
-              <a key={d.label} href={d.url} target="_blank" rel="noreferrer"
-                style={{fontSize:11,padding:'4px 10px',borderRadius:20,border:'1px solid #EDE9E3',color:T.sub,textDecoration:'none',background:'white'}}>
-                {d.label} ↗
-              </a>
-            ))}
-          </div>
-          <div style={{fontSize:11,color:T.muted,fontStyle:'italic',marginTop:8}}>Find a product, copy its URL, paste above — the photo and price import automatically.</div>
+    <Sheet onClose={onClose} title="Add to List">
+      <FL>Product URL</FL>
+      <FInput value={url} onChange={e=>setUrl(e.target.value)} onBlur={e=>fetchProduct(e.target.value)}
+        placeholder="Paste from Loft, WHBM, Nordstrom, Amazon, Etsy…"/>
+      {fetchSt && (
+        <div style={{fontSize:11,color:fetchSt.startsWith('Imported')?C.success:C.inkLight,marginBottom:12,fontWeight:300}}>
+          {fetchSt.startsWith('Imported')?<span style={{marginRight:4,display:'inline-flex',alignItems:'center',verticalAlign:'middle'}}>{Icon.check}</span>:null}
+          {fetchSt}
         </div>
       )}
-
       {cover && (
-        <div style={{borderRadius:10,overflow:'hidden',marginBottom:14,height:140,position:'relative'}}>
-          <img src={cover} alt="product" style={{width:'100%',height:'100%',objectFit:'cover'}} onError={e=>{(e.target as HTMLImageElement).parentElement!.style.display='none';}}/>
-          <div style={{position:'absolute',top:7,left:7,background:'rgba(255,255,255,0.9)',borderRadius:20,padding:'2px 8px',fontSize:9,fontWeight:700,color:T.sub}}>✓ Photo imported</div>
+        <div style={{width:'100%',height:180,borderRadius:6,overflow:'hidden',marginBottom:16,background:C.warm,position:'relative'}}>
+          <img src={cover} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}
+            onError={e=>{(e.target as HTMLImageElement).parentElement!.style.display='none';}}/>
+          <div style={{position:'absolute',top:8,right:8,background:'rgba(26,23,20,0.6)',borderRadius:3,padding:'3px 8px',fontSize:10,color:'white',fontWeight:500,letterSpacing:'0.04em'}}>
+            PHOTO IMPORTED
+          </div>
         </div>
       )}
-
-      <SLabel>Item Name *</SLabel>
-      <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Product name" style={SI}/>
-
-      <div style={{display:'flex',gap:10}}>
-        <div style={{flex:1}}>
-          <SLabel>Current Price</SLabel>
-          <div style={{position:'relative'}}>
-            <span style={{position:'absolute',left:13,top:'50%',transform:'translateY(-50%)',color:T.sub,fontSize:13}}>$</span>
-            <input type="number" value={price} onChange={e=>setPrice(e.target.value)} placeholder="59.99" style={{...SI,paddingLeft:24,marginBottom:0}}/>
-          </div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+        <div>
+          <FL>Item Name</FL>
+          <FInput value={title} onChange={e=>setTitle(e.target.value)} placeholder="Product name"/>
         </div>
-        <div style={{flex:1}}>
-          <SLabel>Alert me when ≤</SLabel>
-          <div style={{position:'relative'}}>
-            <span style={{position:'absolute',left:13,top:'50%',transform:'translateY(-50%)',color:T.sub,fontSize:13}}>$</span>
-            <input type="number" value={targetPrice} onChange={e=>setTarget(e.target.value)} placeholder="44.99" style={{...SI,paddingLeft:24,marginBottom:0}}/>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+          <div>
+            <FL>Price</FL>
+            <FInput value={price} onChange={e=>setPrice(e.target.value)} placeholder="59.99" type="number"/>
+          </div>
+          <div>
+            <FL>Alert at</FL>
+            <FInput value={target} onChange={e=>setTarget(e.target.value)} placeholder="44.99" type="number"/>
           </div>
         </div>
       </div>
-      <div style={{fontSize:11,color:T.sub,fontStyle:'italic',marginBottom:14,marginTop:4}}>
-        👁️ Price watch activates automatically — you'll be notified when the price drops.
-      </div>
-
-      <SLabel>Priority</SLabel>
-      <div style={{display:'flex',gap:6,marginBottom:14}}>
+      {(price||target) && (
+        <div style={{display:'flex',alignItems:'center',gap:6,fontSize:11,color:C.inkLight,marginBottom:12,marginTop:-4}}>
+          {Icon.alert} Price watch activates automatically
+        </div>
+      )}
+      <FL>Priority</FL>
+      <div style={{display:'flex',gap:8,marginBottom:16}}>
         {(['high','medium','low'] as Priority[]).map(p=>(
-          <button key={p} onClick={()=>setPriority(p)}
-            style={{flex:1,padding:'7px',borderRadius:10,border:`1.5px solid ${priority===p?T.ink:T.border}`,background:priority===p?T.ink:'white',cursor:'pointer',fontFamily:T.sans,fontSize:12,fontWeight:600,color:priority===p?'white':T.sub}}>
-            {PRIORITY_STYLES[p].emoji} {PRIORITY_STYLES[p].label}
+          <button key={p} onClick={()=>setPriority(p)} className={`pill-select${priority===p?' active':''}`}
+            style={{flex:1,padding:'8px',borderRadius:4,border:`1px solid ${priority===p?C.ink:C.border}`,background:priority===p?C.ink:'transparent',cursor:'pointer',fontFamily:C.sans,fontSize:12,fontWeight:500,color:priority===p?'white':C.inkMid,transition:'all 0.15s',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+            <div style={{width:6,height:6,borderRadius:'50%',background:priority===p?'white':PRIORITY_CONFIG[p].dot,flexShrink:0}}/>
+            {PRIORITY_CONFIG[p].label.replace(' priority','')}
           </button>
         ))}
       </div>
-
-      <SLabel>Notes (optional)</SLabel>
-      <input value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Size, color, variant…" style={SI}/>
-
-      <div style={{display:'flex',gap:10,marginTop:8}}>
-        <button onClick={onClose} style={GBtn}>Cancel</button>
-        <button onClick={()=>{if(!title.trim())return;onSave({title,url:url||null,cover_image:cover||null,price:price?parseFloat(price):null,target_price:targetPrice?parseFloat(targetPrice):null,priority,notes:notes||null,status:'want'});}}
-          disabled={!title.trim()||fetching}
-          style={{...PBtn,flex:2,background:T.purple,opacity:(!title.trim()||fetching)?0.5:1,cursor:(!title.trim()||fetching)?'not-allowed':'pointer'}}>
+      <FL>Notes (optional)</FL>
+      <FInput value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Size, color, variant…"/>
+      <div style={{display:'flex',gap:10,marginTop:4}}>
+        <FBtnGhost onClick={onClose}>Cancel</FBtnGhost>
+        <FBtnPrimary onClick={()=>{if(!title.trim())return;onSave({title,url:url||null,cover_image:cover||null,price:price?parseFloat(price):null,target_price:target?parseFloat(target):null,priority,notes:notes||null,status:'want'});}} disabled={!title.trim()||fetching}>
           {fetching?'Importing…':'Add to List'}
-        </button>
+        </FBtnPrimary>
       </div>
-    </Modal>
+    </Sheet>
   );
 }
 
@@ -577,156 +617,149 @@ function AddItemModal({listId,onSave,onClose}:{listId:string;onSave:(d:Partial<W
 function ItemDetailModal({item,onUpdate,onDelete,onClose}:{item:WishItem;onUpdate:(u:Partial<WishItem>)=>void;onDelete:()=>void;onClose:()=>void}) {
   const [confirmDel,setConfirmDel] = useState(false);
   const [purchasedBy,setPurchasedBy] = useState(item.purchased_by??'');
-  const s = STATUS_STYLES[item.status];
-  const p = PRIORITY_STYLES[item.priority];
+  const s = STATUS_CONFIG[item.status];
   return (
-    <div style={{position:'fixed',inset:0,background:'rgba(44,35,24,0.55)',zIndex:50,display:'flex',alignItems:'flex-end',justifyContent:'center'}}>
-      <div style={{background:T.ivory,width:'100%',maxWidth:520,borderRadius:'20px 20px 0 0',maxHeight:'92dvh',overflowY:'auto'}}>
-        {item.cover_image ? (
-          <div style={{height:200,position:'relative',borderRadius:'20px 20px 0 0',overflow:'hidden'}}>
+    <Sheet onClose={onClose} title={item.title} wide>
+      <div style={{display:'flex',gap:20,marginBottom:24}}>
+        {item.cover_image && (
+          <div style={{width:140,height:180,borderRadius:6,overflow:'hidden',flexShrink:0,background:C.warm}}>
             <img src={item.cover_image} alt={item.title} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
-            <div style={{position:'absolute',inset:0,background:'linear-gradient(to bottom,transparent 40%,rgba(44,35,24,0.65))'}}/>
-            <button onClick={onClose} style={{position:'absolute',top:12,right:12,background:'rgba(255,255,255,0.25)',backdropFilter:'blur(8px)',border:'none',borderRadius:'50%',width:30,height:30,cursor:'pointer',color:'white',fontSize:16}}>×</button>
-            <div style={{position:'absolute',bottom:16,left:20,right:60}}>
-              <div style={{fontFamily:T.serif,fontSize:22,color:'white',fontWeight:600,lineHeight:1.25}}>{item.title}</div>
-              {item.price && <div style={{fontSize:14,color:'rgba(255,255,255,0.9)',fontWeight:700,marginTop:3}}>${item.price.toFixed(2)}</div>}
-            </div>
           </div>
-        ) : null}
-        <div style={{padding:'20px 22px 44px'}}>
-          {!item.cover_image && (
-            <div style={{display:'flex',justifyContent:'space-between',marginBottom:16}}>
-              <div>
-                <div style={{fontFamily:T.serif,fontSize:22,color:T.ink,fontWeight:500}}>{item.title}</div>
-                {item.price && <div style={{fontSize:18,fontWeight:700,color:T.ink,marginTop:2}}>${item.price.toFixed(2)}</div>}
-              </div>
-              <button onClick={onClose} style={{background:'none',border:'none',fontSize:22,cursor:'pointer',color:T.muted}}>×</button>
-            </div>
-          )}
-
-          {/* Meta */}
-          <div style={{display:'flex',gap:8,alignItems:'center',flexWrap:'wrap',marginBottom:18,paddingBottom:16,borderBottom:`1px solid ${T.border}`}}>
-            <span style={{fontSize:10,fontWeight:700,padding:'3px 8px',borderRadius:20,background:s.bg,color:s.text}}>{s.label}</span>
-            <span style={{fontSize:10}}>{p.emoji} {p.label} priority</span>
-            {item.watch_id && <span style={{fontSize:10,fontWeight:700,padding:'3px 8px',borderRadius:20,background:'#EAF4F8',color:'#2C6E8A'}}>👁️ Price watched</span>}
-            {item.url && <a href={item.url} target="_blank" rel="noreferrer" style={{fontSize:12,color:T.purple,fontWeight:600,textDecoration:'none',marginLeft:'auto'}}>View product ↗</a>}
-          </div>
-
-          {/* Price info */}
+        )}
+        <div style={{flex:1}}>
           {(item.price||item.target_price) && (
-            <div style={{background:T.sand,borderRadius:12,padding:'14px 16px',marginBottom:18}}>
-              <div style={{display:'flex',gap:20}}>
-                {item.price && <div><div style={{fontSize:10,fontWeight:700,color:T.muted,textTransform:'uppercase',letterSpacing:'0.08em'}}>Current Price</div><div style={{fontFamily:T.serif,fontSize:22,color:T.ink,fontWeight:500,marginTop:2}}>${item.price.toFixed(2)}</div></div>}
-                {item.target_price && <div><div style={{fontSize:10,fontWeight:700,color:T.muted,textTransform:'uppercase',letterSpacing:'0.08em'}}>Alert When ≤</div><div style={{fontFamily:T.serif,fontSize:22,color:'#5C8B6A',fontWeight:500,marginTop:2}}>${item.target_price.toFixed(2)}</div></div>}
-              </div>
-              {item.price && item.target_price && item.price<=item.target_price && (
-                <div style={{marginTop:8,fontSize:12,color:'#5C8B6A',fontWeight:700}}>🎉 Price is at or below your target!</div>
-              )}
-              <a href="/settings/watch" style={{display:'inline-flex',alignItems:'center',gap:4,marginTop:10,fontSize:11,color:'#2C6E8A',fontWeight:700,textDecoration:'none'}}>
-                👁️ Manage price watches →
-              </a>
+            <div style={{display:'flex',gap:20,marginBottom:16,padding:'14px 16px',background:C.warm,borderRadius:6}}>
+              {item.price && <div><div style={{fontSize:10,fontWeight:500,color:C.inkLight,textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:3}}>Current</div><div style={{fontFamily:C.serif,fontSize:24,fontWeight:300}}>${item.price.toFixed(2)}</div></div>}
+              {item.target_price && <div><div style={{fontSize:10,fontWeight:500,color:C.inkLight,textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:3}}>Target</div><div style={{fontFamily:C.serif,fontSize:24,fontWeight:300,color:item.price&&item.price<=item.target_price?C.success:C.ink}}>${item.target_price.toFixed(2)}</div></div>}
             </div>
           )}
-
-          {/* Status */}
-          <SLabel>Status</SLabel>
-          <div style={{display:'flex',gap:6,marginBottom:18}}>
-            {(['want','purchased','received'] as ItemStatus[]).map(st=>(
-              <button key={st} onClick={()=>onUpdate({status:st})}
-                style={{flex:1,padding:'8px',borderRadius:10,border:'none',cursor:'pointer',fontSize:11,fontWeight:700,fontFamily:T.sans,background:item.status===st?T.ink:'#F2EDE6',color:item.status===st?'white':T.sub}}>
-                {STATUS_STYLES[st].label}
-              </button>
-            ))}
+          <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:16}}>
+            {item.url && <a href={item.url} target="_blank" rel="noreferrer" style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:12,color:C.accent,fontWeight:500,textDecoration:'none'}}>{Icon.arrow} View product</a>}
+            {item.watch_id && <span style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:11,color:C.inkLight}}>{Icon.eye} Price watched</span>}
           </div>
-
-          {/* Purchased by — for shared lists */}
-          {item.status==='purchased' && (
-            <div style={{marginBottom:18}}>
-              <SLabel>Purchased by</SLabel>
-              <div style={{display:'flex',gap:8}}>
-                <input value={purchasedBy} onChange={e=>setPurchasedBy(e.target.value)} placeholder="Your name (shows on shared list)" style={{...SI,marginBottom:0,flex:1}}/>
-                <button onClick={()=>onUpdate({purchased_by:purchasedBy||null})} style={{padding:'10px 14px',borderRadius:10,border:'none',background:T.ink,color:'white',fontWeight:700,fontSize:12,cursor:'pointer',fontFamily:T.sans}}>Save</button>
-              </div>
-            </div>
-          )}
-
-          {item.notes && <div style={{background:T.sand,borderRadius:10,padding:'10px 14px',marginBottom:18,fontSize:13,color:'#6B5A4A',lineHeight:1.6}}>{item.notes}</div>}
-
-          {confirmDel ? (
-            <div style={{background:'#FDF6F3',borderRadius:10,padding:14}}>
-              <div style={{fontFamily:T.serif,fontSize:16,color:T.ink,marginBottom:10}}>Remove this item?</div>
-              <div style={{display:'flex',gap:8}}>
-                <button onClick={()=>setConfirmDel(false)} style={GBtn}>Cancel</button>
-                <button onClick={onDelete} style={{...PBtn,background:'#C0392B',flex:1}}>Remove</button>
-              </div>
-            </div>
-          ) : (
-            <button onClick={()=>setConfirmDel(true)} style={{width:'100%',padding:11,borderRadius:10,border:'1px solid #EDE9E3',background:'transparent',color:T.muted,fontSize:13,cursor:'pointer',fontFamily:T.sans}}>
-              Remove from list
-            </button>
-          )}
+          {item.notes && <div style={{fontSize:13,color:C.inkMid,lineHeight:1.6,fontWeight:300,fontStyle:'italic'}}>{item.notes}</div>}
         </div>
       </div>
-    </div>
+
+      <FL>Status</FL>
+      <div style={{display:'flex',gap:8,marginBottom:20}}>
+        {(['want','purchased','received'] as ItemStatus[]).map(st=>(
+          <button key={st} onClick={()=>onUpdate({status:st})} className={`pill-select${item.status===st?' active':''}`}
+            style={{flex:1,padding:'9px',borderRadius:4,border:`1px solid ${item.status===st?C.ink:C.border}`,background:item.status===st?C.ink:'transparent',cursor:'pointer',fontFamily:C.sans,fontSize:12,fontWeight:500,color:item.status===st?'white':C.inkMid,transition:'all 0.15s'}}>
+            {STATUS_CONFIG[st].label}
+          </button>
+        ))}
+      </div>
+
+      {item.status==='purchased' && (
+        <div style={{marginBottom:20}}>
+          <FL>Purchased by</FL>
+          <div style={{display:'flex',gap:8}}>
+            <FInput value={purchasedBy} onChange={e=>setPurchasedBy(e.target.value)} placeholder="Name (shown on shared list)" noMargin/>
+            <button onClick={()=>onUpdate({purchased_by:purchasedBy||null})}
+              style={{padding:'10px 16px',borderRadius:4,border:'none',background:C.ink,color:'white',fontFamily:C.sans,fontWeight:500,fontSize:12,cursor:'pointer',whiteSpace:'nowrap'}}>Save</button>
+          </div>
+        </div>
+      )}
+
+      <div style={{borderTop:`1px solid ${C.borderSoft}`,paddingTop:16,marginTop:4}}>
+        {confirmDel ? (
+          <div style={{display:'flex',gap:10,alignItems:'center'}}>
+            <span style={{fontSize:12,color:C.inkMid,flex:1,fontWeight:300}}>Remove this item from the list?</span>
+            <button onClick={()=>setConfirmDel(false)} style={{padding:'8px 16px',borderRadius:4,border:`1px solid ${C.border}`,background:'transparent',color:C.inkMid,fontFamily:C.sans,fontSize:12,cursor:'pointer'}}>Keep</button>
+            <button onClick={onDelete} style={{padding:'8px 16px',borderRadius:4,border:'none',background:'#C0392B',color:'white',fontFamily:C.sans,fontSize:12,fontWeight:500,cursor:'pointer'}}>Remove</button>
+          </div>
+        ) : (
+          <button onClick={()=>setConfirmDel(true)} style={{display:'flex',alignItems:'center',gap:6,color:C.inkLight,background:'none',border:'none',cursor:'pointer',fontFamily:C.sans,fontSize:12,padding:0}}>
+            {Icon.trash} Remove from list
+          </button>
+        )}
+      </div>
+    </Sheet>
   );
 }
 
 // ── Share Modal ────────────────────────────────────────────
-function ShareModal({list,shareUrl,copied,onCopy,onToggle,onClose}:{list:Wishlist;shareUrl:string;copied:boolean;onCopy:()=>void;onToggle:()=>void;onClose:()=>void}) {
+function ShareModal({list,url,copied,onCopy,onToggle,onClose}:{list:Wishlist;url:string;copied:boolean;onCopy:()=>void;onToggle:()=>void;onClose:()=>void}) {
   const lt = LIST_TYPES[list.list_type];
   return (
-    <Modal onClose={onClose} title={`Share ${lt.emoji} ${list.name}`}>
-      <div style={{marginBottom:20}}>
-        <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16,padding:'14px 16px',background:T.sand,borderRadius:12}}>
-          <div style={{flex:1}}>
-            <div style={{fontFamily:T.serif,fontSize:15,color:T.ink,fontWeight:500}}>Public sharing</div>
-            <div style={{fontSize:12,color:T.sub,marginTop:2}}>{list.is_public?'Anyone with the link can view this list':'Only you can see this list'}</div>
-          </div>
+    <Sheet onClose={onClose} title="Share This List">
+      <div style={{padding:'16px',background:C.warm,borderRadius:6,marginBottom:20,display:'flex',gap:14,alignItems:'flex-start'}}>
+        <div style={{color:lt.color,marginTop:2}}>{lt.icon}</div>
+        <div>
+          <div style={{fontFamily:C.serif,fontSize:16,fontWeight:400,letterSpacing:'0.01em',marginBottom:2}}>{list.name}</div>
+          <div style={{fontSize:12,color:C.inkLight,fontWeight:300}}>{lt.label}</div>
+        </div>
+        <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:8}}>
+          <span style={{fontSize:12,color:list.is_public?C.success:C.inkLight,fontWeight:500}}>
+            {list.is_public?'Public':'Private'}
+          </span>
           <button onClick={onToggle}
-            style={{padding:'8px 18px',borderRadius:20,border:'none',background:list.is_public?'#C0392B':T.purple,color:'white',fontWeight:700,fontSize:12,cursor:'pointer',fontFamily:T.sans}}>
+            style={{padding:'7px 14px',borderRadius:4,border:`1px solid ${C.border}`,background:C.surface,color:C.inkMid,fontFamily:C.sans,fontSize:12,fontWeight:500,cursor:'pointer'}}>
             {list.is_public?'Make Private':'Make Public'}
           </button>
         </div>
-
-        {list.is_public && (
-          <>
-            <SLabel>Share Link</SLabel>
-            <div style={{display:'flex',gap:8,marginBottom:10}}>
-              <input readOnly value={shareUrl} style={{...SI,marginBottom:0,flex:1,fontSize:11,color:T.sub}}/>
-              <button onClick={onCopy}
-                style={{padding:'10px 16px',borderRadius:10,border:'none',background:copied?'#5C8B6A':T.ink,color:'white',fontWeight:700,fontSize:12,cursor:'pointer',fontFamily:T.sans,whiteSpace:'nowrap'}}>
-                {copied?'✓ Copied!':'Copy Link'}
-              </button>
-            </div>
-            <div style={{fontSize:11,color:T.sub,fontStyle:'italic',lineHeight:1.6}}>
-              Family and friends can view this list and mark items as purchased — so you don't get duplicates. They don't need a Clarityboards account.
-            </div>
-          </>
-        )}
       </div>
-      <button onClick={onClose} style={{...PBtn,background:T.ink}}>Done</button>
-    </Modal>
+
+      {list.is_public ? (
+        <>
+          <FL>Share Link</FL>
+          <div style={{display:'flex',gap:8,marginBottom:12}}>
+            <input readOnly value={url} style={{flex:1,padding:'10px 12px',border:`1px solid ${C.border}`,borderRadius:4,fontSize:12,color:C.inkMid,background:C.bg,fontFamily:C.mono}}/>
+            <button onClick={onCopy}
+              style={{padding:'10px 16px',borderRadius:4,border:'none',background:copied?C.success:C.ink,color:'white',fontFamily:C.sans,fontSize:12,fontWeight:500,cursor:'pointer',whiteSpace:'nowrap',transition:'background 0.2s',display:'flex',alignItems:'center',gap:6}}>
+              {copied?Icon.check:Icon.copy} {copied?'Copied':'Copy'}
+            </button>
+          </div>
+          <p style={{fontSize:12,color:C.inkLight,lineHeight:1.6,fontWeight:300,margin:0}}>
+            Anyone with this link can view your list and mark items as purchased — no account needed. Perfect for family gift coordination.
+          </p>
+        </>
+      ) : (
+        <p style={{fontSize:13,color:C.inkMid,lineHeight:1.6,fontWeight:300,margin:0}}>
+          Make this list public to generate a shareable link. Family and friends can see items and claim gifts without needing a Clarityboards account.
+        </p>
+      )}
+
+      <div style={{marginTop:20}}>
+        <FBtnPrimary onClick={onClose}>Done</FBtnPrimary>
+      </div>
+    </Sheet>
   );
 }
 
-// ── Shared Components ──────────────────────────────────────
-function Modal({children,onClose,title}:{children:React.ReactNode;onClose:()=>void;title:string}) {
+// ── Design primitives ──────────────────────────────────────
+function Sheet({children,onClose,title,wide=false}:{children:React.ReactNode;onClose:()=>void;title:string;wide?:boolean}) {
   return (
-    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(44,35,24,0.55)',zIndex:50,display:'flex',alignItems:'flex-end',justifyContent:'center'}}>
-      <div onClick={e=>e.stopPropagation()} style={{background:T.ivory,width:'100%',maxWidth:520,borderRadius:'20px 20px 0 0',padding:'10px 24px 44px',maxHeight:'92dvh',overflowY:'auto'}}>
-        <div style={{width:36,height:4,borderRadius:2,background:T.border,margin:'0 auto 20px'}}/>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}>
-          <div style={{fontFamily:T.serif,fontSize:22,color:T.ink,fontWeight:500}}>{title}</div>
-          <button onClick={onClose} style={{background:'none',border:'none',fontSize:22,cursor:'pointer',color:T.muted}}>×</button>
+    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(26,23,20,0.5)',zIndex:50,display:'flex',alignItems:'flex-end',justifyContent:'center'}}>
+      <div onClick={e=>e.stopPropagation()}
+        style={{background:C.surface,width:'100%',maxWidth:wide?620:520,borderRadius:'12px 12px 0 0',padding:'8px 28px 48px',maxHeight:'92dvh',overflowY:'auto',boxShadow:'0 -4px 40px rgba(26,23,20,0.12)'}}>
+        <div style={{width:32,height:3,borderRadius:2,background:C.border,margin:'12px auto 24px'}}/>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24}}>
+          <div style={{fontFamily:C.serif,fontSize:22,fontWeight:400,letterSpacing:'0.01em'}}>{title}</div>
+          <button onClick={onClose} style={{background:'none',border:'none',cursor:'pointer',color:C.inkLight,padding:4}}>{Icon.x}</button>
         </div>
         {children}
       </div>
     </div>
   );
 }
-const SI: React.CSSProperties = {width:'100%',padding:'10px 13px',borderRadius:10,border:'1px solid #EDE9E3',fontSize:13,fontFamily:"'DM Sans',system-ui",color:'#2C2318',marginBottom:12,outline:'none',background:'#FFFEF9'};
-const PBtn: React.CSSProperties = {width:'100%',padding:'13px',borderRadius:12,border:'none',background:'#2C2318',color:'white',fontWeight:700,fontSize:14,cursor:'pointer',fontFamily:"'DM Sans',system-ui"};
-const GBtn: React.CSSProperties = {flex:1,padding:'12px',borderRadius:12,border:'1px solid #EDE9E3',background:'transparent',color:'#9C8B7A',fontWeight:600,fontSize:13,cursor:'pointer',fontFamily:"'DM Sans',system-ui"};
-function SLabel({children}:{children:React.ReactNode}) {
-  return <div style={{fontSize:10,fontWeight:700,color:'#C8B8A8',textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:7,fontFamily:"'DM Sans',system-ui"}}>{children as any}</div>;
+function FL({children}:{children:React.ReactNode}) {
+  return <div style={{fontSize:10,fontWeight:500,color:C.inkLight,textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:8,fontFamily:C.sans}}>{children as any}</div>;
+}
+function FInput({value,onChange,onBlur,placeholder,type,noMargin}:{value:string;onChange:(e:any)=>void;onBlur?:(e:any)=>void;placeholder?:string;type?:string;noMargin?:boolean}) {
+  return <input value={value} onChange={onChange} onBlur={onBlur} placeholder={placeholder} type={type||'text'}
+    style={{width:'100%',padding:'10px 12px',border:`1px solid ${C.border}`,borderRadius:4,fontSize:13,fontFamily:C.sans,color:C.ink,background:C.bg,marginBottom:noMargin?0:16,fontWeight:300,outline:'none',transition:'border-color 0.15s'}}/>;
+}
+function FBtnPrimary({children,onClick,disabled}:{children:React.ReactNode;onClick:()=>void;disabled?:boolean}) {
+  return <button onClick={onClick} disabled={disabled}
+    style={{flex:2,width:'100%',padding:'12px',borderRadius:4,border:'none',background:disabled?'#CCCAC7':C.ink,color:disabled?'#8A8884':'white',fontFamily:C.sans,fontWeight:500,fontSize:13,cursor:disabled?'not-allowed':'pointer',letterSpacing:'0.02em',transition:'background 0.15s'}}>
+    {children}
+  </button>;
+}
+function FBtnGhost({children,onClick}:{children:React.ReactNode;onClick:()=>void}) {
+  return <button onClick={onClick}
+    style={{flex:1,padding:'12px',borderRadius:4,border:`1px solid ${C.border}`,background:'transparent',color:C.inkMid,fontFamily:C.sans,fontWeight:500,fontSize:13,cursor:'pointer',letterSpacing:'0.02em'}}>
+    {children}
+  </button>;
 }
