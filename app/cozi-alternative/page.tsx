@@ -1,10 +1,11 @@
 'use client';
+import React from 'react';
 export default function LandingPage() {
-  const wrapStyle = {
-    fontFamily: "'DM Sans', system-ui, sans-serif" as const,
-    background: '#F7F4F0' as const,
-    color: '#1A1714' as const,
-    minHeight: '100vh' as const,
+  const wrapStyle: React.CSSProperties = {
+    fontFamily: "'DM Sans', system-ui, sans-serif",
+    background: '#F7F4F0',
+    color: '#1A1714',
+    minHeight: '100vh',
   }
   return (
     <div style={wrapStyle}>
