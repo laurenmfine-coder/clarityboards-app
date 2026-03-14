@@ -32,43 +32,43 @@ export default function LandingPage() {
         <div style={{ maxWidth: 720, margin: '0 auto', padding: '52px 24px' }}>
           <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(22px,3vw,32px)', fontWeight: 400, color: '#1A1714', marginBottom: 32, textAlign: 'center' }}>Caregiving is hard. Your tools shouldn't make it harder.</h2>
           
-              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
-                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#0F6E56" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>You can't remember if you gave the 2pm medication</div>
-                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Most to-do apps delete completed tasks. There's no way to look back without a paper trail.</div>
+                  <div style={{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}>You can't remember if you gave the 2pm medication</div>
+                  <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Most to-do apps delete completed tasks. There's no way to look back without a paper trail.</div>
                 </div>
               </div>
 
-              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
-                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#0F6E56" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>You're coordinating care across multiple people</div>
-                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Texting back and forth about who did what, when. Nothing is in one place.</div>
+                  <div style={{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}>You're coordinating care across multiple people</div>
+                  <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Texting back and forth about who did what, when. Nothing is in one place.</div>
                 </div>
               </div>
 
-              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
-                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#0F6E56" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Your care notes live in a different app than your tasks</div>
-                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Notes in one place, reminders in another, calendar in a third. Switching between them costs you focus.</div>
+                  <div style={{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}>Your care notes live in a different app than your tasks</div>
+                  <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Notes in one place, reminders in another, calendar in a third. Switching between them costs you focus.</div>
                 </div>
               </div>
 
-              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
-                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#0F6E56" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>No record to show the doctor or care team</div>
-                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>When a doctor asks 'how has she been this week?' — you're guessing from memory.</div>
+                  <div style={{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}>No record to show the doctor or care team</div>
+                  <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>When a doctor asks 'how has she been this week?' — you're guessing from memory.</div>
                 </div>
               </div>
         </div>
@@ -79,36 +79,36 @@ export default function LandingPage() {
         <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(22px,3vw,32px)', fontWeight: 400, color: '#1A1714', marginBottom: 32, textAlign: 'center' }}>What makes Clarityboards different</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16 }}>
           
-              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
-                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
+              <div style={{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F6E56" strokeWidth="1.5"><path d="M5 8h14M5 8a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2v-9a2 2 0 00-2-2M5 8V6a2 2 0 012-2h10a2 2 0 012 2v2M9 12h6M9 16h4"/></svg>
                 </div>
-                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Archive, don't delete</div>
-                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Every completed task is archived, not erased. Restore it in one tap, or browse your full care history.</div>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}>Archive, don't delete</div>
+                <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Every completed task is archived, not erased. Restore it in one tap, or browse your full care history.</div>
               </div>
 
-              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
-                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
+              <div style={{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F6E56" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 7a4 4 0 100 8 4 4 0 000-8z"/></svg>
                 </div>
-                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Share with your care team</div>
-                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Invite family members, siblings, or a professional caregiver as viewer or contributor. Everyone sees the same picture.</div>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}>Share with your care team</div>
+                <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Invite family members, siblings, or a professional caregiver as viewer or contributor. Everyone sees the same picture.</div>
               </div>
 
-              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
-                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
+              <div style={{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F6E56" strokeWidth="1.5"><path d="M9 12h6M9 16h4M17 3H7a2 2 0 00-2 2v16l3-3 2 3 2-3 2 3 2-3 3 3V5a2 2 0 00-2-2z"/></svg>
                 </div>
-                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Notes that remember context</div>
-                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Markdown notes on every item — bold key instructions, bullet medication schedules, add links to care plans.</div>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}>Notes that remember context</div>
+                <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Markdown notes on every item — bold key instructions, bullet medication schedules, add links to care plans.</div>
               </div>
 
-              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
-                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
+              <div style={{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#E1F5EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F6E56" strokeWidth="1.5"><path d="M3 3h18v18H3zM9 9h6M9 13h6M9 17h4"/></svg>
                 </div>
-                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>One view for your whole care picture</div>
-                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Events, tasks, and recurring items in one board. Not scattered across 4 different apps.</div>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}>One view for your whole care picture</div>
+                <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Events, tasks, and recurring items in one board. Not scattered across 4 different apps.</div>
               </div>
         </div>
       </div>
@@ -135,40 +135,40 @@ export default function LandingPage() {
             </thead>
             <tbody>
               
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Completed task archive</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ Deleted forever</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Completed task archive</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>✗ Deleted forever</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Restore archived items</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#A32D2D', fontWeight: '500' }}}>✗</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Restore archived items</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#A32D2D', fontWeight: '500' }}>✗</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Shared care team access</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✓ Viewer/Editor</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ or $$</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Shared care team access</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>✓ Viewer/Editor</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>✗ or $$</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Markdown care notes</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ Plain text only</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Markdown care notes</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>✗ Plain text only</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Recurring medication reminders</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>~ Basic</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Recurring medication reminders</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>~ Basic</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Free to start</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>~</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Free to start</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>~</td>
                   </tr>
             </tbody>
           </table>

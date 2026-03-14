@@ -32,43 +32,43 @@ export default function LandingPage() {
         <div style={{ maxWidth: 720, margin: '0 auto', padding: '52px 24px' }}>
           <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(22px,3vw,32px)', fontWeight: 400, color: '#1A1714', marginBottom: 32, textAlign: 'center' }}>Your planning tools shouldn't feel like grading more work</h2>
           
-              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
-                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8E44AD" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Notion requires you to be a developer to use it well</div>
-                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Building databases, creating linked views, learning formulas — this is not what teachers have time for at 10pm.</div>
+                  <div style={{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}>Notion requires you to be a developer to use it well</div>
+                  <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Building databases, creating linked views, learning formulas — this is not what teachers have time for at 10pm.</div>
                 </div>
               </div>
 
-              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
-                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8E44AD" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Your paper planner doesn't sync and your digital one feels cold</div>
-                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>The warmth of a paper planner and the convenience of digital don't have to be mutually exclusive.</div>
+                  <div style={{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}>Your paper planner doesn't sync and your digital one feels cold</div>
+                  <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>The warmth of a paper planner and the convenience of digital don't have to be mutually exclusive.</div>
                 </div>
               </div>
 
-              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
-                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8E44AD" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Professional development, lesson planning, and grading deadlines all live in different places</div>
-                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>StudyBoard for your courses, WorkBoard for your department, EventBoard for professional milestones.</div>
+                  <div style={{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}>Professional development, lesson planning, and grading deadlines all live in different places</div>
+                  <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>StudyBoard for your courses, WorkBoard for your department, EventBoard for professional milestones.</div>
                 </div>
               </div>
 
-              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
-                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8E44AD" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>You want to share your planning without sharing your entire system</div>
-                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>A read-only view of your StudyBoard for a department head. A shared EventBoard for a field trip. Without giving anyone edit access to everything.</div>
+                  <div style={{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}>You want to share your planning without sharing your entire system</div>
+                  <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>A read-only view of your StudyBoard for a department head. A shared EventBoard for a field trip. Without giving anyone edit access to everything.</div>
                 </div>
               </div>
         </div>
@@ -79,36 +79,36 @@ export default function LandingPage() {
         <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(22px,3vw,32px)', fontWeight: 400, color: '#1A1714', marginBottom: 32, textAlign: 'center' }}>What makes Clarityboards different</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16 }}>
           
-              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
-                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
+              <div style={{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E44AD" strokeWidth="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2"/></svg>
                 </div>
-                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Works on day one — no setup</div>
-                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>No databases to build, no templates to configure. Add your semester's deadlines in 5 minutes.</div>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}>Works on day one — no setup</div>
+                <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>No databases to build, no templates to configure. Add your semester's deadlines in 5 minutes.</div>
               </div>
 
-              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
-                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
+              <div style={{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E44AD" strokeWidth="1.5"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
                 </div>
-                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Serif typography that feels like your planner</div>
-                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Cormorant Garamond headers. Warm cream background. The aesthetic of a quality paper planner, in a synced digital form.</div>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}>Serif typography that feels like your planner</div>
+                <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Cormorant Garamond headers. Warm cream background. The aesthetic of a quality paper planner, in a synced digital form.</div>
               </div>
 
-              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
-                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
+              <div style={{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E44AD" strokeWidth="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 100 6 3 3 0 000-6z"/></svg>
                 </div>
-                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Read-only sharing for department transparency</div>
-                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Share your WorkBoard or StudyBoard as view-only with a department head or colleague. They see your planning without being able to edit it.</div>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}>Read-only sharing for department transparency</div>
+                <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Share your WorkBoard or StudyBoard as view-only with a department head or colleague. They see your planning without being able to edit it.</div>
               </div>
 
-              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
-                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
+              <div style={{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#F5EEF8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E44AD" strokeWidth="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
                 </div>
-                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Markdown notes for lesson context</div>
-                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Add formatted notes to any item — bold key standards, bullet materials lists, link to resources. Renders cleanly in read mode.</div>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}>Markdown notes for lesson context</div>
+                <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Add formatted notes to any item — bold key standards, bullet materials lists, link to resources. Renders cleanly in read mode.</div>
               </div>
         </div>
       </div>
@@ -135,40 +135,40 @@ export default function LandingPage() {
             </thead>
             <tbody>
               
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Works on day one</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ Must build</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Works on day one</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>✗ Must build</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Warm editorial aesthetic</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>~ Cold minimal</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Warm editorial aesthetic</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>~ Cold minimal</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>No learning curve</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ Hours of setup</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>No learning curve</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>✗ Hours of setup</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Markdown notes</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Markdown notes</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Read-only sharing</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Read-only sharing</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Price</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>Free · $99/yr Pro</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>$120/yr</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Price</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>Free · $99/yr Pro</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>$120/yr</td>
                   </tr>
             </tbody>
           </table>

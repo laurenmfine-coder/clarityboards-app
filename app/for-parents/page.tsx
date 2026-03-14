@@ -32,43 +32,43 @@ export default function LandingPage() {
         <div style={{ maxWidth: 720, margin: '0 auto', padding: '52px 24px' }}>
           <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(22px,3vw,32px)', fontWeight: 400, color: '#1A1714', marginBottom: 32, textAlign: 'center' }}>The coordination tax of modern family life</h2>
           
-              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
-                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#E67E22" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>You're the family secretary because no one else uses the app</div>
-                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>If the interface is ugly or confusing, your partner ignores it and you end up entering everything yourself.</div>
+                  <div style={{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}>You're the family secretary because no one else uses the app</div>
+                  <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>If the interface is ugly or confusing, your partner ignores it and you end up entering everything yourself.</div>
                 </div>
               </div>
 
-              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
-                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#E67E22" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Kids' activities, school events, and family tasks live in separate places</div>
-                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>ActivityBoard, EventBoard, and TaskBoard keep everything in one place without making it feel like a work tool.</div>
+                  <div style={{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}>Kids' activities, school events, and family tasks live in separate places</div>
+                  <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>ActivityBoard, EventBoard, and TaskBoard keep everything in one place without making it feel like a work tool.</div>
                 </div>
               </div>
 
-              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
-                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#E67E22" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Group texts are your family's task manager</div>
-                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Things get lost. No one remembers who was supposed to RSVP to the birthday party.</div>
+                  <div style={{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}>Group texts are your family's task manager</div>
+                  <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Things get lost. No one remembers who was supposed to RSVP to the birthday party.</div>
                 </div>
               </div>
 
-              <div style={{{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}}>
-                <div style={{{ width: '32px', height: '32px', borderRadius: '50%', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' }}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#E67E22" strokeWidth="1.8"><path d="M13 4L6 11 3 8"/></svg>
                 </div>
                 <div>
-                  <div style={{{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}}>Sharing a calendar is different from sharing a plan</div>
-                  <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Google Calendar shows when. Clarityboards shows what, who, and done — with a history of everything completed.</div>
+                  <div style={{ fontSize: '15px', fontWeight: '500', color: '#1A1714', marginBottom: '3px' }}>Sharing a calendar is different from sharing a plan</div>
+                  <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Google Calendar shows when. Clarityboards shows what, who, and done — with a history of everything completed.</div>
                 </div>
               </div>
         </div>
@@ -79,36 +79,36 @@ export default function LandingPage() {
         <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(22px,3vw,32px)', fontWeight: 400, color: '#1A1714', marginBottom: 32, textAlign: 'center' }}>What makes Clarityboards different</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16 }}>
           
-              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
-                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
+              <div style={{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="1.5"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>
                 </div>
-                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Boards for every part of family life</div>
-                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>EventBoard for celebrations. ActivityBoard for kids' sports and activities. TaskBoard for household to-dos. Each one organized, each one shareable.</div>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}>Boards for every part of family life</div>
+                <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>EventBoard for celebrations. ActivityBoard for kids' sports and activities. TaskBoard for household to-dos. Each one organized, each one shareable.</div>
               </div>
 
-              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
-                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
+              <div style={{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
                 </div>
-                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Invite your partner in 30 seconds</div>
-                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Type their email, pick Viewer or Contributor, send. They get a warm invite email and can start adding items immediately.</div>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}>Invite your partner in 30 seconds</div>
+                <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Type their email, pick Viewer or Contributor, send. They get a warm invite email and can start adding items immediately.</div>
               </div>
 
-              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
-                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
+              <div style={{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="1.5"><path d="M5 8h14M5 8a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2v-9a2 2 0 00-2-2M5 8V6a2 2 0 012-2h10a2 2 0 012 2v2"/></svg>
                 </div>
-                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Archive keeps the family history</div>
-                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Every completed task is archived, not deleted. Who prepared for the recital, who handled the college application — it's all there.</div>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}>Archive keeps the family history</div>
+                <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Every completed task is archived, not deleted. Who prepared for the recital, who handled the college application — it's all there.</div>
               </div>
 
-              <div style={{{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}}>
-                <div style={{{ width: '36px', height: '36px', borderRadius: '8px', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}}>
+              <div style={{ background: 'white', border: '0.5px solid #C8BFB5', borderRadius: '12px', padding: '20px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#FEF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2"/></svg>
                 </div>
-                <div style={{{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}}>Beautiful enough to open without being asked</div>
-                <div style={{{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}}>Warm, editorial, calm. Not a corporate tool that feels like homework. The kind of app your family opens because it feels good.</div>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#1A1714', marginBottom: '6px' }}>Beautiful enough to open without being asked</div>
+                <div style={{ fontSize: '13px', color: '#6B6059', lineHeight: '1.6' }}>Warm, editorial, calm. Not a corporate tool that feels like homework. The kind of app your family opens because it feels good.</div>
               </div>
         </div>
       </div>
@@ -135,40 +135,40 @@ export default function LandingPage() {
             </thead>
             <tbody>
               
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Modern interface</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ Dated design</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Modern interface</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>✗ Dated design</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Contributor editing</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✓ Anyone</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Contributor editing</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>✓ Anyone</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Permission levels</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✓ Viewer/Editor</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ No control</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Permission levels</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>✓ Viewer/Editor</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>✗ No control</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Completed task archive</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#A32D2D', fontWeight: '500' }}}>✗</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Completed task archive</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#A32D2D', fontWeight: '500' }}>✗</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Full calendar free</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ 30-day limit</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Full calendar free</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>✗ 30-day limit</td>
                   </tr>
 
-                  <tr style={{{ borderBottom: '0.5px solid #EDE8E2' }}}>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}}>Data export</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}}>✓</td>
-                    <td style={{{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}}>✗ None</td>
+                  <tr style={{ borderBottom: '0.5px solid #EDE8E2' }}>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#1A1714', fontWeight: '500' }}>Data export</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#3B6D11', fontWeight: '500' }}>✓</td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', textAlign: 'center', color: '#854F0B', fontWeight: '500' }}>✗ None</td>
                   </tr>
             </tbody>
           </table>
