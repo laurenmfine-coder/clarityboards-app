@@ -93,9 +93,17 @@ export async function POST(req: NextRequest) {
               <p style="margin-top: 24px; color: #9B9B9B; font-size: 12px;">
                 This link expires in 7 days. If you didn't expect this invite, you can ignore it.
               </p>
+              <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid #E8E4DF;">
+                <p style="color: #9C8878; font-size: 12px; margin: 0 0 6px;">
+                  Sent via <strong style="color: #1A1714;">Clarityboards</strong> — one place for your whole life.
+                </p>
+                <a href="${BASE_URL}?ref=invite" style="display: inline-block; padding: 8px 18px; background: #F5F2EE; color: #1A1714; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 600; border: 1px solid #E8E4DF;">
+                  Try Clarityboards free →
+                </a>
+              </div>
             </div>
           `,
-          TextBody: `${ownerName} invited you to ${roleLabel} on their ${boardLabel} in Clarityboards. Accept here: ${acceptUrl}`,
+          TextBody: `${ownerName} invited you to ${roleLabel} on their ${boardLabel} in Clarityboards. Accept here: ${acceptUrl}\n\n---\nTry Clarityboards free: ${BASE_URL}?ref=invite`,
           MessageStream: 'outbound',
         }),
       })

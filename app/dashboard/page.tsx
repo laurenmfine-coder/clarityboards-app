@@ -447,6 +447,56 @@ function AllDonePrompt({ item, onArchiveAll, onKeep, onClose }: { item: Item; on
   )
 }
 
+// ─── Notes Field (markdown read / plain write) ───────────
+function renderMarkdown(text: string): string {
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code style="background:#EDE8E2;padding:1px 4px;border-radius:3px;font-size:0.9em">$1</code>')
+    .replace(/\[(.+?)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:#2874A6">$1</a>')
+    .replace(/^[-*]\s+(.+)$/gm, '<li style="margin-left:16px;margin-bottom:2px">$1</li>')
+    .replace(/(<li[^>]*>.*<\/li>
+?)+/g, (m) => `<ul style="padding:0;list-style:disc;margin:4px 0">${m}</ul>`)
+    .replace(/
+/g, '<br/>')
+}
+
+function NotesField({ value, onChange, onSave, readOnly, sheetInput, T }: {
+  value: string; onChange: (v: string) => void; onSave: () => void
+  readOnly: boolean; sheetInput: React.CSSProperties; T: typeof import('./page').default extends never ? any : any
+}) {
+  const [editing, setEditing] = useState(false)
+  const empty = !value.trim()
+
+  if (readOnly || !editing) {
+    return (
+      <div
+        onClick={() => !readOnly && setEditing(true)}
+        style={{ minHeight: 64, padding: '10px 13px', borderRadius: 6, border: `1px solid ${T.border}`, fontSize: 13, color: empty ? T.muted : T.ink, background: T.ivory, cursor: readOnly ? 'default' : 'text', lineHeight: 1.7, fontFamily: T.sans }}
+        dangerouslySetInnerHTML={{ __html: empty ? 'Notes, instructions, reminders…' : renderMarkdown(value) }}
+      />
+    )
+  }
+
+  return (
+    <div>
+      <textarea
+        autoFocus
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        onBlur={() => { onSave(); setEditing(false) }}
+        rows={4}
+        placeholder="Notes, instructions, reminders… (supports **bold**, *italic*, - bullets, [links](url))"
+        style={{ ...sheetInput, resize: 'none', marginBottom: 4 }}
+      />
+      <div style={{ fontSize: 11, color: T.muted, fontFamily: T.sans }}>
+        **bold** · *italic* · - bullet · [text](url)
+      </div>
+    </div>
+  )
+}
+
 // ─── Detail Modal ─────────────────────────────────────────
 const PRIORITY_OPTIONS = [
   { value: 'high',   label: '🔴 High',   color: '#C0392B' },
@@ -625,12 +675,17 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
           </div>
         </div>
 
-        {/* Notes */}
+        {/* Notes — read/write markdown */}
         <div>
           <Label>Notes</Label>
-          <textarea value={editNotes} onChange={e => setEditNotes(e.target.value)} onBlur={saveNotes}
-            rows={3} placeholder="Notes, instructions, reminders…"
-            style={{ ...sheetInput, resize: 'none', marginBottom: 0 }} />
+          <NotesField
+            value={editNotes}
+            onChange={setEditNotes}
+            onSave={saveNotes}
+            readOnly={isReadOnly}
+            sheetInput={sheetInput}
+            T={T}
+          />
         </div>
 
         {/* Tags */}

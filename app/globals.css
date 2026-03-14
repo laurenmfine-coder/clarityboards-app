@@ -233,3 +233,90 @@ textarea {
     font-size: 14px;
   }
 }
+
+/* ─── Print stylesheet ───────────────────────────────────
+   @media print: clean weekly planner output
+   Hides nav, stats strip, FAB, bottom nav, modals.
+   Renders board list as clean paper-ready layout.
+   ─────────────────────────────────────────────────────── */
+@media print {
+  /* Hide everything UI */
+  nav,
+  [data-print="hide"],
+  .cb-fab,
+  .pwa-banner {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: #1A1714 !important;
+    font-family: 'Georgia', serif;
+    font-size: 11pt;
+  }
+
+  /* Stats strip — show as a clean header line */
+  [data-print="stats"] {
+    border-bottom: 1.5pt solid #1A1714;
+    padding-bottom: 6pt;
+    margin-bottom: 12pt;
+    font-size: 9pt;
+    color: #5C5650;
+  }
+
+  /* Board items — clean list layout */
+  [data-print="item-row"] {
+    border-bottom: 0.5pt solid #DDD8D2 !important;
+    page-break-inside: avoid;
+    padding: 6pt 0 !important;
+  }
+
+  /* Item titles — full ink weight */
+  [data-print="item-title"] {
+    font-weight: 600;
+    color: #1A1714 !important;
+  }
+
+  /* Status badges — outline only */
+  [data-print="status-badge"] {
+    background: transparent !important;
+    border: 1pt solid currentColor !important;
+    color: #5C5650 !important;
+  }
+
+  /* Checklist items */
+  [data-print="checklist-item"] {
+    font-size: 10pt;
+    color: #5C5650;
+  }
+
+  /* Page header */
+  [data-print="board-header"] {
+    border-bottom: 2pt solid #1A1714;
+    padding-bottom: 8pt;
+    margin-bottom: 16pt;
+    page-break-after: avoid;
+  }
+
+  /* Clarityboards wordmark in print header */
+  [data-print="wordmark"]::before {
+    content: "Clarityboards";
+    font-family: 'Georgia', serif;
+    font-size: 14pt;
+    font-weight: 400;
+    display: block;
+    margin-bottom: 4pt;
+  }
+
+  /* Force background colors off for ink saving */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Page margins */
+  @page {
+    margin: 1.5cm 2cm;
+    size: A4 portrait;
+  }
+}
