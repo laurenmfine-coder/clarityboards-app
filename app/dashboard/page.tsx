@@ -886,6 +886,10 @@ function ItemCard({ item, onClick, onSwipeComplete, isFirst = false, cardDensity
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: pct !== null || item.date ? 5 : 0 }}>
+                {/* Board letter avatar */}
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: cfg?.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, opacity: isDone ? 0.5 : 1 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'white', fontFamily: T.sans, letterSpacing: '0.02em' }}>{cfg?.letter ?? item.board[0].toUpperCase()}</span>
+                </div>
                 {isPinned && (
                   <Pin size={9} color={cfg?.color} strokeWidth={2} style={{ flexShrink: 0, transform: 'rotate(45deg)' }} />
                 )}
