@@ -2,7 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* ─── Clarityboards theme tokens ─────────────────────────────
+   Warm editorial palette baked into :root so it works before
+   JS sets data-theme. Dark mode overrides on [data-theme="dark"].
+   ─────────────────────────────────────────────────────────── */
+
+:root,
+[data-theme="warm"] {
+  --cb-cream:      #F7F4F0;
+  --cb-ivory:      #FFFFFF;
+  --cb-sand:       #EDE8E2;
+  --cb-border:     #C8BFB5;
+  --cb-borderSoft: #DDD8D2;
+  --cb-muted:      #9C8878;
+  --cb-sub:        #6B6059;
+  --cb-inkMid:     #3D3530;
+  --cb-ink:        #1A1714;
+  --cb-accent:     #8B6B52;
+  --cb-navBg:      #1A1714;
+
+  /* Legacy brand tokens */
   --brand: #1B4F8A;
   --teal:  #2E9E8F;
   --amber: #F5A623;
@@ -10,17 +29,207 @@
   --mid:   #5A7A94;
 }
 
+[data-theme="dark"] {
+  --cb-cream:      #111110;
+  --cb-ivory:      #1C1B19;
+  --cb-sand:       #252320;
+  --cb-border:     #3D3830;
+  --cb-borderSoft: #2E2C28;
+  --cb-muted:      #5A5248;
+  --cb-sub:        #8A8078;
+  --cb-inkMid:     #B8B0A8;
+  --cb-ink:        #F0EDE8;
+  --cb-accent:     #C49A74;
+  --cb-navBg:      #0D0C0B;
+}
+
+/* ─── Base ──────────────────────────────────────────────────── */
+
 * { box-sizing: border-box; }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #F4F7FA;
-  color: #1A2B3C;
+  background: var(--cb-cream);
+  color: var(--cb-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Global contrast boost ─────────────────────────────────
+   Ensures all text and borders have sufficient definition
+   regardless of theme state.
+   ─────────────────────────────────────────────────────────── */
+
+/* Stronger default border color for all inputs */
+input, textarea, select {
+  border-color: var(--cb-border) !important;
+  color: var(--cb-ink);
+  background: var(--cb-ivory);
+}
+
+/* Navigation tabs — ensure white text is always visible */
+nav {
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Stats strip numbers — stronger weight */
+.cb-stat-num {
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* Item card hover — more defined */
+.cb-row-item:hover {
+  background: var(--cb-sand) !important;
+}
+
+.cb-settings-item:hover {
+  background: var(--cb-sand) !important;
+}
+
+/* Board tab active/hover */
+.cb-tab:hover {
+  color: rgba(255,255,255,0.9) !important;
 }
 
 .font-georgia { font-family: Georgia, serif; }
 
-/* Scrollbar */
+/* ─── Theme transition ───────────────────────────────────── */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.18s;
+  transition-timing-function: ease;
+}
+
+[style*="transform"],
+[style*="animation"] {
+  transition-property: background-color, border-color, color !important;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--cb-border); border-radius: 3px; }
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ─── Safe area / PWA ────────────────────────────────────── */
+.safe-bottom { padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* ─── Animations ─────────────────────────────────────────── */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.sheet-animate { animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1); }
+
+body.modal-open { overflow: hidden; touch-action: none; }
+
+/* ─── Mobile ─────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  button { min-height: 44px; }
+  a { min-height: 44px; display: inline-flex; align-items: center; }
+  input, textarea, select { font-size: 16px !important; }
+}
+
+input[type="text"],
+input[type="email"],
+input[type="date"],
+textarea { font-size: 16px; }
+
+@media (min-width: 640px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="date"],
+  textarea { font-size: 14px; }
+}
+
+
+/* Dark mode */
+[data-theme="dark"] {
+  --cb-cream:      #111110;
+  --cb-ivory:      #1C1B19;
+  --cb-sand:       #252320;
+  --cb-border:     #333028;
+  --cb-borderSoft: #2A2825;
+  --cb-muted:      #4A4640;
+  --cb-sub:        #7A746E;
+  --cb-inkMid:     #A8A09A;
+  --cb-ink:        #F0EDE8;
+  --cb-accent:     #C49A74;
+  --cb-navBg:      #0D0C0B;
+}
+
+/* ─── Base styles ──────────────────────────────────────────── */
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--cb-cream);
+  color: var(--cb-ink);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.font-georgia { font-family: Georgia, serif; }
+
+/* Smooth theme transition on all elements */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.18s;
+  transition-timing-function: ease;
+}
+
+/* Exception: don't animate transforms/opacity (breaks animations) */
+[style*="transform"],
+[style*="opacity"],
+[style*="animation"] {
+  transition-property: background-color, border-color, color !important;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #D4E6F1; border-radius: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--cb-border); border-radius: 3px; }
+
+/* Hide scrollbar on mobile nav tabs */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ─── Safe area / PWA ────────────────────────────────────── */
+.safe-bottom { padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* ─── Animations ─────────────────────────────────────────── */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.sheet-animate { animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1); }
+
+/* Prevent body scroll when modal open on mobile */
+body.modal-open { overflow: hidden; touch-action: none; }
+
+/* ─── Mobile tap targets ─────────────────────────────────── */
+@media (max-width: 640px) {
+  button { min-height: 44px; }
+  a { min-height: 44px; display: inline-flex; align-items: center; }
+  input, textarea, select { font-size: 16px !important; }
+}
+
+/* Input font size fix for iOS (prevents auto-zoom) */
+input[type="text"],
+input[type="email"],
+input[type="date"],
+textarea {
+  font-size: 16px;
+}
+@media (min-width: 640px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="date"],
+  textarea {
+    font-size: 14px;
+  }
+}

@@ -22,23 +22,45 @@ import RecurringPicker, { RecurRule } from '@/components/RecurringPicker'
 import PWAManager from '@/components/PWAManager'
 import GlobalSearch from '@/components/GlobalSearch'
 
-// ─── Theme system (CSS custom properties) ────────────────
-// Actual values are set in globals.css via [data-theme] selectors.
-const T = {
-  cream:      'var(--cb-cream)',
-  ivory:      'var(--cb-ivory)',
-  sand:       'var(--cb-sand)',
-  border:     'var(--cb-border)',
-  borderSoft: 'var(--cb-borderSoft)',
-  muted:      'var(--cb-muted)',
-  sub:        'var(--cb-sub)',
-  inkMid:     'var(--cb-inkMid)',
-  ink:        'var(--cb-ink)',
-  accent:     'var(--cb-accent)',
-  navBg:      'var(--cb-navBg)',
+// ─── Design tokens ───────────────────────────────────────
+// Hardcoded warm editorial palette — no CSS variable dependency.
+// Dark mode is handled by toggling a separate darkT object below.
+const WARM = {
+  cream:      '#F7F4F0',
+  ivory:      '#FFFFFF',
+  sand:       '#EDE8E2',
+  border:     '#C8BFB5',
+  borderSoft: '#DDD8D2',
+  muted:      '#9C8878',
+  sub:        '#6B6059',
+  inkMid:     '#3D3530',
+  ink:        '#1A1714',
+  accent:     '#8B6B52',
+  navBg:      '#1A1714',
   serif:      "'Cormorant Garamond', Georgia, serif",
   sans:       "'DM Sans', system-ui, sans-serif",
 }
+
+const DARK = {
+  cream:      '#111110',
+  ivory:      '#1C1B19',
+  sand:       '#252320',
+  border:     '#3D3830',
+  borderSoft: '#2E2C28',
+  muted:      '#5A5248',
+  sub:        '#8A8078',
+  inkMid:     '#B8B0A8',
+  ink:        '#F0EDE8',
+  accent:     '#C49A74',
+  navBg:      '#0D0C0B',
+  serif:      "'Cormorant Garamond', Georgia, serif",
+  sans:       "'DM Sans', system-ui, sans-serif",
+}
+
+// T is set at runtime based on theme state — updated in Dashboard
+// and passed down via a module-level reference that components read.
+// Default to WARM so components render correctly before hydration.
+let T = { ...WARM }
 
 // ─── Helpers ──────────────────────────────────────────────
 const fmt = (d: string | null) => {
@@ -798,7 +820,7 @@ function ItemCard({ item, onClick, onSwipeComplete, isFirst = false, cardDensity
                 {isPinned && (
                   <Pin size={9} color={cfg?.color} strokeWidth={2} style={{ flexShrink: 0, transform: 'rotate(45deg)' }} />
                 )}
-                <span style={{ fontFamily: T.sans, fontWeight: 400, fontSize: 13, color: isDone ? T.sub : T.ink, textDecoration: isDone ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', letterSpacing: '0.01em' }}>
+                <span style={{ fontFamily: T.sans, fontWeight: 500, fontSize: 13, color: isDone ? T.sub : T.ink, textDecoration: isDone ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', letterSpacing: '0.01em' }}>
                   {item.title}
                 </span>
                 {(item as any)._shared && (
@@ -1022,18 +1044,23 @@ export default function Dashboard() {
   const [theme,       setTheme]       = useState<'warm' | 'dark'>('warm')
   const [cardDensity, setCardDensity] = useState<'compact' | 'comfortable'>('compact')
 
-  useEffect(() => { document.documentElement.setAttribute('data-theme', theme); try { localStorage.setItem('cb_theme', theme) } catch {} }, [theme])
+  useEffect(() => { Object.assign(T, theme === 'dark' ? DARK : WARM); document.documentElement.setAttribute('data-theme', theme); try { localStorage.setItem('cb_theme', theme) } catch {} }, [theme])
 
   useEffect(() => {
     try {
       const savedTheme = localStorage.getItem('cb_theme') as 'warm' | 'dark' | null
-      if (savedTheme) { setTheme(savedTheme); document.documentElement.setAttribute('data-theme', savedTheme) }
+      if (savedTheme) { setTheme(savedTheme); document.documentElement.setAttribute('data-theme', savedTheme); Object.assign(T, savedTheme === 'dark' ? DARK : WARM) }
       const savedDensity = localStorage.getItem('cb_card_density') as 'compact' | 'comfortable' | null
       if (savedDensity) setCardDensity(savedDensity)
     } catch {}
   }, [])
 
-  const toggleTheme = () => setTheme(t => t === 'warm' ? 'dark' : 'warm')
+  const toggleTheme = () => setTheme(t => {
+    const next = t === 'warm' ? 'dark' : 'warm'
+    Object.assign(T, next === 'dark' ? DARK : WARM)
+    document.documentElement.setAttribute('data-theme', next)
+    return next
+  })
   const toggleDensity = () => setCardDensity(d => {
     const next = d === 'compact' ? 'comfortable' : 'compact'
     try { localStorage.setItem('cb_card_density', next) } catch {}
@@ -1227,7 +1254,7 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-              <span style={{ fontFamily: T.serif, color: 'white', fontSize: 19, fontWeight: 400, letterSpacing: '0.02em' }}>Clarityboards</span>
+              <span style={{ fontFamily: T.serif, color: 'white', fontSize: 20, fontWeight: 400, letterSpacing: '0.02em', opacity: 1 }}>Clarityboards</span>
             </div>
 
             <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.12)', flexShrink: 0 }} />
@@ -1247,7 +1274,7 @@ export default function Dashboard() {
                 return (
                   <button key={b.id} className="cb-tab"
                     onClick={() => { if (locked) { setShowUpgrade(true); return } if (isMeal) { router.push('/settings/meal'); return } if (isTravel) { router.push('/settings/travel'); return } if (isWishlist) { router.push('/settings/wishlist'); return } setActiveBoard(b.id) }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 11px', border: 'none', borderBottom: isActive ? `2px solid ${b.color}` : '2px solid transparent', cursor: 'pointer', fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap', fontFamily: T.sans, transition: 'color 0.15s', letterSpacing: '0.01em', background: 'transparent', color: isActive ? 'white' : locked ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.42)' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 11px', border: 'none', borderBottom: isActive ? `2px solid ${b.color}` : '2px solid transparent', cursor: 'pointer', fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap', fontFamily: T.sans, transition: 'color 0.15s', letterSpacing: '0.01em', background: 'transparent', color: isActive ? 'white' : locked ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.62)' }}>
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: locked ? 'rgba(255,255,255,0.2)' : b.color, flexShrink: 0 }} />
                     {boardLabel(b.id).replace('Board', '')}
                   </button>
@@ -1357,7 +1384,7 @@ export default function Dashboard() {
               { label: t('totalItems'),  value: items.length, color: T.sub },
             ].map(s => (
               <div key={s.label} style={{ display: 'flex', alignItems: 'baseline', gap: 7, flexShrink: 0 }}>
-                <span style={{ fontFamily: T.serif, fontSize: 24, fontWeight: 300, color: s.color, lineHeight: 1 }}>{s.value}</span>
+                <span style={{ fontFamily: T.serif, fontSize: 24, fontWeight: 400, color: s.color, lineHeight: 1 }}>{s.value}</span>
                 <span style={{ fontSize: 11, color: T.sub, fontWeight: 300, letterSpacing: '0.01em' }}>{s.label}</span>
               </div>
             ))}
@@ -1410,7 +1437,7 @@ export default function Dashboard() {
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: cfg?.color }} />
                 </div>
                 <div>
-                  <div style={{ fontFamily: T.serif, fontSize: 28, color: T.ink, fontWeight: 400, letterSpacing: '0.01em', lineHeight: 1.1 }}>{boardLabel(activeBoard)}</div>
+                  <div style={{ fontFamily: T.serif, fontSize: 28, color: T.ink, fontWeight: 500, letterSpacing: '0.01em', lineHeight: 1.1 }}>{boardLabel(activeBoard)}</div>
                   <div style={{ fontSize: 12, color: T.sub, marginTop: 3, fontWeight: 300 }}>{cfg?.tagline}</div>
                 </div>
               </div>
@@ -1476,7 +1503,7 @@ export default function Dashboard() {
                 onClick={() => { if (locked) { setShowUpgrade(true); return } if (isMeal) { router.push('/settings/meal'); return } if (isTravel) { router.push('/settings/travel'); return } if (isWishlist) { router.push('/settings/wishlist'); return } setActiveBoard(b.id) }}
                 style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, height: '100%', background: 'none', border: 'none', cursor: 'pointer' }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: locked ? 'rgba(255,255,255,0.15)' : isActive ? b.color : 'rgba(255,255,255,0.3)', transition: 'all 0.15s' }} />
-                <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.03em', color: isActive ? 'white' : locked ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.35)', maxWidth: 44, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.03em', color: isActive ? 'white' : locked ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.55)', maxWidth: 44, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {boardLabel(b.id).replace('Board','')}
                 </span>
               </button>
@@ -1542,9 +1569,13 @@ function Label({ children, style }: { children: React.ReactNode; style?: React.C
   )
 }
 
+const getSheetInput = (): React.CSSProperties => ({
+  width: '100%', padding: '10px 13px', borderRadius: 6, border: `1px solid ${T.border}`,
+  fontSize: 13, fontFamily: "'DM Sans', system-ui, sans-serif", color: T.ink, marginBottom: 10, outline: 'none', background: T.ivory,
+})
 const sheetInput: React.CSSProperties = {
-  width: '100%', padding: '10px 13px', borderRadius: 6, border: '1px solid var(--cb-border)',
-  fontSize: 13, fontFamily: "'DM Sans', system-ui, sans-serif", color: 'var(--cb-ink)', marginBottom: 10, outline: 'none', background: 'var(--cb-ivory)',
+  width: '100%', padding: '10px 13px', borderRadius: 6, border: '1px solid #C8BFB5',
+  fontSize: 13, fontFamily: "'DM Sans', system-ui, sans-serif", color: '#1A1714', marginBottom: 10, outline: 'none', background: '#FFFFFF',
 }
 const primaryBtn = (bg: string): React.CSSProperties => ({
   width: '100%', padding: '12px 16px', borderRadius: 6, border: 'none',
@@ -1552,12 +1583,12 @@ const primaryBtn = (bg: string): React.CSSProperties => ({
   cursor: 'pointer', fontFamily: T.sans,
 })
 const ghostBtn: React.CSSProperties = {
-  flex: 1, padding: '12px', borderRadius: 6, border: '1px solid var(--cb-border)',
-  background: 'transparent', color: 'var(--cb-sub)', fontWeight: 500, fontSize: 13,
+  flex: 1, padding: '12px', borderRadius: 6, border: '1px solid #C8BFB5',
+  background: 'transparent', color: '#6B6059', fontWeight: 500, fontSize: 13,
   cursor: 'pointer', fontFamily: "'DM Sans', system-ui, sans-serif",
 }
 const closeBtn: React.CSSProperties = {
-  background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: 'var(--cb-sub)',
+  background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#6B6059',
   padding: 0, lineHeight: 1, flexShrink: 0,
 }
 
