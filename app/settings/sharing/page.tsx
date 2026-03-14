@@ -124,13 +124,27 @@ export default function SharingPage() {
   }, {} as Record<string, Share[]>)
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F2EFE9]">
+    <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", minHeight: '100vh', background: '#FAFAF8' }}>
+      <nav style={{ background: '#1A1714', borderBottom: '0.5px solid rgba(255,255,255,0.06)', position: 'sticky', top: 0, zIndex: 30 }}>
+        <div style={{ maxWidth: 680, margin: '0 auto', padding: '0 24px', height: 54, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={() => router.push('/dashboard')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: 13, fontWeight: 300, padding: 0 }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 12L6 8l4-4"/></svg>
+            Dashboard
+          </button>
+          <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.12)' }}/>
+          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: 'white', fontSize: 19, fontWeight: 400, letterSpacing: '0.01em' }}>
+            Board Sharing
+          </span>
+        </div>
+      </nav>
+
       <Loader2 className="animate-spin text-[#2874A6]" size={32} />
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-[#F2EFE9]" style={{ fontFamily: 'Georgia, serif' }}>
+    <div className="min-h-screen background: "#FAFAF8"" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
       {/* Header */}
       <div className="bg-[#1A2B3C] px-6 py-4 flex items-center gap-4">
         <button onClick={() => router.push('/dashboard')} className="text-[#5A7A94] hover:text-white transition-colors">
@@ -162,7 +176,7 @@ export default function SharingPage() {
         {/* Shared with me */}
         {sharedWithMe.length > 0 && (
           <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden">
-            <div className="px-5 py-3 border-b border-[#F0ECE4] bg-[#FAFAF8]">
+            <div className="px-5 py-3 border-b border-[#F0ECE4] background: "#FAFAF8"">
               <span className="text-xs font-bold text-[#9B8E7E] uppercase tracking-wider">Shared with you</span>
             </div>
             {sharedWithMe.map(s => {
@@ -290,7 +304,7 @@ export default function SharingPage() {
           onClick={e => e.target === e.currentTarget && setShowInvite(false)}>
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-7 space-y-5">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-[#1A2B3C]" style={{ fontFamily: 'Georgia, serif' }}>Invite someone</h2>
+              <h2 className="text-xl font-bold text-[#1A2B3C]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>Invite someone</h2>
               <button onClick={() => setShowInvite(false)} className="text-[#9B8E7E] hover:text-[#1A2B3C] text-2xl leading-none">×</button>
             </div>
 
@@ -372,7 +386,7 @@ export default function SharingPage() {
               onClick={handleInvite}
               disabled={inviting || !inviteValue.trim() || !inviteName.trim()}
               className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all flex items-center justify-center gap-2 disabled:opacity-40"
-              style={{ background: '#1A2B3C' }}
+              style={{ background: '#1A1714' }}
             >
               {inviting ? <><Loader2 size={16} className="animate-spin" /> Sending...</> : 'Send invite →'}
             </button>

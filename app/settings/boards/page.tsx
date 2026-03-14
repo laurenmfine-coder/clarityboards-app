@@ -57,9 +57,9 @@ export default function BoardNamesPage() {
   };
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", minHeight: "100vh", background: "#F4F7FA" }}>
+    <div style={{ fontFamily: "'DM Sans', sans-serif", minHeight: "100vh", background: "#FAFAF8" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
         * { box-sizing: border-box; }
         input:focus { outline: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
@@ -67,30 +67,27 @@ export default function BoardNamesPage() {
       `}</style>
 
       {/* Header */}
-      <div style={{ background: "#1A2B3C", padding: "0 16px" }}>
-        <div style={{ maxWidth: 560, margin: "0 auto", height: 56, display: "flex", alignItems: "center", gap: 12 }}>
-          <button
-            onClick={() => router.back()}
-            style={{ color: "rgba(255,255,255,0.6)", background: "none", border: "none", cursor: "pointer", padding: "6px", borderRadius: 8, display: "flex", alignItems: "center" }}
-          >
-            ← Back
+            <nav style={{ background: '#1A1714', borderBottom: '0.5px solid rgba(255,255,255,0.06)', position: 'sticky', top: 0, zIndex: 30 }}>
+        <div style={{ maxWidth: 680, margin: '0 auto', padding: '0 24px', height: 54, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={() => router.push('/dashboard')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: 13, fontWeight: 300, padding: 0 }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 12L6 8l4-4"/></svg>
+            Dashboard
           </button>
-          <div style={{ flex: 1 }} />
-          {saved && (
-            <span className="fade-in" style={{ fontSize: 12, color: "#27AE60", fontWeight: 700, background: "#EAFAF1", padding: "4px 10px", borderRadius: 20 }}>
-              ✓ Saved
-            </span>
-          )}
+          <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.12)' }}/>
+          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: 'white', fontSize: 19, fontWeight: 400, letterSpacing: '0.01em' }}>
+            Rename Boards
+          </span>
         </div>
-      </div>
+      </nav>
 
       {/* Content */}
       <div style={{ maxWidth: 560, margin: "0 auto", padding: "24px 16px 60px" }}>
         <div style={{ marginBottom: 28 }}>
-          <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: "#1A2B3C", marginBottom: 6 }}>
+          <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 26, color: "#1A1714", marginBottom: 6 }}>
             Rename Your Boards
           </div>
-          <p style={{ fontSize: 14, color: "#5A7A94", lineHeight: 1.5, margin: 0 }}>
+          <p style={{ fontSize: 14, color: "#5C5650", lineHeight: 1.5, margin: 0 }}>
             Give each board a name that fits your family. Changes appear everywhere in the app instantly.
           </p>
         </div>
@@ -118,7 +115,7 @@ export default function BoardNamesPage() {
                   background: board.color,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   flexShrink: 0,
-                  fontFamily: "Georgia, serif", fontWeight: "bold", fontSize: 16, color: "white",
+                  fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: "bold", fontSize: 16, color: "white",
                 }}>
                   {board.letter}
                 </div>
@@ -139,7 +136,7 @@ export default function BoardNamesPage() {
                       width: "100%",
                       fontSize: 15,
                       fontWeight: 600,
-                      color: "#1A2B3C",
+                      color: "#1A1714",
                       border: "none",
                       borderBottom: `2px solid ${isCustom ? board.color : "#E8EDF5"}`,
                       padding: "2px 0",
@@ -187,7 +184,7 @@ export default function BoardNamesPage() {
             <button
               onClick={resetAll}
               style={{
-                fontSize: 13, color: "#5A7A94", background: "none", border: "1px solid #D4E6F1",
+                fontSize: 13, color: "#5C5650", background: "none", border: "1px solid #D4E6F1",
                 borderRadius: 10, padding: "8px 20px", cursor: "pointer",
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
               }}

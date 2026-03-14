@@ -23,15 +23,18 @@ import GlobalSearch from '@/components/GlobalSearch'
 
 // ─── Design tokens (warm editorial palette) ──────────────
 const T = {
-  cream:   '#FAF9F7',
-  ivory:   '#FFFEF9',
-  sand:    '#F2EDE6',
-  border:  '#EDE9E3',
-  muted:   '#C8B8A8',
-  sub:     '#9C8B7A',
-  ink:     '#2C2318',
-  serif:   "'Cormorant Garamond', Georgia, serif",
-  sans:    "'DM Sans', system-ui, sans-serif",
+  cream:      '#FAFAF8',
+  ivory:      '#FFFFFF',
+  sand:       '#F5F2EE',
+  border:     '#E8E4DF',
+  borderSoft: '#F0EDE8',
+  muted:      '#C8B8A8',
+  sub:        '#9C968F',
+  inkMid:     '#5C5650',
+  ink:        '#1A1714',
+  accent:     '#8B6B52',
+  serif:      "'Cormorant Garamond', Georgia, serif",
+  sans:       "'DM Sans', system-ui, sans-serif",
 }
 
 // ─── Helpers ──────────────────────────────────────────────
@@ -67,21 +70,24 @@ function StatusPill({ status, board }: { status: string; board: string }) {
   const cfg = BOARD_MAP[board as keyof typeof BOARD_MAP]
   const map: Record<string, { bg: string; text: string }> = {
     'rsvp-needed': { bg: '#FEF3CD', text: '#8B6914' },
-    'accepted':    { bg: '#D5F0E0', text: '#1E6B40' },
-    'declined':    { bg: '#FADBD8', text: '#8B2020' },
-    'in-progress': { bg: '#D6EAF8', text: '#1A5276' },
-    'submitted':   { bg: '#E8DAEF', text: '#5B2C6F' },
-    'applied':     { bg: '#D4E6F1', text: '#1A4F72' },
-    'done':        { bg: '#EAEDED', text: '#717D7E' },
-    'todo':        { bg: '#F2F3F4', text: '#717D7E' },
+    'accepted':    { bg: '#EDF5F0', text: '#3D6B52' },
+    'declined':    { bg: '#FCEBEB', text: '#A32D2D' },
+    'in-progress': { bg: '#EAF4F8', text: '#2C6E8A' },
+    'submitted':   { bg: '#F0EBF8', text: '#6B528B' },
+    'applied':     { bg: '#EAF4F8', text: '#2C6E8A' },
+    'done':        { bg: '#F5F2EE', text: '#9C968F' },
+    'todo':        { bg: '#F5F2EE', text: '#9C968F' },
+    'want-to-go':  { bg: '#EAF4F8', text: '#2C6E8A' },
+    'planning':    { bg: '#FEF3CD', text: '#8B6914' },
+    'booked':      { bg: '#EDF5F0', text: '#3D6B52' },
   }
   const label = cfg?.statuses.find(s => s.value === status)?.label ?? status
-  const style = map[status] ?? { bg: '#F2F3F4', text: '#717D7E' }
+  const style = map[status] ?? { bg: '#F5F2EE', text: '#9C968F' }
   return (
     <span style={{
-      fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 20,
-      background: style.bg, color: style.text, letterSpacing: '0.03em',
-      fontFamily: T.sans, whiteSpace: 'nowrap',
+      fontSize: 10, fontWeight: 500, padding: '3px 8px', borderRadius: 3,
+      background: style.bg, color: style.text, letterSpacing: '0.04em',
+      fontFamily: T.sans, whiteSpace: 'nowrap', textTransform: 'uppercase' as const,
     }}>{label}</span>
   )
 }
@@ -519,69 +525,68 @@ function ItemCard({ item, onClick, onSwipeComplete, isFirst = false }: {
   }
 
   return (
-    <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 12 }}>
+    <div style={{ position: 'relative', overflow: 'hidden', borderBottom: `0.5px solid ${T.borderSoft}` }}>
       {/* Swipe reveal */}
-      <div style={{ position: 'absolute', inset: '0 auto 0 0', display: 'flex', alignItems: 'center', paddingLeft: 16, background: '#5C8B6A', width: Math.max(swipeX, 0), opacity: swipeX > 10 ? 1 : 0, borderRadius: 12 }}>
-        <Check size={16} color="white" strokeWidth={2.5} />
+      <div style={{ position: 'absolute', inset: '0 auto 0 0', display: 'flex', alignItems: 'center', paddingLeft: 18, background: '#3D6B52', width: Math.max(swipeX, 0), opacity: swipeX > 10 ? 1 : 0, transition: 'opacity 0.1s' }}>
+        <Check size={14} color="white" strokeWidth={2} />
       </div>
 
-      {/* Card */}
+      {/* Row */}
       <div onClick={() => { if (swipeX < 5) onClick() }}
         onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
+        className="cb-row-item"
         style={{
-          background: T.ivory, borderRadius: 12,
-          border: `1px solid ${T.border}`,
-          display: 'flex', overflow: 'hidden', cursor: 'pointer',
+          background: T.ivory, display: 'flex', alignItems: 'center', gap: 0,
+          cursor: 'pointer', overflow: 'hidden',
           transform: `translateX(${swipeX}px)`,
-          transition: swipeX === 0 ? 'transform 0.25s ease, opacity 0.3s, box-shadow 0.2s' : 'none',
-          opacity: isDone ? 0.55 : swiped ? 0 : 1,
-          boxShadow: '0 1px 4px rgba(44,35,24,0.06)',
+          transition: swipeX === 0 ? 'transform 0.25s ease, opacity 0.3s' : 'none',
+          opacity: isDone ? 0.5 : swiped ? 0 : 1,
         }}
-        onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 16px rgba(44,35,24,0.1)')}
-        onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 1px 4px rgba(44,35,24,0.06)')}
       >
-        {/* Board color bar */}
-        <div style={{ width: 3, flexShrink: 0, background: cfg?.color }} />
+        {/* Board color accent — 2px left bar */}
+        <div style={{ width: 2, alignSelf: 'stretch', background: cfg?.color, flexShrink: 0 }} />
 
-        <div style={{ flex: 1, padding: '12px 14px' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
-              <Monogram board={item.board} size={24} />
-              <span style={{ fontFamily: T.sans, fontWeight: 600, fontSize: 13, color: isDone ? T.muted : T.ink, textDecoration: isDone ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {item.title}
-              </span>
-              {(item as any)._shared && (
-                <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 20, background: T.sand, color: T.sub, flexShrink: 0 }}>shared</span>
-              )}
-              {(item as any).recur_rule_id && (
-                <span style={{ flexShrink: 0 }}><RefreshCw size={10} color={T.muted} /></span>
+        <div style={{ flex: 1, padding: '13px 16px', minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: pct !== null || item.date ? 5 : 0 }}>
+                <span style={{ fontFamily: T.sans, fontWeight: 400, fontSize: 13, color: isDone ? T.sub : T.ink, textDecoration: isDone ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', letterSpacing: '0.01em' }}>
+                  {item.title}
+                </span>
+                {(item as any)._shared && (
+                  <span style={{ fontSize: 9, fontWeight: 500, padding: '1px 6px', borderRadius: 3, background: T.sand, color: T.sub, flexShrink: 0, letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>shared</span>
+                )}
+                {(item as any).recur_rule_id && (
+                  <RefreshCw size={9} color={T.sub} strokeWidth={1.5} style={{ flexShrink: 0 }} />
+                )}
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                {item.date && (
+                  <span style={{ fontSize: 11, color: urgencyColor(item.date), fontWeight: 300, letterSpacing: '0.01em' }}>
+                    {urgencyLabel(item.date, t)}
+                  </span>
+                )}
+                {item.checklist.length > 0 && (
+                  <span {...(isFirst ? { 'data-tour': 'checklist' } : {})}
+                    style={{ fontSize: 11, color: T.sub, display: 'flex', alignItems: 'center', gap: 3, fontWeight: 300 }}>
+                    <CheckSquare size={10} strokeWidth={1.5} />
+                    {item.checklist.filter(c => c.done).length}/{item.checklist.length}
+                  </span>
+                )}
+              </div>
+
+              {pct !== null && (
+                <div style={{ marginTop: 7, height: 1.5, background: T.border, borderRadius: 1 }}>
+                  <div style={{ height: '100%', borderRadius: 1, background: cfg?.color, width: `${pct}%`, transition: 'width 0.3s' }} />
+                </div>
               )}
             </div>
+
             <span {...(isFirst ? { 'data-tour': 'status-badge' } : {})}>
               <StatusPill status={item.status} board={item.board} />
             </span>
           </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 6 }}>
-            {item.date && (
-              <span style={{ fontSize: 11, color: urgencyColor(item.date), fontWeight: daysUntil(item.date) !== null && (daysUntil(item.date) ?? 99) <= 7 ? 600 : 400 }}>
-                {urgencyLabel(item.date, t)}
-              </span>
-            )}
-            {item.checklist.length > 0 && (
-              <span {...(isFirst ? { 'data-tour': 'checklist' } : {})}
-                style={{ fontSize: 11, color: T.sub, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <CheckSquare size={11} />
-                {item.checklist.filter(c => c.done).length}/{item.checklist.length}
-              </span>
-            )}
-          </div>
-
-          {pct !== null && (
-            <div style={{ marginTop: 8, height: 2, background: T.sand, borderRadius: 1 }}>
-              <div style={{ height: '100%', borderRadius: 1, background: cfg?.color, width: `${pct}%`, transition: 'width 0.3s' }} />
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -881,233 +886,231 @@ export default function Dashboard() {
   return (
     <div style={{ minHeight: '100vh', background: T.cream, fontFamily: T.sans }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
-        * { box-sizing: border-box; }
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 2px; }
+        .cb-tab:hover { color: rgba(255,255,255,0.85) !important; }
+        .cb-row-item:hover { background: #FDFCFA !important; }
+        .cb-settings-item:hover { background: ${T.sand} !important; }
       `}</style>
 
-      {/* ── NAV ── */}
-      <nav style={{ background: T.ink, position: 'sticky', top: 0, zIndex: 30 }}>
+      {/* NAV */}
+      <nav style={{ background: T.ink, position: 'sticky', top: 0, zIndex: 30, borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', height: 58, gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', height: 54, gap: 14 }}>
+
             {/* Wordmark */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 9, flexShrink: 0 }}>
               <div style={{ display: 'flex', gap: 2 }}>
-                {[['#C17A5A','rgba(255,255,255,0.3)'],['rgba(255,255,255,0.3)','#8B9B6A']].map((pair, r) => (
+                {[['#8B6B52','rgba(255,255,255,0.25)'],['rgba(255,255,255,0.25)','#6B8A5C']].map((pair, r) => (
                   <div key={r} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {pair.map((c,i) => <div key={i} style={{ width: 9, height: 9, borderRadius: 2, background: c }} />)}
+                    {pair.map((c,i) => <div key={i} style={{ width: 8, height: 8, borderRadius: 2, background: c }} />)}
                   </div>
                 ))}
               </div>
-              <span style={{ fontFamily: T.serif, color: 'white', fontSize: 20, fontWeight: 500, letterSpacing: '0.02em', display: 'none' }} className="sm-visible">Clarityboards</span>
+              <span style={{ fontFamily: T.serif, color: 'white', fontSize: 19, fontWeight: 400, letterSpacing: '0.02em' }}>Clarityboards</span>
             </div>
 
-            {/* Board tabs */}
-            <div data-tour="board-tabs" style={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, overflowX: 'auto' }}>
-              <button data-tour="unified-feed" onClick={() => setActiveBoard('all')}
-                style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', fontFamily: T.sans, transition: 'all 0.15s',
-                  background: activeBoard === 'all' ? 'rgba(255,255,255,0.15)' : 'transparent',
-                  color: activeBoard === 'all' ? 'white' : 'rgba(255,255,255,0.45)',
-                }}>
-                <Layers size={12} /> All
+            <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.12)', flexShrink: 0 }} />
+
+            {/* Board tabs — flat underline style */}
+            <div data-tour="board-tabs" style={{ display: 'flex', alignItems: 'center', flex: 1, overflowX: 'auto' }}>
+              <button data-tour="unified-feed" className="cb-tab" onClick={() => setActiveBoard('all')}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 11px', border: 'none', borderBottom: activeBoard === 'all' ? '2px solid rgba(255,255,255,0.55)' : '2px solid transparent', cursor: 'pointer', fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap', fontFamily: T.sans, transition: 'color 0.15s', letterSpacing: '0.01em', background: 'transparent', color: activeBoard === 'all' ? 'white' : 'rgba(255,255,255,0.4)' }}>
+                <Layers size={11} strokeWidth={1.5} /> All
               </button>
               {BOARDS.map(b => {
                 const locked = !isPro && !activeBoards.includes(b.id)
-                const isMeal = (b.id as string) === 'meal'; const isTravel = (b.id as string) === 'travel'; const isWishlist = (b.id as string) === 'wishlist'
+                const isMeal = (b.id as string) === 'meal'
+                const isTravel = (b.id as string) === 'travel'
+                const isWishlist = (b.id as string) === 'wishlist'
+                const isActive = activeBoard === b.id
                 return (
-                  <button key={b.id} onClick={() => { if (locked) { setShowUpgrade(true); return } if (isMeal) { router.push('/settings/meal'); return } if (isTravel) { router.push('/settings/travel'); return } if (isWishlist) { router.push('/settings/wishlist'); return } setActiveBoard(b.id) }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', fontFamily: T.sans, transition: 'all 0.15s',
-                      background: activeBoard === b.id ? 'rgba(255,255,255,0.15)' : 'transparent',
-                      color: activeBoard === b.id ? 'white' : locked ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.5)',
-                    }}>
-                    <span style={{ width: 16, height: 16, borderRadius: 4, background: locked ? 'rgba(255,255,255,0.15)' : b.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontFamily: T.serif, color: 'white', fontWeight: 600 }}>
-                      {locked ? '🔒' : b.letter}
-                    </span>
-                    {boardLabel(b.id)}
+                  <button key={b.id} className="cb-tab"
+                    onClick={() => { if (locked) { setShowUpgrade(true); return } if (isMeal) { router.push('/settings/meal'); return } if (isTravel) { router.push('/settings/travel'); return } if (isWishlist) { router.push('/settings/wishlist'); return } setActiveBoard(b.id) }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 11px', border: 'none', borderBottom: isActive ? `2px solid ${b.color}` : '2px solid transparent', cursor: 'pointer', fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap', fontFamily: T.sans, transition: 'color 0.15s', letterSpacing: '0.01em', background: 'transparent', color: isActive ? 'white' : locked ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.42)' }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: locked ? 'rgba(255,255,255,0.2)' : b.color, flexShrink: 0 }} />
+                    {boardLabel(b.id).replace('Board', '')}
                   </button>
                 )
               })}
             </div>
 
             {/* Right actions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-              <NavIconBtn onClick={() => setSearchOpen(true)} title="Search (⌘K)"><Search size={15} /></NavIconBtn>
-              <NavIconBtn onClick={() => setShowUpgrade(true)} title="Pro">⭐</NavIconBtn>
-              <NavIconBtn onClick={() => { localStorage.removeItem('cb_tour_complete'); setShowTour(true) }} title="Tour">?</NavIconBtn>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
+              <NavIconBtn onClick={() => setSearchOpen(true)} title="Search (⌘K)"><Search size={14} strokeWidth={1.5} /></NavIconBtn>
+              <NavIconBtn onClick={() => setShowUpgrade(true)} title="Pro">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="8,1 10,6 15,6 11,10 12.5,15 8,12 3.5,15 5,10 1,6 6,6"/></svg>
+              </NavIconBtn>
+              <NavIconBtn onClick={() => { localStorage.removeItem('cb_tour_complete'); setShowTour(true) }} title="Help">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M6 6a2 2 0 114 0c0 1.5-2 2-2 3.5"/><circle cx="8" cy="12.5" r="0.6" fill="currentColor"/></svg>
+              </NavIconBtn>
 
               {/* Settings */}
               <div style={{ position: 'relative' }}>
-                <NavIconBtn onClick={() => setShowSettings(s => !s)} title="Settings"><Settings size={15} /></NavIconBtn>
+                <NavIconBtn onClick={() => setShowSettings(s => !s)} title="Settings"><Settings size={14} strokeWidth={1.5} /></NavIconBtn>
                 {showSettings && (
                   <>
                     <div style={{ position: 'fixed', inset: 0, zIndex: 40 }} onClick={() => setShowSettings(false)} />
-                    <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, width: 220, background: T.ivory, borderRadius: 14, boxShadow: '0 8px 32px rgba(44,35,24,0.18)', border: `1px solid ${T.border}`, zIndex: 50, overflow: 'hidden' }}>
-                      <div style={{ padding: '8px 14px 6px', fontSize: 9, fontWeight: 700, color: T.muted, textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: `1px solid ${T.border}` }}>Settings</div>
+                    <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, width: 240, background: T.ivory, borderRadius: 8, boxShadow: '0 4px 24px rgba(26,23,20,0.14)', border: `0.5px solid ${T.border}`, zIndex: 50, overflow: 'hidden' }}>
+                      <div style={{ padding: '8px 14px 4px', fontSize: 9, fontWeight: 600, color: T.sub, textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>Boards</div>
                       {[
-                        { href: '/settings/sharing',           icon: <Share2 size={13} />,   label: 'Board Sharing' },
-                        { href: '/settings/phone',             icon: <Phone size={13} />,    label: 'SMS Forwarding' },
-                        { href: '/settings/ical',              icon: <Calendar size={13} />, label: 'Calendar Export' },
-                        { href: '/settings/ical-subscriptions',icon: <RefreshCw size={13} />,label: 'Subscribe to Calendars' },
-                        { href: '/settings/gcal',              icon: '📅',                  label: 'Google Calendar Sync' },
-                        { href: '/settings/boards',            icon: '✏️',                  label: 'Rename Boards' },
-                        { href: '/settings/export',            icon: '📤',                  label: 'Export & Connect' },
-                        { href: '/settings/zapier',            icon: '⚡',                  label: 'Zapier Integration' },
-                        { href: '/settings/pinterest',         icon: '📌',                  label: 'Pinterest Boards' },
-                        { href: '/settings/travel',            icon: '✈️',                  label: 'TravelBoard' },
-                        { href: '/settings/wishlist',          icon: '✦',                   label: 'WishlistBoard' },
-                        { href: '/settings/watch',             icon: '👁️',                 label: 'Watch & Alert' },
-                        { href: '/settings/notifications',     icon: '🔔',                  label: 'Notifications' },
-                        { href: '/settings/templates',         icon: '📋',                  label: 'Templates' },
-                        { href: '/settings/language',          icon: '🌐',                  label: t('language') },
+                        { href: '/settings/meal',     label: 'MealBoard',    icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 2v12M4 4c0-2 1.5-2 2-2M12 4c0-2-1.5-2-2-2M3 6h10"/></svg> },
+                        { href: '/settings/travel',   label: 'TravelBoard',  icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 12l4-8 4 8M14 4l-2 8"/><path d="M6.5 9h3"/></svg> },
+                        { href: '/settings/wishlist', label: 'WishlistBoard',icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="8,2 9.5,6 14,6 10.5,9 11.5,13 8,11 4.5,13 5.5,9 2,6 6.5,6"/></svg> },
                       ].map(item => (
-                        <a key={item.href} href={item.href} onClick={() => setShowSettings(false)}
-                          style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', fontSize: 13, color: T.ink, textDecoration: 'none', transition: 'background 0.1s' }}
-                          onMouseEnter={e => e.currentTarget.style.background = T.sand}
-                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                          <span style={{ color: T.sub, display: 'flex', fontSize: 13 }}>{item.icon}</span>
-                          {item.label}
+                        <a key={item.href} href={item.href} onClick={() => setShowSettings(false)} className="cb-settings-item"
+                          style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', fontSize: 13, fontWeight: 400, color: T.ink, textDecoration: 'none', transition: 'background 0.1s' }}>
+                          <span style={{ color: T.sub, display: 'flex', width: 16, justifyContent: 'center' }}>{item.icon}</span>{item.label}
                         </a>
                       ))}
-                      <div style={{ borderTop: `1px solid ${T.border}` }}>
-                        <button onClick={() => { setShowSettings(false); signOut() }}
-                          style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', fontSize: 13, color: '#C0392B', background: 'none', border: 'none', cursor: 'pointer', width: '100%', fontFamily: T.sans }}
-                          onMouseEnter={e => e.currentTarget.style.background = '#FDF6F3'}
-                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                          <LogOut size={13} /> Sign out
-                        </button>
-                      </div>
+                      <div style={{ height: '0.5px', background: T.border, margin: '4px 0' }} />
+                      <div style={{ padding: '4px 14px', fontSize: 9, fontWeight: 600, color: T.sub, textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>Integrations</div>
+                      {[
+                        { href: '/settings/gcal',     label: 'Google Calendar', icon: <Calendar size={13} strokeWidth={1.5} /> },
+                        { href: '/settings/ical',     label: 'Calendar Export', icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M5 1v3M11 1v3M2 7h12"/></svg> },
+                        { href: '/settings/phone',    label: 'SMS Forwarding',  icon: <Phone size={13} strokeWidth={1.5} /> },
+                        { href: '/settings/zapier',   label: 'Zapier',          icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 2v4M8 10v4M2 8h4M10 8h4"/></svg> },
+                        { href: '/settings/pinterest',label: 'Pinterest Boards',icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="8" cy="8" r="6"/><path d="M6 10.5c.4-1.5.7-3 1-4.5M7 6c.5-1.5 2.5-2 3 0s-1 3-2.5 2.5"/></svg> },
+                        { href: '/settings/watch',    label: 'Watch & Alert',   icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg> },
+                        { href: '/settings/ical-subscriptions', label: 'Subscribe Calendars', icon: <RefreshCw size={13} strokeWidth={1.5} /> },
+                      ].map(item => (
+                        <a key={item.href} href={item.href} onClick={() => setShowSettings(false)} className="cb-settings-item"
+                          style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', fontSize: 13, fontWeight: 400, color: T.ink, textDecoration: 'none', transition: 'background 0.1s' }}>
+                          <span style={{ color: T.sub, display: 'flex', width: 16, justifyContent: 'center' }}>{item.icon}</span>{item.label}
+                        </a>
+                      ))}
+                      <div style={{ height: '0.5px', background: T.border, margin: '4px 0' }} />
+                      <div style={{ padding: '4px 14px', fontSize: 9, fontWeight: 600, color: T.sub, textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>Account</div>
+                      {[
+                        { href: '/settings/boards',       label: 'Rename Boards',   icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M11 3l2 2-6 6-2.5.5.5-2.5L11 3z"/></svg> },
+                        { href: '/settings/notifications', label: 'Notifications',  icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 2a4 4 0 014 4c0 4 2 5 2 5H2s2-1 2-5a4 4 0 014-4z"/><path d="M6.5 13a1.5 1.5 0 003 0"/></svg> },
+                        { href: '/settings/export',        label: 'Export & Connect',icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 10V2M5 5l3-3 3 3M4 10v4h8v-4"/></svg> },
+                        { href: '/settings/language',      label: t('language'),    icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 2c-1.5 2-1.5 8 0 12M8 2c1.5 2 1.5 8 0 12M2 8h12"/></svg> },
+                      ].map(item => (
+                        <a key={item.href} href={item.href} onClick={() => setShowSettings(false)} className="cb-settings-item"
+                          style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', fontSize: 13, fontWeight: 400, color: T.ink, textDecoration: 'none', transition: 'background 0.1s' }}>
+                          <span style={{ color: T.sub, display: 'flex', width: 16, justifyContent: 'center' }}>{item.icon}</span>{item.label}
+                        </a>
+                      ))}
+                      <div style={{ height: '0.5px', background: T.border }} />
+                      <button onClick={() => { setShowSettings(false); signOut() }} className="cb-settings-item"
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', fontSize: 13, fontWeight: 400, color: '#A32D2D', background: 'none', border: 'none', cursor: 'pointer', width: '100%', fontFamily: T.sans, transition: 'background 0.1s' }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#FDF6F3'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                        <LogOut size={13} strokeWidth={1.5} /> Sign out
+                      </button>
                     </div>
                   </>
                 )}
               </div>
-              <NavIconBtn onClick={signOut} title="Sign out" className="sm-hidden"><LogOut size={15} /></NavIconBtn>
             </div>
           </div>
 
-          {/* Search bar */}
+          {/* Search */}
           {searchOpen && (
             <div style={{ paddingBottom: 10 }}>
-              <input autoFocus value={search} onChange={e => setSearch(e.target.value)}
-                placeholder={t('searchPlaceholder')}
-                style={{ width: '100%', background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', borderRadius: 10, padding: '9px 14px', fontSize: 13, outline: 'none', fontFamily: T.sans }}
-              />
+              <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder={t('searchPlaceholder')}
+                style={{ width: '100%', background: 'rgba(255,255,255,0.08)', color: 'white', border: '0.5px solid rgba(255,255,255,0.12)', borderRadius: 6, padding: '9px 14px', fontSize: 13, outline: 'none', fontFamily: T.sans, fontWeight: 300 }} />
             </div>
           )}
         </div>
       </nav>
 
-      {/* ── STATS STRIP ── */}
-      <div style={{ background: T.ivory, borderBottom: `1px solid ${T.border}` }}>
+      {/* STATS STRIP */}
+      <div style={{ background: T.ivory, borderBottom: `0.5px solid ${T.border}` }}>
         <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 24, height: 52, overflowX: 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 28, height: 50, overflowX: 'auto' }}>
             {[
-              { label: t('thisWeek'),   value: thisWeek,       color: '#C17A5A' },
-              { label: t('rsvpsNeeded'),value: rsvpNeed,       color: '#8B6914' },
-              { label: t('openItems'),  value: openTasks,      color: '#3C6B5A' },
-              { label: t('totalItems'), value: items.length,   color: T.sub },
+              { label: t('thisWeek'),    value: thisWeek,     color: T.accent },
+              { label: t('rsvpsNeeded'),value: rsvpNeed,      color: '#8B6914' },
+              { label: t('openItems'),   value: openTasks,    color: '#3C6B5A' },
+              { label: t('totalItems'),  value: items.length, color: T.sub },
             ].map(s => (
-              <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                <span style={{ fontFamily: T.serif, fontSize: 26, fontWeight: 500, color: s.color }}>{s.value}</span>
-                <span style={{ fontSize: 11, color: T.sub, lineHeight: 1.3 }}>{s.label}</span>
+              <div key={s.label} style={{ display: 'flex', alignItems: 'baseline', gap: 7, flexShrink: 0 }}>
+                <span style={{ fontFamily: T.serif, fontSize: 24, fontWeight: 300, color: s.color, lineHeight: 1 }}>{s.value}</span>
+                <span style={{ fontSize: 11, color: T.sub, fontWeight: 300, letterSpacing: '0.01em' }}>{s.label}</span>
               </div>
             ))}
-
-            {/* Divider */}
-            <div style={{ width: 1, height: 20, background: T.border, flexShrink: 0 }} />
-
-            {/* Due soon filter */}
+            <div style={{ width: '0.5px', height: 18, background: T.border, flexShrink: 0 }} />
             {dueSoonCount > 0 && (
               <button onClick={() => setDueSoonOnly(v => !v)}
-                style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px', borderRadius: 20, border: `1px solid ${dueSoonOnly ? '#C17A5A' : T.border}`, background: dueSoonOnly ? '#C17A5A' : 'transparent', color: dueSoonOnly ? 'white' : '#C17A5A', fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0, fontFamily: T.sans, transition: 'all 0.15s' }}>
-                <Bell size={10} /> {dueSoonCount} due soon {dueSoonOnly && '×'}
+                style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 4, border: `0.5px solid ${dueSoonOnly ? T.accent : T.border}`, background: dueSoonOnly ? T.accent : 'transparent', color: dueSoonOnly ? 'white' : T.accent, fontSize: 11, fontWeight: 500, cursor: 'pointer', flexShrink: 0, fontFamily: T.sans, transition: 'all 0.15s' }}>
+                <Bell size={9} strokeWidth={1.5} /> {dueSoonCount} due soon {dueSoonOnly && '×'}
               </button>
             )}
-
-            {/* Priority filters */}
-            {[{ v: 'high', e: '🔴' }, { v: 'medium', e: '🟡' }, { v: 'low', e: '🟢' }].map(p => (
+            {[{ v: 'high', label: 'High', dot: '#E24B4A' }, { v: 'medium', label: 'Med', dot: '#EF9F27' }, { v: 'low', label: 'Low', dot: '#639922' }].map(p => (
               <button key={p.v} onClick={() => setPriorityFilter(v => v === p.v ? '' : p.v)}
-                style={{ padding: '4px 10px', borderRadius: 20, border: `1px solid ${priorityFilter === p.v ? T.ink : T.border}`, background: priorityFilter === p.v ? T.ink : 'transparent', color: priorityFilter === p.v ? 'white' : T.sub, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0, fontFamily: T.sans, transition: 'all 0.15s' }}>
-                {p.e} {priorityFilter === p.v && '×'}
+                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 4, border: `0.5px solid ${priorityFilter === p.v ? T.ink : T.border}`, background: priorityFilter === p.v ? T.ink : 'transparent', color: priorityFilter === p.v ? 'white' : T.sub, fontSize: 11, fontWeight: 500, cursor: 'pointer', flexShrink: 0, fontFamily: T.sans, transition: 'all 0.15s' }}>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: priorityFilter === p.v ? 'white' : p.dot, flexShrink: 0 }} />
+                {p.label}{priorityFilter === p.v && ' ×'}
               </button>
             ))}
-
-            {/* Tag filters */}
             {allTagsComp.slice(0, 4).map(tag => (
               <button key={tag} onClick={() => setActiveTag(tg => tg === tag ? '' : tag)}
-                style={{ padding: '4px 10px', borderRadius: 20, border: `1px solid ${activeTag === tag ? T.ink : T.border}`, background: activeTag === tag ? T.ink : T.sand, color: activeTag === tag ? 'white' : T.ink, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0, fontFamily: T.sans }}>
-                #{tag} {activeTag === tag && '×'}
+                style={{ padding: '4px 10px', borderRadius: 4, border: `0.5px solid ${activeTag === tag ? T.ink : T.border}`, background: activeTag === tag ? T.ink : 'transparent', color: activeTag === tag ? 'white' : T.inkMid, fontSize: 11, fontWeight: 500, cursor: 'pointer', flexShrink: 0, fontFamily: T.sans, transition: 'all 0.15s' }}>
+                #{tag}{activeTag === tag && ' ×'}
               </button>
             ))}
-
-            {/* View toggle */}
-            <div style={{ marginLeft: 'auto', display: 'flex', gap: 2, background: T.sand, borderRadius: 10, padding: 3, flexShrink: 0 }}>
-              {[['list', <List size={13} />], ['calendar', <LayoutGrid size={13} />]].map(([v, icon]) => (
-                <button key={v as string} onClick={() => setViewMode(v as any)}
-                  style={{ padding: '5px 10px', borderRadius: 8, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'all 0.15s',
-                    background: viewMode === v ? T.ivory : 'transparent',
-                    color: viewMode === v ? T.ink : T.sub,
-                    boxShadow: viewMode === v ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                  }}>
-                  {icon}
-                </button>
-              ))}
-            </div>
-
-            {/* User avatar */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+              <div style={{ display: 'flex', border: `0.5px solid ${T.border}`, borderRadius: 4, overflow: 'hidden' }}>
+                {([['list', <List size={12} strokeWidth={1.5} />], ['calendar', <LayoutGrid size={12} strokeWidth={1.5} />]] as const).map(([v, icon]) => (
+                  <button key={v} onClick={() => setViewMode(v as any)}
+                    style={{ padding: '5px 9px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'all 0.15s', background: viewMode === v ? T.ink : 'transparent', color: viewMode === v ? 'white' : T.sub }}>
+                    {icon}
+                  </button>
+                ))}
+              </div>
               {user?.user_metadata?.avatar_url && (
-                <img src={user.user_metadata.avatar_url} alt="" style={{ width: 28, height: 28, borderRadius: '50%', border: `2px solid ${T.border}` }} />
+                <img src={user.user_metadata.avatar_url} alt="" style={{ width: 26, height: 26, borderRadius: '50%', border: `0.5px solid ${T.border}` }} />
               )}
-              <span style={{ fontSize: 12, color: T.sub }}>
-                {user?.user_metadata?.full_name?.split(' ')[0] ?? t('welcome')}
-              </span>
+              <span style={{ fontSize: 12, color: T.sub, fontWeight: 300 }}>{user?.user_metadata?.full_name?.split(' ')[0] ?? t('welcome')}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── MAIN ── */}
-      <main style={{ maxWidth: 960, margin: '0 auto', padding: '24px 20px 120px' }}>
-
-        {/* Board header when filtered */}
+      {/* MAIN */}
+      <main style={{ maxWidth: 960, margin: '0 auto', padding: '28px 20px 120px' }}>
         {activeBoard !== 'all' && (() => {
           const cfg = BOARD_MAP[activeBoard as keyof typeof BOARD_MAP]
           return (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, paddingBottom: 20, borderBottom: `0.5px solid ${T.border}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <Monogram board={activeBoard} size={48} />
+                <div style={{ width: 44, height: 44, borderRadius: 6, background: T.sand, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: cfg?.color }} />
+                </div>
                 <div>
-                  <div style={{ fontFamily: T.serif, fontSize: 28, color: T.ink, fontWeight: 500 }}>{boardLabel(activeBoard)}</div>
-                  <div style={{ fontSize: 12, color: T.sub, marginTop: 2 }}>{cfg?.tagline}</div>
+                  <div style={{ fontFamily: T.serif, fontSize: 28, color: T.ink, fontWeight: 400, letterSpacing: '0.01em', lineHeight: 1.1 }}>{boardLabel(activeBoard)}</div>
+                  <div style={{ fontSize: 12, color: T.sub, marginTop: 3, fontWeight: 300 }}>{cfg?.tagline}</div>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
                 <a href={`/settings/export?board=${activeBoard}`} data-tour="export-button"
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 20, border: `1px solid ${T.border}`, color: T.sub, fontSize: 12, fontWeight: 600, textDecoration: 'none', background: T.ivory, fontFamily: T.sans }}>
-                  📤 Export
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 13px', borderRadius: 4, border: `0.5px solid ${T.border}`, color: T.inkMid, fontSize: 12, fontWeight: 500, textDecoration: 'none', background: 'white', fontFamily: T.sans }}>
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 10V2M5 5l3-3 3 3M4 10v4h8v-4"/></svg> Export
                 </a>
                 <button onClick={() => setShareBoard(activeBoard)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 20, border: `1px solid ${T.border}`, color: T.sub, fontSize: 12, fontWeight: 600, background: T.ivory, cursor: 'pointer', fontFamily: T.sans }}>
-                  <Share2 size={13} /> {t('shareBoard')}
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 13px', borderRadius: 4, border: `0.5px solid ${T.border}`, color: T.inkMid, fontSize: 12, fontWeight: 500, background: 'white', cursor: 'pointer', fontFamily: T.sans }}>
+                  <Share2 size={12} strokeWidth={1.5} /> {t('shareBoard')}
                 </button>
               </div>
             </div>
           )
         })()}
 
-        {/* Content */}
         {viewMode === 'calendar' ? (
           <CalendarView items={filtered} onItemClick={setDetail} />
         ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '64px 0' }}>
-            <div style={{ fontFamily: T.serif, fontSize: 28, color: T.sub, fontStyle: 'italic', marginBottom: 8 }}>Nothing here yet</div>
-            <div style={{ fontSize: 13, color: T.muted, marginBottom: 24 }}>{t('noItemsDesc')}</div>
-            <button onClick={() => setShowAdd(true)} style={primaryBtn(T.ink)}>Add your first item</button>
+          <div style={{ textAlign: 'center', padding: '72px 0' }}>
+            <div style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 300, color: T.sub, fontStyle: 'italic', marginBottom: 8, letterSpacing: '0.01em' }}>Nothing here yet</div>
+            <div style={{ fontSize: 13, color: T.sub, fontWeight: 300, marginBottom: 28 }}>{t('noItemsDesc')}</div>
+            <button onClick={() => setShowAdd(true)} style={{ padding: '10px 24px', borderRadius: 4, border: 'none', background: T.ink, color: 'white', fontFamily: T.sans, fontWeight: 500, fontSize: 13, cursor: 'pointer', letterSpacing: '0.02em' }}>Add your first item</button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
+          <div style={{ border: `0.5px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
             {filtered.map((item, index) => (
               <ItemCard key={item.id} item={item} onClick={() => setDetail(item)} onSwipeComplete={() => swipeComplete(item.id)} isFirst={index === 0} />
             ))}
@@ -1115,39 +1118,43 @@ export default function Dashboard() {
         )}
       </main>
 
-      {/* ── FAB ── */}
+      {/* FAB */}
       <button data-tour="add-button" onClick={() => setShowAdd(true)}
-        style={{ position: 'fixed', right: 20, width: 52, height: 52, borderRadius: '50%', background: T.ink, color: 'white', border: 'none', boxShadow: '0 4px 20px rgba(44,35,24,0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20, bottom: 'max(80px, calc(64px + env(safe-area-inset-bottom)))', transition: 'transform 0.2s, box-shadow 0.2s' }}
-        onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.boxShadow = '0 6px 28px rgba(44,35,24,0.4)' }}
-        onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(44,35,24,0.3)' }}
-      >
-        <Plus size={22} />
+        style={{ position: 'fixed', right: 20, width: 46, height: 46, borderRadius: 6, background: T.ink, color: 'white', border: 'none', boxShadow: '0 2px 16px rgba(26,23,20,0.25)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20, bottom: 'max(76px, calc(60px + env(safe-area-inset-bottom)))', transition: 'transform 0.15s, box-shadow 0.15s' }}
+        onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.06)'; e.currentTarget.style.boxShadow = '0 4px 22px rgba(26,23,20,0.35)' }}
+        onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 2px 16px rgba(26,23,20,0.25)' }}>
+        <Plus size={20} strokeWidth={1.75} />
       </button>
 
-      {/* ── BOTTOM NAV (mobile) ── */}
-      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 20, background: T.ink, borderTop: `1px solid rgba(255,255,255,0.06)`, paddingBottom: 'env(safe-area-inset-bottom, 0px)', display: 'flex' }}>
-        <div style={{ display: 'flex', alignItems: 'center', width: '100%', height: 56 }}>
-          <button onClick={() => setActiveBoard('all')} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, height: '100%', background: 'none', border: 'none', cursor: 'pointer', color: activeBoard === 'all' ? 'white' : 'rgba(255,255,255,0.35)' }}>
-            <Layers size={17} />
-            <span style={{ fontSize: 9, fontWeight: 600 }}>All</span>
+      {/* BOTTOM NAV */}
+      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 20, background: T.ink, borderTop: '0.5px solid rgba(255,255,255,0.08)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', width: '100%', height: 52, maxWidth: 960, margin: '0 auto' }}>
+          <button onClick={() => setActiveBoard('all')}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, height: '100%', background: 'none', border: 'none', cursor: 'pointer' }}>
+            <Layers size={15} strokeWidth={1.5} color={activeBoard === 'all' ? 'white' : 'rgba(255,255,255,0.35)'} />
+            <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.03em', color: activeBoard === 'all' ? 'white' : 'rgba(255,255,255,0.35)' }}>All</span>
           </button>
           {BOARDS.map(b => {
             const locked = !isPro && !activeBoards.includes(b.id)
-            const isMeal = (b.id as string) === 'meal'; const isTravel = (b.id as string) === 'travel'; const isWishlist = (b.id as string) === 'wishlist'
+            const isMeal = (b.id as string) === 'meal'
+            const isTravel = (b.id as string) === 'travel'
+            const isWishlist = (b.id as string) === 'wishlist'
+            const isActive = activeBoard === b.id
             return (
-              <button key={b.id} onClick={() => { if (locked) { setShowUpgrade(true); return } if (isMeal) { router.push('/settings/meal'); return } if (isTravel) { router.push('/settings/travel'); return } if (isWishlist) { router.push('/settings/wishlist'); return } setActiveBoard(b.id) }}
-                style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, height: '100%', background: 'none', border: 'none', cursor: 'pointer', color: activeBoard === b.id ? 'white' : locked ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.35)' }}>
-                <span style={{ width: 18, height: 18, borderRadius: 4, background: locked ? 'rgba(255,255,255,0.1)' : b.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontFamily: T.serif, color: 'white', fontWeight: 600 }}>
-                  {locked ? '🔒' : b.letter}
+              <button key={b.id}
+                onClick={() => { if (locked) { setShowUpgrade(true); return } if (isMeal) { router.push('/settings/meal'); return } if (isTravel) { router.push('/settings/travel'); return } if (isWishlist) { router.push('/settings/wishlist'); return } setActiveBoard(b.id) }}
+                style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, height: '100%', background: 'none', border: 'none', cursor: 'pointer' }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: locked ? 'rgba(255,255,255,0.15)' : isActive ? b.color : 'rgba(255,255,255,0.3)', transition: 'all 0.15s' }} />
+                <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.03em', color: isActive ? 'white' : locked ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.35)', maxWidth: 44, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {boardLabel(b.id).replace('Board','')}
                 </span>
-                <span style={{ fontSize: 9, fontWeight: 600, maxWidth: 40, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{boardLabel(b.id).replace('Board','')}</span>
               </button>
             )
           })}
         </div>
       </nav>
 
-      {/* ── MODALS ── */}
+      {/* MODALS */}
       {showAdd     && <AddModal defaultBoard={activeBoard === 'all' ? 'event' : activeBoard} onSave={(item, rule) => addItem(item, rule)} onClose={() => setShowAdd(false)} />}
       {detail      && <DetailModal item={detail} onUpdate={u => updateItem(detail.id, u)} onDelete={() => deleteItem(detail.id)} onClose={() => setDetail(null)} boardNames={boardNames} />}
       {shareBoard  && <ShareModal board={shareBoard} onClose={() => setShareBoard(null)} />}
@@ -1171,63 +1178,4 @@ export default function Dashboard() {
       <KeyboardShortcut onSearch={() => setSearchOpen(true)} />
     </div>
   )
-}
-
-// ─── Shared sub-components ────────────────────────────────
-function BottomSheet({ children, onClose, maxWidth = 480 }: { children: React.ReactNode; onClose: () => void; maxWidth?: number }) {
-  return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(44,35,24,0.55)', zIndex: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-      <div style={{ background: T.ivory, width: '100%', maxWidth, borderRadius: '20px 20px 0 0', padding: '10px 24px 40px', maxHeight: '92dvh', overflowY: 'auto', paddingBottom: 'max(40px, env(safe-area-inset-bottom, 40px))' }}>
-        <div style={{ width: 36, height: 4, borderRadius: 2, background: T.border, margin: '0 auto 20px' }} />
-        {children}
-      </div>
-    </div>
-  )
-}
-
-function NavIconBtn({ children, onClick, title, className }: { children: React.ReactNode; onClick: () => void; title?: string; className?: string }) {
-  return (
-    <button onClick={onClick} title={title}
-      style={{ width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, transition: 'all 0.15s', fontFamily: T.sans }}
-      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'white' }}
-      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)' }}
-    >{children}</button>
-  )
-}
-
-function Label({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
-  return (
-    <div style={{ fontSize: 10, fontWeight: 700, color: T.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4, fontFamily: T.sans, ...style }}>
-      {children}
-    </div>
-  )
-}
-
-// Shared style helpers
-const sheetInput: React.CSSProperties = {
-  width: '100%', padding: '10px 13px', borderRadius: 10, border: `1px solid ${T.border}`,
-  fontSize: 13, fontFamily: T.sans, color: T.ink, marginBottom: 10, outline: 'none', background: T.ivory,
-}
-const primaryBtn = (bg: string): React.CSSProperties => ({
-  width: '100%', padding: '12px 16px', borderRadius: 12, border: 'none',
-  background: bg, color: 'white', fontWeight: 700, fontSize: 13,
-  cursor: 'pointer', fontFamily: T.sans,
-})
-const ghostBtn: React.CSSProperties = {
-  flex: 1, padding: '12px', borderRadius: 12, border: `1px solid ${T.border}`,
-  background: 'transparent', color: T.sub, fontWeight: 600, fontSize: 13,
-  cursor: 'pointer', fontFamily: T.sans,
-}
-const closeBtn: React.CSSProperties = {
-  background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: T.muted,
-  padding: 0, lineHeight: 1, flexShrink: 0,
-}
-
-function KeyboardShortcut({ onSearch }: { onSearch: () => void }) {
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); onSearch() } }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [onSearch])
-  return null
 }

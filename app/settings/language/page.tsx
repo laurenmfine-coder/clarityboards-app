@@ -36,7 +36,21 @@ export default function LanguagePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F7FA]" style={{ fontFamily: 'Georgia, serif' }}>
+    <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", minHeight: '100vh', background: '#FAFAF8' }}>
+      <nav style={{ background: '#1A1714', borderBottom: '0.5px solid rgba(255,255,255,0.06)', position: 'sticky', top: 0, zIndex: 30 }}>
+        <div style={{ maxWidth: 680, margin: '0 auto', padding: '0 24px', height: 54, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={() => router.push('/dashboard')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: 13, fontWeight: 300, padding: 0 }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 12L6 8l4-4"/></svg>
+            Dashboard
+          </button>
+          <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.12)' }}/>
+          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: 'white', fontSize: 19, fontWeight: 400, letterSpacing: '0.01em' }}>
+            Language
+          </span>
+        </div>
+      </nav>
+
       <div className="max-w-lg mx-auto px-4 py-10">
         <button
           onClick={() => router.push('/dashboard')}

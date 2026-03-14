@@ -73,7 +73,7 @@ function StatusPill({ connected }: { connected: boolean }) {
       background: connected ? "#EAFAF1" : "#FEF3E8",
       color: connected ? "#27AE60" : "#E67E22",
       border: `1px solid ${connected ? "#27AE60" : "#E67E22"}30`,
-      borderRadius: 20, padding: "4px 12px", fontSize: 12,
+      borderRadius: 4, padding: "4px 12px", fontSize: 12,
       fontFamily: "'DM Mono', monospace", fontWeight: 700,
     }}>
       <span style={{ width: 7, height: 7, borderRadius: "50%", background: connected ? "#27AE60" : "#E67E22", display: "inline-block" }} />
@@ -134,17 +134,28 @@ export default function GCalSyncPanel() {
   const enabledBoards = boards.filter(b => b.enabled);
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", maxWidth: 520, margin: "0 auto", padding: "0 16px 40px" }}>
+    <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", minHeight: '100vh', background: '#FAFAF8' }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
-        * { box-sizing: border-box; }
-        @keyframes fadeSlide {
-          from { opacity: 0; transform: translateY(-8px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
         .fade-slide { animation: fadeSlide 0.3s ease; }
       `}</style>
+      <nav style={{ background: '#1A1714', borderBottom: '0.5px solid rgba(255,255,255,0.06)', position: 'sticky', top: 0, zIndex: 30 }}>
+        <div style={{ maxWidth: 680, margin: '0 auto', padding: '0 24px', height: 54, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={() => router.push('/dashboard')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: 13, fontWeight: 300, padding: 0 }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 12L6 8l4-4"/></svg>
+            Dashboard
+          </button>
+          <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.12)' }}/>
+          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: 'white', fontSize: 19, fontWeight: 400, letterSpacing: '0.01em' }}>
+            Google Calendar Sync
+          </span>
+        </div>
+      </nav>
+      <div style={{ maxWidth: 680, margin: '0 auto', padding: '28px 24px 60px' }}>
 
       {/* ── Header ── */}
       <div style={{ padding: "28px 0 20px", borderBottom: "1px solid #e8edf5", marginBottom: 24 }}>
@@ -153,7 +164,7 @@ export default function GCalSyncPanel() {
             📅
           </div>
           <div>
-            <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: "#1a1a2e", margin: 0 }}>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 22, color: "#1a1a2e", margin: 0 }}>
               Google Calendar Sync
             </h1>
             <p style={{ fontSize: 13, color: "#888", margin: "2px 0 0", fontFamily: "'DM Mono', monospace" }}>

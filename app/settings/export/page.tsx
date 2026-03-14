@@ -274,9 +274,9 @@ export default function ExportPage() {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", minHeight: "100vh", background: "#F4F7FA" }}>
+    <div style={{ fontFamily: "'DM Sans', sans-serif", minHeight: "100vh", background: "#FAFAF8" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
         * { box-sizing: border-box; }
         textarea { resize: none; }
         select, input { font-family: 'DM Sans', sans-serif; }
@@ -287,29 +287,33 @@ export default function ExportPage() {
       `}</style>
 
       {/* ── Nav ── */}
-      <div style={{ background: "#1A2B3C", padding: "0 16px" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", height: 56, display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => router.back()} style={{ color: "rgba(255,255,255,0.6)", background: "none", border: "none", cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", gap: 6 }}>
-            ← Back
+            <nav style={{ background: '#1A1714', borderBottom: '0.5px solid rgba(255,255,255,0.06)', position: 'sticky', top: 0, zIndex: 30 }}>
+        <div style={{ maxWidth: 680, margin: '0 auto', padding: '0 24px', height: 54, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={() => router.push('/dashboard')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: 13, fontWeight: 300, padding: 0 }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 12L6 8l4-4"/></svg>
+            Dashboard
           </button>
-          <div style={{ flex: 1 }} />
-          <span style={{ fontFamily: "'DM Serif Display', serif", color: "rgba(255,255,255,0.9)", fontSize: 16 }}>Export & Connect</span>
+          <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.12)' }}/>
+          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: 'white', fontSize: 19, fontWeight: 400, letterSpacing: '0.01em' }}>
+            Export & Connect
+          </span>
         </div>
-      </div>
+      </nav>
 
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "24px 16px 60px", display: "flex", gap: 20, flexWrap: "wrap" }}>
 
         {/* ── Left panel: controls ── */}
         <div style={{ width: 280, flexShrink: 0 }}>
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: "#1A2B3C", marginBottom: 6 }}>Export Your Data</div>
-            <p style={{ fontSize: 13, color: "#5A7A94", lineHeight: 1.5, margin: 0 }}>
+            <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 22, color: "#1A1714", marginBottom: 6 }}>Export Your Data</div>
+            <p style={{ fontSize: 13, color: "#5C5650", lineHeight: 1.5, margin: 0 }}>
               Export any board to NotebookLM, Obsidian, ChatGPT, Claude, or any AI platform. Your data, your way.
             </p>
           </div>
 
           {/* Mode */}
-          <div style={{ background: "white", borderRadius: 14, border: "1px solid #E8EDF5", padding: "16px", marginBottom: 14 }}>
+          <div style={{ background: "white", borderRadius: 8, border: "1px solid #E8EDF5", padding: "16px", marginBottom: 14 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#9AABBD", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 10 }}>Export Mode</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {([
@@ -324,7 +328,7 @@ export default function ExportPage() {
                     textAlign: "left", padding: "10px 12px", borderRadius: 10,
                     background: mode === opt.value ? "#EBF3FB" : "#F7FAFE",
                     border: `1.5px solid ${mode === opt.value ? "#1B4F8A" : "#E8EDF5"}`,
-                    color: mode === opt.value ? "#1B4F8A" : "#5A7A94",
+                    color: mode === opt.value ? "#1B4F8A" : "#5C5650",
                   }}
                 >
                   <div style={{ fontWeight: 700, fontSize: 13 }}>{opt.label}</div>
@@ -335,7 +339,7 @@ export default function ExportPage() {
           </div>
 
           {/* Board selector */}
-          <div style={{ background: "white", borderRadius: 14, border: "1px solid #E8EDF5", padding: "16px", marginBottom: 14 }}>
+          <div style={{ background: "white", borderRadius: 8, border: "1px solid #E8EDF5", padding: "16px", marginBottom: 14 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#9AABBD", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 10 }}>Board</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {BOARDS.map(b => (
@@ -350,11 +354,11 @@ export default function ExportPage() {
                     border: `1.5px solid ${selectedBoard === b.id ? b.color : "transparent"}`,
                   }}
                 >
-                  <div style={{ width: 26, height: 26, borderRadius: 7, background: b.color, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontFamily: "Georgia, serif", fontWeight: "bold", fontSize: 12, flexShrink: 0 }}>
+                  <div style={{ width: 26, height: 26, borderRadius: 7, background: b.color, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: "bold", fontSize: 12, flexShrink: 0 }}>
                     {b.letter}
                   </div>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#1A2B3C" }}>{getBoardLabel(b.id)}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#1A1714" }}>{getBoardLabel(b.id)}</div>
                     <div style={{ fontSize: 10, color: "#9AABBD" }}>
                       {items.filter(i => i.board === b.id).length} items
                     </div>
@@ -365,7 +369,7 @@ export default function ExportPage() {
           </div>
 
           {/* Filters */}
-          <div style={{ background: "white", borderRadius: 14, border: "1px solid #E8EDF5", padding: "16px", marginBottom: 14 }}>
+          <div style={{ background: "white", borderRadius: 8, border: "1px solid #E8EDF5", padding: "16px", marginBottom: 14 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#9AABBD", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 10 }}>
               {mode === "archive" ? "Date Range" : "Filter by Status"}
             </div>
@@ -374,7 +378,7 @@ export default function ExportPage() {
               <select
                 value={statusFilter}
                 onChange={e => setStatusFilter(e.target.value)}
-                style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid #E8EDF5", fontSize: 13, color: "#1A2B3C", background: "#F7FAFE" }}
+                style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid #E8EDF5", fontSize: 13, color: "#1A1714", background: "#F7FAFE" }}
               >
                 <option value="all">All statuses</option>
                 {boardStatuses.map(s => (
@@ -386,12 +390,12 @@ export default function ExportPage() {
                 <div>
                   <div style={{ fontSize: 11, color: "#9AABBD", marginBottom: 4 }}>From</div>
                   <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
-                    style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #E8EDF5", fontSize: 13, color: "#1A2B3C", background: "#F7FAFE" }} />
+                    style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #E8EDF5", fontSize: 13, color: "#1A1714", background: "#F7FAFE" }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 11, color: "#9AABBD", marginBottom: 4 }}>To</div>
                   <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
-                    style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #E8EDF5", fontSize: 13, color: "#1A2B3C", background: "#F7FAFE" }} />
+                    style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #E8EDF5", fontSize: 13, color: "#1A1714", background: "#F7FAFE" }} />
                 </div>
               </div>
             )}
@@ -410,7 +414,7 @@ export default function ExportPage() {
                   <span style={{ fontSize: 15, flexShrink: 0 }}>{row.icon}</span>
                   <div>
                     <div style={{ fontSize: 11, fontWeight: 700, color: "#1B4F8A" }}>{row.label}</div>
-                    <div style={{ fontSize: 11, color: "#5A7A94", lineHeight: 1.4 }}>{row.tip}</div>
+                    <div style={{ fontSize: 11, color: "#5C5650", lineHeight: 1.4 }}>{row.tip}</div>
                   </div>
                 </div>
               ))}
@@ -434,7 +438,7 @@ export default function ExportPage() {
                 style={{
                   flex: 1, padding: "10px 8px", borderRadius: 10, fontSize: 13, fontWeight: 700,
                   background: format === f.value ? "#1B4F8A" : "white",
-                  color: format === f.value ? "white" : "#5A7A94",
+                  color: format === f.value ? "white" : "#5C5650",
                   border: `1.5px solid ${format === f.value ? "#1B4F8A" : "#E8EDF5"}`,
                   boxShadow: format === f.value ? "0 3px 10px rgba(27,79,138,0.25)" : "none",
                 }}
@@ -447,7 +451,7 @@ export default function ExportPage() {
           {/* Output header */}
           <div style={{ background: "white", borderRadius: "14px 14px 0 0", border: "1px solid #E8EDF5", borderBottom: "none", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div>
-              <span style={{ fontSize: 13, fontWeight: 700, color: "#1A2B3C" }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "#1A1714" }}>
                 {getBoardLabel(selectedBoard)} · {mode === "archive" ? "Archive" : "Snapshot"}
               </span>
               <span style={{ marginLeft: 8, fontSize: 12, color: itemCount > 0 ? "#27AE60" : "#9AABBD", fontWeight: 600 }}>
@@ -457,7 +461,7 @@ export default function ExportPage() {
             <div style={{ display: "flex", gap: 8 }}>
               <button
                 onClick={download}
-                style={{ padding: "7px 14px", borderRadius: 8, border: "1px solid #E8EDF5", background: "#F7FAFE", fontSize: 12, fontWeight: 700, color: "#5A7A94", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", transition: "all 0.18s" }}
+                style={{ padding: "7px 14px", borderRadius: 8, border: "1px solid #E8EDF5", background: "#F7FAFE", fontSize: 12, fontWeight: 700, color: "#5C5650", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", transition: "all 0.18s" }}
               >
                 {downloaded ? "✓ Saved" : "↓ Download"}
               </button>
@@ -476,7 +480,7 @@ export default function ExportPage() {
             value={loading ? "Loading your items…" : itemCount === 0 ? `No items found with the current filters.\n\nTry:\n• Selecting a different board\n• Changing the status filter\n• Widening the date range` : output}
             style={{
               width: "100%", height: 520,
-              background: "#1A2B3C", color: "#E8F0FA",
+              background: "#1A1714", color: "#E8F0FA",
               border: "1px solid #E8EDF5", borderRadius: "0 0 14px 14px",
               padding: "16px", fontSize: 12, lineHeight: 1.7,
               fontFamily: "'DM Mono', monospace",

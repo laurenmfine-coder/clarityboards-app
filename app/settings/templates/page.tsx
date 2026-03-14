@@ -225,30 +225,37 @@ export default function TemplatesPage() {
   };
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", minHeight: "100vh", background: "#F4F7FA" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap'); * { box-sizing: border-box; }`}</style>
+    <div style={{ fontFamily: "'DM Sans', sans-serif", minHeight: "100vh", background: "#FAFAF8" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap'); * { box-sizing: border-box; }`}</style>
 
-      <div style={{ background: "#1A2B3C", padding: "0 16px" }}>
-        <div style={{ maxWidth: 680, margin: "0 auto", height: 56, display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => router.back()} style={{ color: "rgba(255,255,255,0.6)", background: "none", border: "none", cursor: "pointer", fontSize: 14 }}>← Back</button>
-          <span style={{ marginLeft: "auto", fontFamily: "'DM Serif Display', serif", color: "rgba(255,255,255,0.9)", fontSize: 16 }}>Templates</span>
+            <nav style={{ background: '#1A1714', borderBottom: '0.5px solid rgba(255,255,255,0.06)', position: 'sticky', top: 0, zIndex: 30 }}>
+        <div style={{ maxWidth: 680, margin: '0 auto', padding: '0 24px', height: 54, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={() => router.push('/dashboard')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: 13, fontWeight: 300, padding: 0 }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 12L6 8l4-4"/></svg>
+            Dashboard
+          </button>
+          <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.12)' }}/>
+          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: 'white', fontSize: 19, fontWeight: 400, letterSpacing: '0.01em' }}>
+            Templates
+          </span>
         </div>
-      </div>
+      </nav>
 
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "28px 16px 60px" }}>
 
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, color: "#1A2B3C", marginBottom: 6 }}>Start with a template</div>
-          <div style={{ fontSize: 14, color: "#5A7A94" }}>Load a pre-built checklist into any board in one tap. Edit items after loading.</div>
+          <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 24, color: "#1A1714", marginBottom: 6 }}>Start with a template</div>
+          <div style={{ fontSize: 14, color: "#5C5650" }}>Load a pre-built checklist into any board in one tap. Edit items after loading.</div>
         </div>
 
         {/* Board filter */}
         <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
           {boards.map(b => (
             <button key={b} onClick={() => setFilter(b)} style={{
-              padding: "6px 14px", borderRadius: 20, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
-              background: filter === b ? (b === "all" ? "#1A2B3C" : BOARD_COLORS[b]) : "white",
-              color: filter === b ? "white" : "#5A7A94",
+              padding: "6px 14px", borderRadius: 4, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
+              background: filter === b ? (b === "all" ? "#1A1714" : BOARD_COLORS[b]) : "white",
+              color: filter === b ? "white" : "#5C5650",
               border: `1px solid ${filter === b ? "transparent" : "#E8EDF5"}`,
               textTransform: b === "all" ? "none" : "capitalize",
             }}>
@@ -261,7 +268,7 @@ export default function TemplatesPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
           {filtered.map(template => (
             <div key={template.id} style={{
-              background: "white", borderRadius: 14, border: "1px solid #E8EDF5",
+              background: "white", borderRadius: 8, border: "1px solid #E8EDF5",
               overflow: "hidden", display: "flex", flexDirection: "column",
             }}>
               <div style={{ padding: "16px 18px", borderBottom: "1px solid #F0F4F8", display: "flex", gap: 12, alignItems: "flex-start" }}>
@@ -270,13 +277,13 @@ export default function TemplatesPage() {
                   background: `${template.color}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22,
                 }}>{template.icon}</div>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "#1A2B3C", lineHeight: 1.3 }}>{template.label}</div>
-                  <div style={{ fontSize: 11, color: "#5A7A94", marginTop: 3 }}>{template.description}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#1A1714", lineHeight: 1.3 }}>{template.label}</div>
+                  <div style={{ fontSize: 11, color: "#5C5650", marginTop: 3 }}>{template.description}</div>
                   <div style={{ marginTop: 6 }}>
                     <span style={{
                       display: "inline-block", background: `${BOARD_COLORS[template.board]}15`,
                       color: BOARD_COLORS[template.board], fontSize: 10, fontWeight: 700,
-                      padding: "2px 8px", borderRadius: 20, textTransform: "uppercase", letterSpacing: 0.5,
+                      padding: "2px 8px", borderRadius: 4, textTransform: "uppercase", letterSpacing: 0.5,
                     }}>{BOARD_LABELS[template.board]}</span>
                   </div>
                 </div>
@@ -287,7 +294,7 @@ export default function TemplatesPage() {
                 {template.items.slice(0, 4).map((item, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                     <div style={{ width: 14, height: 14, borderRadius: 4, border: "2px solid #D5DDE8", flexShrink: 0 }} />
-                    <span style={{ fontSize: 12, color: "#5A7A94" }}>{item.title}</span>
+                    <span style={{ fontSize: 12, color: "#5C5650" }}>{item.title}</span>
                   </div>
                 ))}
                 {template.items.length > 4 && (
