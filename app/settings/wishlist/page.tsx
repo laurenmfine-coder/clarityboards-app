@@ -525,42 +525,83 @@ function AddListModal({onSave,onClose}:{onSave:(d:Partial<Wishlist>)=>void;onClo
 
 // ── Add Item Modal ─────────────────────────────────────────
 function AddItemModal({listId,onSave,onClose}:{listId:string;onSave:(d:Partial<WishItem>)=>void;onClose:()=>void}) {
-  const [url,setUrl]         = useState('');
-  const [title,setTitle]     = useState('');
-  const [price,setPrice]     = useState('');
-  const [target,setTarget]   = useState('');
+  const [url,setUrl]           = useState('');
+  const [title,setTitle]       = useState('');
+  const [price,setPrice]       = useState('');
+  const [target,setTarget]     = useState('');
   const [priority,setPriority] = useState<Priority>('medium');
-  const [notes,setNotes]     = useState('');
-  const [cover,setCover]     = useState('');
-  const [fetchSt,setFetchSt] = useState('');
+  const [notes,setNotes]       = useState('');
+  const [cover,setCover]       = useState('');
+  const [fetchSt,setFetchSt]   = useState('');
   const [fetching,setFetching] = useState(false);
+  const [fetchedOk,setFetchedOk]       = useState(false);   // URL fetched something
+  const [needsPrice,setNeedsPrice]     = useState(false);   // fetched but no price
+  const [priceWasFocused,setPriceWasFocused] = useState(false); // user engaged with price field
 
   const fetchProduct = async (raw:string) => {
     if (!raw.trim()) return;
     setFetching(true); setFetchSt('Importing product…');
+    setFetchedOk(false); setNeedsPrice(false);
     try {
-      const r = await fetch('/api/wishlist?action=fetch-product',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:raw.trim()})});
+      const r = await fetch('/api/wishlist?action=fetch-product',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({url:raw.trim()})
+      });
       const d = await r.json();
-      if (d.title&&!title) setTitle(d.title);
-      if (d.image) setCover(d.image);
-      if (d.price&&!price) setPrice(String(d.price));
-      const parts = [d.title?'Name':'',d.image?'Photo':'',d.price?'Price':''].filter(Boolean);
-      setFetchSt(parts.length ? `Imported: ${parts.join(', ')}` : 'No product data found — fill in manually');
-    } catch { setFetchSt('Could not fetch URL'); }
+      const gotTitle = !!(d.title && !title);
+      const gotImage = !!d.image;
+      const gotPrice = !!(d.price);
+
+      if (gotTitle) setTitle(d.title);
+      if (gotImage) setCover(d.image);
+      if (gotPrice) { setPrice(String(d.price)); setNeedsPrice(false); }
+
+      const gotSomething = gotTitle || gotImage || gotPrice;
+      setFetchedOk(gotSomething);
+
+      if (gotSomething && !gotPrice) {
+        // Partial import — highlight price field
+        setNeedsPrice(true);
+        const parts = [gotTitle?'name':'', gotImage?'photo':''].filter(Boolean);
+        setFetchSt(`Imported ${parts.join(' + ')} — please add the price`);
+      } else if (gotSomething) {
+        const parts = [gotTitle?'Name':'', gotImage?'Photo':'', gotPrice?'Price':''].filter(Boolean);
+        setFetchSt(`Imported: ${parts.join(', ')}`);
+      } else {
+        setFetchSt('No product data found — fill in manually');
+      }
+    } catch { setFetchSt('Could not fetch URL — enter details manually'); }
     setFetching(false);
   };
+
+  const priceHighlight = needsPrice && !priceWasFocused && !price;
 
   return (
     <Sheet onClose={onClose} title="Add to List">
       <FL>Product URL</FL>
       <FInput value={url} onChange={e=>setUrl(e.target.value)} onBlur={e=>fetchProduct(e.target.value)}
         placeholder="Paste from Loft, WHBM, Nordstrom, Amazon, Etsy…"/>
+
+      {/* Fetch status */}
       {fetchSt && (
-        <div style={{fontSize:11,color:fetchSt.startsWith('Imported')?C.success:C.inkLight,marginBottom:12,fontWeight:300}}>
-          {fetchSt.startsWith('Imported')?<span style={{marginRight:4,display:'inline-flex',alignItems:'center',verticalAlign:'middle'}}>{Icon.check}</span>:null}
+        <div style={{
+          fontSize:11, marginBottom:12, fontWeight:300,
+          color: fetchSt.startsWith('Imported') && needsPrice ? '#8B6914'
+               : fetchSt.startsWith('Imported') ? C.success
+               : C.inkLight,
+          display:'flex', alignItems:'center', gap:5,
+        }}>
+          {fetchSt.startsWith('Imported') && !needsPrice && (
+            <span style={{display:'inline-flex',alignItems:'center'}}>{Icon.check}</span>
+          )}
+          {fetchSt.startsWith('Imported') && needsPrice && (
+            <span style={{display:'inline-flex',alignItems:'center'}}>{Icon.alert}</span>
+          )}
           {fetchSt}
         </div>
       )}
+
+      {/* Cover image */}
       {cover && (
         <div style={{width:'100%',height:180,borderRadius:6,overflow:'hidden',marginBottom:16,background:C.warm,position:'relative'}}>
           <img src={cover} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}
@@ -570,6 +611,8 @@ function AddItemModal({listId,onSave,onClose}:{listId:string;onSave:(d:Partial<W
           </div>
         </div>
       )}
+
+      {/* Item name + Price row */}
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
         <div>
           <FL>Item Name</FL>
@@ -577,8 +620,34 @@ function AddItemModal({listId,onSave,onClose}:{listId:string;onSave:(d:Partial<W
         </div>
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
           <div>
-            <FL>Price</FL>
-            <FInput value={price} onChange={e=>setPrice(e.target.value)} placeholder="59.99" type="number"/>
+            {/* Price field — highlighted when partial import */}
+            <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:8}}>
+              <div style={{fontSize:10,fontWeight:500,color:priceHighlight?'#8B6914':C.inkLight,textTransform:'uppercase',letterSpacing:'0.1em',fontFamily:C.sans}}>
+                Price
+              </div>
+              {priceHighlight && (
+                <div style={{fontSize:10,fontWeight:600,color:'#8B6914',background:'#FEF3CD',borderRadius:3,padding:'1px 6px',letterSpacing:'0.03em'}}>
+                  ADD MANUALLY
+                </div>
+              )}
+            </div>
+            <input
+              type="number"
+              value={price}
+              onChange={e=>{setPrice(e.target.value);if(e.target.value)setNeedsPrice(false);}}
+              onFocus={()=>setPriceWasFocused(true)}
+              placeholder="59.99"
+              autoFocus={priceHighlight}
+              style={{
+                width:'100%', padding:'10px 12px',
+                border:`1px solid ${priceHighlight?'#D4A017':C.border}`,
+                borderRadius:4, fontSize:13, fontFamily:C.sans, color:C.ink,
+                background:priceHighlight?'#FFFBEE':C.bg,
+                marginBottom:0, fontWeight:300, outline:'none',
+                transition:'border-color 0.15s, background 0.15s',
+                boxShadow: priceHighlight?'0 0 0 3px rgba(212,160,23,0.12)':'none',
+              }}
+            />
           </div>
           <div>
             <FL>Alert at</FL>
@@ -586,11 +655,21 @@ function AddItemModal({listId,onSave,onClose}:{listId:string;onSave:(d:Partial<W
           </div>
         </div>
       </div>
-      {(price||target) && (
+
+      {/* Price watch notice */}
+      {price && !needsPrice && (
         <div style={{display:'flex',alignItems:'center',gap:6,fontSize:11,color:C.inkLight,marginBottom:12,marginTop:-4}}>
           {Icon.alert} Price watch activates automatically
         </div>
       )}
+
+      {/* Retailer hint when price missing */}
+      {needsPrice && !price && (
+        <div style={{fontSize:11,color:'#8B6914',marginBottom:12,marginTop:-4,fontWeight:300,lineHeight:1.5}}>
+          Some retailers (Loft, WHBM, Amazon, Target) don't include the price in their page data — just type it above and we'll watch it for you.
+        </div>
+      )}
+
       <FL>Priority</FL>
       <div style={{display:'flex',gap:8,marginBottom:16}}>
         {(['high','medium','low'] as Priority[]).map(p=>(
@@ -601,11 +680,15 @@ function AddItemModal({listId,onSave,onClose}:{listId:string;onSave:(d:Partial<W
           </button>
         ))}
       </div>
+
       <FL>Notes (optional)</FL>
       <FInput value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Size, color, variant…"/>
+
       <div style={{display:'flex',gap:10,marginTop:4}}>
         <FBtnGhost onClick={onClose}>Cancel</FBtnGhost>
-        <FBtnPrimary onClick={()=>{if(!title.trim())return;onSave({title,url:url||null,cover_image:cover||null,price:price?parseFloat(price):null,target_price:target?parseFloat(target):null,priority,notes:notes||null,status:'want'});}} disabled={!title.trim()||fetching}>
+        <FBtnPrimary
+          onClick={()=>{if(!title.trim())return;onSave({title,url:url||null,cover_image:cover||null,price:price?parseFloat(price):null,target_price:target?parseFloat(target):null,priority,notes:notes||null,status:'want'});}}
+          disabled={!title.trim()||fetching}>
           {fetching?'Importing…':'Add to List'}
         </FBtnPrimary>
       </div>
