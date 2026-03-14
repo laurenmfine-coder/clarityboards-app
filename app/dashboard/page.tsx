@@ -1115,6 +1115,15 @@ export default function Dashboard() {
 
   useEffect(() => { Object.assign(T, theme === 'dark' ? DARK : WARM); document.documentElement.setAttribute('data-theme', theme); try { localStorage.setItem('cb_theme', theme) } catch {} }, [theme])
 
+  // Unregister stale service workers on mount to prevent old cached version loading
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(reg => reg.unregister())
+      })
+    }
+  }, [])
+
   useEffect(() => {
     try {
       const savedTheme = localStorage.getItem('cb_theme') as 'warm' | 'dark' | null
@@ -1267,6 +1276,7 @@ export default function Dashboard() {
 
   const filtered = items
     .filter(i => {
+    if (i.status === 'done') return false
     const boardMatch   = activeBoard === 'all' || i.board === activeBoard
     const searchMatch  = !search || i.title.toLowerCase().includes(search.toLowerCase()) || i.notes?.toLowerCase().includes(search.toLowerCase())
     const dueSoonMatch = !dueSoonOnly || (() => { const n = daysUntil(i.date); return n !== null && n >= 0 && n <= 7 })()
