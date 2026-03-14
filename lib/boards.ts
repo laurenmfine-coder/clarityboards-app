@@ -100,6 +100,21 @@ export const BOARDS: BoardConfig[] = [
       { value: 'done',        label: 'Done' },
     ],
   },
+  {
+    id: 'travel',
+    label: 'TravelBoard',
+    letter: '✈',
+    color: '#2C6E8A',
+    bg: '#2C6E8A',
+    lightBg: '#EAF4F8',
+    tagline: 'Trips, itineraries & places to discover',
+    statuses: [
+      { value: 'want-to-go', label: 'Want to Go' },
+      { value: 'planning',   label: 'Planning' },
+      { value: 'booked',     label: 'Booked' },
+      { value: 'done',       label: 'Done' },
+    ],
+  },
 ]
 
 export const BOARD_MAP = Object.fromEntries(BOARDS.map(b => [b.id, b])) as Record<Board, BoardConfig>
