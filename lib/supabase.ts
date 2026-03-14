@@ -19,7 +19,7 @@ export const supabase = new Proxy({} as SupabaseClient, {
   }
 })
 
-export type Board = 'event' | 'study' | 'activity' | 'career' | 'task' | 'meal' | 'travel'
+export type Board = 'event' | 'study' | 'activity' | 'career' | 'task' | 'meal' | 'travel' | 'wishlist'
 
 export interface Item {
   id: string

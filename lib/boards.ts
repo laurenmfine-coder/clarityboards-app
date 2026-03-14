@@ -115,6 +115,20 @@ export const BOARDS: BoardConfig[] = [
       { value: 'done',       label: 'Done' },
     ],
   },
+  {
+    id: 'wishlist',
+    label: 'WishlistBoard',
+    letter: '✦',
+    color: '#9B6B9E',
+    bg: '#9B6B9E',
+    lightBg: '#F5EDF6',
+    tagline: 'Birthday, registry & shopping wish lists',
+    statuses: [
+      { value: 'want',      label: 'Want' },
+      { value: 'purchased', label: 'Purchased' },
+      { value: 'received',  label: 'Received' },
+    ],
+  },
 ]
 
 export const BOARD_MAP = Object.fromEntries(BOARDS.map(b => [b.id, b])) as Record<Board, BoardConfig>

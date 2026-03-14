@@ -915,9 +915,9 @@ export default function Dashboard() {
               </button>
               {BOARDS.map(b => {
                 const locked = !isPro && !activeBoards.includes(b.id)
-                const isMeal = (b.id as string) === 'meal'; const isTravel = (b.id as string) === 'travel'
+                const isMeal = (b.id as string) === 'meal'; const isTravel = (b.id as string) === 'travel'; const isWishlist = (b.id as string) === 'wishlist'
                 return (
-                  <button key={b.id} onClick={() => { if (locked) { setShowUpgrade(true); return } if (isMeal) { router.push('/settings/meal'); return } if (isTravel) { router.push('/settings/travel'); return } setActiveBoard(b.id) }}
+                  <button key={b.id} onClick={() => { if (locked) { setShowUpgrade(true); return } if (isMeal) { router.push('/settings/meal'); return } if (isTravel) { router.push('/settings/travel'); return } if (isWishlist) { router.push('/settings/wishlist'); return } setActiveBoard(b.id) }}
                     style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', fontFamily: T.sans, transition: 'all 0.15s',
                       background: activeBoard === b.id ? 'rgba(255,255,255,0.15)' : 'transparent',
                       color: activeBoard === b.id ? 'white' : locked ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.5)',
@@ -956,6 +956,7 @@ export default function Dashboard() {
                         { href: '/settings/zapier',            icon: '⚡',                  label: 'Zapier Integration' },
                         { href: '/settings/pinterest',         icon: '📌',                  label: 'Pinterest Boards' },
                         { href: '/settings/travel',            icon: '✈️',                  label: 'TravelBoard' },
+                        { href: '/settings/wishlist',          icon: '✦',                   label: 'WishlistBoard' },
                         { href: '/settings/watch',             icon: '👁️',                 label: 'Watch & Alert' },
                         { href: '/settings/notifications',     icon: '🔔',                  label: 'Notifications' },
                         { href: '/settings/templates',         icon: '📋',                  label: 'Templates' },
@@ -1132,9 +1133,9 @@ export default function Dashboard() {
           </button>
           {BOARDS.map(b => {
             const locked = !isPro && !activeBoards.includes(b.id)
-            const isMeal = (b.id as string) === 'meal'; const isTravel = (b.id as string) === 'travel'
+            const isMeal = (b.id as string) === 'meal'; const isTravel = (b.id as string) === 'travel'; const isWishlist = (b.id as string) === 'wishlist'
             return (
-              <button key={b.id} onClick={() => { if (locked) { setShowUpgrade(true); return } if (isMeal) { router.push('/settings/meal'); return } if (isTravel) { router.push('/settings/travel'); return } setActiveBoard(b.id) }}
+              <button key={b.id} onClick={() => { if (locked) { setShowUpgrade(true); return } if (isMeal) { router.push('/settings/meal'); return } if (isTravel) { router.push('/settings/travel'); return } if (isWishlist) { router.push('/settings/wishlist'); return } setActiveBoard(b.id) }}
                 style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, height: '100%', background: 'none', border: 'none', cursor: 'pointer', color: activeBoard === b.id ? 'white' : locked ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.35)' }}>
                 <span style={{ width: 18, height: 18, borderRadius: 4, background: locked ? 'rgba(255,255,255,0.1)' : b.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontFamily: T.serif, color: 'white', fontWeight: 600 }}>
                   {locked ? '🔒' : b.letter}
