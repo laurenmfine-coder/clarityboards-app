@@ -64,7 +64,7 @@ export default function PWAManager() {
 
   return (
     <div style={{ position: "relative", zIndex: 9997 }}>
-      {/* Warm banner */
+      {/* Warm banner */}
       <div style={{
         position: "fixed",
         bottom: "calc(72px + env(safe-area-inset-bottom, 0px))",
