@@ -1210,7 +1210,7 @@ function UpgradeModal({ onClose, itemCount }: { onClose: () => void; itemCount: 
 }
 
 // ─── Calendar View ────────────────────────────────────────
-function WeekView({ items, weekStart, setWeekStart, onItemClick, onDayClick }: { items: Item[]; weekStart: Date; setWeekStart: (d: Date) => void; onItemClick: (item: Item) => void; onDayClick?: (dateStr: string) => void }) {
+function WeekView({ items, weekStart, setWeekStart, onItemClick, onDayClick }: { items: Item[]; weekStart: Date; setWeekStart: (d: Date) => void; onItemClick: (item: Item) => void; onDayClick?: (dateStr: string, e: React.MouseEvent) => void }) {
   const today = new Date(); today.setHours(0,0,0,0)
   const days: Date[] = []
   for (let i = 0; i < 7; i++) { const d = new Date(weekStart); d.setDate(weekStart.getDate() + i); days.push(d) }
@@ -1246,8 +1246,8 @@ function WeekView({ items, weekStart, setWeekStart, onItemClick, onDayClick }: {
           const isPast = day < today
           const hasOverdue = isPast && !isToday && dayItems.some(i => i.status !== 'done')
           return (
-            <div key={dateStr} onClick={() => { if (dayItems.length === 0 && onDayClick) onDayClick(dateStr) }}
-              style={{ background: T.ivory, border: '1px solid ' + (isToday ? T.ink : T.border), borderRadius: 8, padding: '8px 6px', minHeight: 120, opacity: isPast && !isToday ? 0.65 : 1, cursor: dayItems.length === 0 && onDayClick ? 'pointer' : 'default' }}>
+            <div key={dateStr} onClick={e => { if (onDayClick) onDayClick(dateStr, e) }}
+              style={{ background: T.ivory, border: '1px solid ' + (isToday ? T.ink : T.border), borderRadius: 8, padding: '8px 6px', minHeight: 120, opacity: isPast && !isToday ? 0.65 : 1, cursor: onDayClick ? 'pointer' : 'default' }}>
               <div style={{ marginBottom: 6, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ fontSize: 9, fontWeight: 700, color: T.sub, textTransform: 'uppercase', letterSpacing: '0.07em', fontFamily: T.sans }}>{day.toLocaleDateString('en-US', { weekday: 'short' })}</div>
@@ -1295,7 +1295,7 @@ function WeekView({ items, weekStart, setWeekStart, onItemClick, onDayClick }: {
   )
 }
 
-function CalendarView({ items, onItemClick, onDayClick }: { items: Item[]; onItemClick: (item: Item) => void; onDayClick?: (dateStr: string) => void }) {
+function CalendarView({ items, onItemClick, onDayClick }: { items: Item[]; onItemClick: (item: Item) => void; onDayClick?: (dateStr: string, e: React.MouseEvent) => void }) {
   const [currentMonth, setCurrentMonth] = useState(() => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), 1) })
   const year = currentMonth.getFullYear()
   const month = currentMonth.getMonth()
@@ -1351,8 +1351,8 @@ function CalendarView({ items, onItemClick, onDayClick }: { items: Item[]; onIte
           const hasOverdue = isPast && !isToday && dayItems.some(i => i.status !== 'done')
           return (
             <div key={cell.dateStr}
-              onClick={() => { if (dayItems.length === 0 && onDayClick) onDayClick(cell.dateStr!) }}
-              style={{ background: T.ivory, minHeight: 100, padding: 8, opacity: isPast && !isToday ? 0.65 : 1, cursor: dayItems.length === 0 && onDayClick ? 'pointer' : 'default' }}>
+              onClick={e => { if (onDayClick) onDayClick(cell.dateStr!, e) }}
+              style={{ background: T.ivory, minHeight: 100, padding: 8, opacity: isPast && !isToday ? 0.65 : 1, cursor: onDayClick ? 'pointer' : 'default' }}>
               <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ display: 'inline-flex', width: 24, height: 24, alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: 12, fontWeight: 600, background: isToday ? T.ink : 'transparent', color: isToday ? '#fff' : T.ink }}>{cell.day}</span>
                 {hasOverdue && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C0392B', display: 'inline-block' }} />}
@@ -1428,6 +1428,8 @@ export default function Dashboard() {
   const [selectedIds,   setSelectedIds]   = useState<Set<string>>(new Set())
   const [showTemplates, setShowTemplates]  = useState(false)
   const [showActivity,  setShowActivity]   = useState(false)
+  const [dayPopup, setDayPopup] = useState<{ dateStr: string; x: number; y: number } | null>(null)
+  const [daySheet, setDaySheet] = useState<string | null>(null)
   const [activityFeed,  setActivityFeed]   = useState<any[]>([])
   const [activityLoading, setActivityLoading] = useState(false)
   const [activityBoardFilter, setActivityBoardFilter] = useState<string>('all')
@@ -1965,7 +1967,7 @@ export default function Dashboard() {
                   <button onClick={() => setViewMode('week')} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 11px', border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 500, background: viewMode === 'week' ? T.ink : 'transparent', color: viewMode === 'week' ? 'white' : T.sub, fontFamily: T.sans, transition: 'all 0.15s' }}><AlignJustify size={12} strokeWidth={1.5} /> Week</button>
                   <button onClick={() => setViewMode('calendar')} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 11px', border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 500, background: viewMode === 'calendar' ? T.ink : 'transparent', color: viewMode === 'calendar' ? 'white' : T.sub, fontFamily: T.sans, transition: 'all 0.15s' }}><Calendar size={12} strokeWidth={1.5} /> Calendar</button>
         ) : viewMode === 'week' ? (
-          <WeekView items={filtered} weekStart={weekStart} setWeekStart={setWeekStart} onItemClick={setDetail} onDayClick={(dateStr) => { setCalendarDefaultDate(dateStr); setShowAdd(true) }} />
+          <WeekView items={filtered} weekStart={weekStart} setWeekStart={setWeekStart} onItemClick={setDetail} onDayClick={(dateStr, e) => { setDayPopup({ dateStr, x: e.clientX, y: e.clientY }); e.stopPropagation() }} />
                 </div>
                 <a href={`/settings/export?board=${activeBoard}`} data-tour="export-button"
                   style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 13px', borderRadius: 4, border: `0.5px solid ${T.border}`, color: T.inkMid, fontSize: 12, fontWeight: 500, textDecoration: 'none', background: 'white', fontFamily: T.sans }}>
@@ -1982,7 +1984,7 @@ export default function Dashboard() {
         })()}
 
         {viewMode === 'calendar' ? (
-          <CalendarView items={filtered} onItemClick={setDetail} onDayClick={(dateStr) => { setCalendarDefaultDate(dateStr); setShowAdd(true) }} />
+          <CalendarView items={filtered} onItemClick={setDetail} onDayClick={(dateStr, e) => { setDayPopup({ dateStr, x: e.clientX, y: e.clientY }); e.stopPropagation() }} />
         ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '72px 0' }}>
             <div style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 300, color: T.sub, fontStyle: 'italic', marginBottom: 8, letterSpacing: '0.01em' }}>Nothing here yet</div>
@@ -2119,6 +2121,66 @@ export default function Dashboard() {
           </div>
         </>
       )}
+      {dayPopup && (
+        <>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 48 }} onClick={() => setDayPopup(null)} />
+          <div style={{ position: 'fixed', zIndex: 49, background: T.ivory, borderRadius: 10, boxShadow: '0 4px 24px rgba(26,23,20,0.18)', border: '1px solid ' + T.border, padding: '6px 4px', display: 'flex', flexDirection: 'column', gap: 2, minWidth: 160,
+            left: Math.min(dayPopup.x, window.innerWidth - 180), top: Math.min(dayPopup.y + 8, window.innerHeight - 100) }}>
+            <button onClick={() => { setDaySheet(dayPopup.dateStr); setDayPopup(null) }}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: T.ink, fontFamily: T.sans, borderRadius: 6, textAlign: 'left' as const }}
+              onMouseEnter={e => (e.currentTarget.style.background = T.sand)} onMouseLeave={e => (e.currentTarget.style.background = 'none')}>
+              <svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' strokeWidth='1.5'><rect x='1' y='3' width='14' height='11' rx='2'/><path d='M5 1v4M11 1v4M1 7h14'/></svg>
+              View day
+            </button>
+            <button onClick={() => { setCalendarDefaultDate(dayPopup.dateStr); setShowAdd(true); setDayPopup(null) }}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: T.ink, fontFamily: T.sans, borderRadius: 6, textAlign: 'left' as const }}
+              onMouseEnter={e => (e.currentTarget.style.background = T.sand)} onMouseLeave={e => (e.currentTarget.style.background = 'none')}>
+              <svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' strokeWidth='1.5'><path d='M8 3v10M3 8h10'/></svg>
+              Add item
+            </button>
+          </div>
+        </>
+      )}
+      {daySheet && (() => {
+        const sheetDate = new Date(daySheet + 'T00:00:00')
+        const label = sheetDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+        const dayItems = filtered.filter(i => i.date && i.date.slice(0,10) === daySheet).sort((a,b) => (a.date??'').localeCompare(b.date??''))
+        return (
+          <BottomSheet onClose={() => setDaySheet(null)} maxWidth={520}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+              <div style={{ fontFamily: T.serif, fontSize: 22, color: T.ink, fontWeight: 500 }}>{label}</div>
+              <button onClick={() => setDaySheet(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.sub, fontSize: 20, lineHeight: 1 }}>x</button>
+            </div>
+            <button onClick={() => { setCalendarDefaultDate(daySheet); setDaySheet(null); setShowAdd(true) }}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderRadius: 8, border: '1px dashed ' + T.border, background: 'transparent', color: T.sub, fontSize: 13, cursor: 'pointer', fontFamily: T.sans, width: '100%', marginBottom: 16 }}>
+              <svg width='13' height='13' viewBox='0 0 16 16' fill='none' stroke='currentColor' strokeWidth='1.5'><path d='M8 3v10M3 8h10'/></svg>
+              Add item for this day
+            </button>
+            {dayItems.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '32px 0', color: T.muted, fontFamily: T.sans, fontSize: 13 }}>Nothing scheduled</div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {dayItems.map(item => {
+                  const cfg = BOARD_MAP[item.board]
+                  const timeStr = item.date && item.date.length > 10 ? new Date(item.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : null
+                  return (
+                    <button key={item.id} onClick={() => { setDetail(item); setDaySheet(null) }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 10, border: '1px solid ' + T.border, background: T.ivory, cursor: 'pointer', textAlign: 'left' as const, width: '100%', fontFamily: T.sans }}>
+                      <div style={{ width: 3, alignSelf: 'stretch', borderRadius: 2, background: cfg?.color, flexShrink: 0 }} />
+                      <Monogram board={item.board} size={22} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 500, color: T.ink, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{item.title}</div>
+                        {timeStr && <div style={{ fontSize: 11, color: T.muted, marginTop: 2 }}>{timeStr}</div>}
+                      </div>
+                      <StatusPill status={item.status} board={item.board} />
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </BottomSheet>
+        )
+      })()}
       {showActivity && (
         <>
           <div style={{ position: 'fixed', inset: 0, zIndex: 44 }} onClick={() => setShowActivity(false)} />
