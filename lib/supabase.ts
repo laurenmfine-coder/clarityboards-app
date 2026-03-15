@@ -26,6 +26,7 @@ export interface ChecklistItem {
   text: string
   done: boolean
   due_date?: string | null
+  attachments?: { name: string; url: string; type: string }[]
 }
 
 // Sprint 1: archived checklist items retain full history
