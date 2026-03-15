@@ -1328,20 +1328,14 @@ function CalendarView({ items, onItemClick, onDayClick }: { items: Item[]; onIte
         <div style={{ display: 'flex', gap: 4 }}>
           {[['<', () => setCurrentMonth(new Date(year, month-1, 1))], ['>', () => setCurrentMonth(new Date(year, month+1, 1))]].map(([arrow, fn]) => (
             <button key={arrow as string} onClick={fn as any}
-              style={{ width: 32, height: 32, borderRadius: '50%', border: `1px solid ${T.border}`, background: T.ivory, color: T.sub, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              style={{ width: 32, height: 32, borderRadius: '50%', border: '1px solid ' + T.border, background: T.ivory, color: T.sub, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {arrow as string}
             </button>
           ))}
         </div>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 4 }}>
-        {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
-          <div key={d} style={{ textAlign: 'center', fontSize: 10, fontWeight: 700, color: T.sub, padding: '4px 0', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{d}</div>
-        ))}
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, background: T.border, borderRadius: 12, overflow: 'hidden', border: `1px solid ${T.border}` }}>
+        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, background: T.border, borderRadius: 12, overflow: 'hidden', border: '1px solid ' + T.border }}>
+        {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (<div key={d} style={{ textAlign: 'center', fontSize: 10, fontWeight: 700, color: T.sub, padding: '6px 0', textTransform: 'uppercase', letterSpacing: '0.08em', background: T.sand }}>{d}</div>))}
         {cells.map((cell, idx) => {
           if (!cell.day || !cell.dateStr) return <div key={`e-${idx}`} style={{ background: T.cream, minHeight: 100 }} />
           const cellDate = new Date(cell.dateStr + 'T00:00:00')
