@@ -10,7 +10,7 @@
     "subheadline": "Text anything to Clarityboards. AI figures out the rest â€” dates, checklists, which board it belongs on. No app switching. No formatting.",
     "ctaPrimary": "Start free â€” no credit card",
     "ctaSecondary": "See it in action â†“",
-    "pricingNote": "Free forever Â· Pro from $4.99/mo Â· No app download required"
+    "pricingNote": "Free forever Â. Pro from $4.99/mo Â. No app download required"
   },
   "demo": {
     "chromeUrl": "clarityboards-app.vercel.app/dashboard",
@@ -22,7 +22,7 @@
   },
   "detail": {
     "checklist": "Checklist",
-    "sharedBoard": "ðŸ”— Shared board",
+    "sharedBoard": "ðŸ”- Shared board",
     "markComplete": "Mark complete âœ“",
     "completed": "âœ“ Completed",
     "done": "Done!",
@@ -41,25 +41,25 @@
     "maria": {
       "persona": "Maria, Soccer Mom",
       "userText": "Jake's soccer tournament Saturday 8am, bring snacks for 12 kids",
-      "appText": "âœ… Added to ActivityBoard: \"Jake soccer tournament\" Â· Sat Mar 15 Â· reminder set for Friday night ðŸŠ",
+      "appText": "âœ... Added to ActivityBoard: \"Jake soccer tournament\" Â. Sat Mar 15 Â. reminder set for Friday night ðŸŠ",
       "result": "Appeared instantly in ActivityBoard â€” date, time, even the snack reminder."
     },
     "priya": {
       "persona": "Priya, Pre-Med Student",
       "userText": "BIO 301 midterm March 18, study: chapters 4-7, practice MCQs, review labs",
-      "appText": "âœ… Added to StudyBoard: \"BIO 301 midterm\" Â· Tue Mar 18 Â· 3 checklist tasks added ðŸ“‹",
+      "appText": "âœ... Added to StudyBoard: \"BIO 301 midterm\" Â. Tue Mar 18 Â. 3 checklist tasks added ðŸ“‹",
       "result": "The checklist built itself. She opened the app to find it already organized."
     },
     "derek": {
       "persona": "Derek, Job Seeker",
       "userText": "Applied to Google SWE role today, follow up in 2 weeks if no response",
-      "appText": "âœ… Added to CareerBoard: \"Google SWE application\" Â· submitted Â· follow-up reminder Mar 30 ðŸ“…",
+      "appText": "âœ... Added to CareerBoard: \"Google SWE application\" Â. submitted Â. follow-up reminder Mar 30 ðŸ“...",
       "result": "Application logged, follow-up scheduled â€” without opening the app once."
     },
     "tom": {
       "persona": "Tom, Empty Nester",
       "userText": "RSVP deadline for Martins' dinner party is this Friday, plus need to buy wine",
-      "appText": "âœ… Added 2 items:\nâ€¢ \"Martins dinner party RSVP\" Â· Fri Mar 14 â†’ EventBoard\nâ€¢ \"Buy wine for dinner party\" â†’ TaskBoard",
+      "appText": "âœ... Added 2 items:\nâ€¢ \"Martins dinner party RSVP\" Â. Fri Mar 14 â†’ EventBoard\nâ€¢ \"Buy wine for dinner party\" â†’ TaskBoard",
       "result": "One text became two separate items on the right boards automatically."
     }
   },
@@ -113,7 +113,7 @@
     "pro": {
       "name": "Pro",
       "price": "$4.99",
-      "desc": "/month Â· or $49.99/yr",
+      "desc": "/month Â. or $49.99/yr",
       "features": [
         "All 5 boards",
         "Unlimited items",
@@ -130,10 +130,10 @@
     "headlineAccent": "out of your head?",
     "subheadline": "Join families, students, and professionals who text their way to organized.",
     "button": "Start free today â†’",
-    "footnote": "No credit card Â· Cancel anytime Â· Works from any phone"
+    "footnote": "No credit card Â. Cancel anytime Â. Works from any phone"
   },
   "footer": {
-    "copyright": "Â© 2026 Clarityboards",
+    "copyright": "Â(c) 2026 Clarityboards",
     "privacy": "Privacy",
     "terms": "Terms"
   },
@@ -360,7 +360,7 @@
     "tourComplete": "You're all set!",
     "tourCompleteBody": "Tour complete. Head to your dashboard and add your first item â€” it takes about 10 seconds.",
     "goToDashboard": "Go to Dashboard â†’",
-    "replayTour": "â†© Replay tour",
+    "replayTour": "â†(c) Replay tour",
     "welcomeTitle": "Welcome to",
     "welcomeApp": "Clarityboards",
     "welcomeBody": "One platform for every part of your busy life. Let's take a quick tour â€” it only takes 60 seconds.",
