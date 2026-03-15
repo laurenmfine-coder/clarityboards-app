@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -1960,8 +1960,6 @@ export default function Dashboard() {
                   <button onClick={() => setViewMode('list')} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 11px', border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 500, background: viewMode === 'list' ? T.ink : 'transparent', color: viewMode === 'list' ? 'white' : T.sub, fontFamily: T.sans, transition: 'all 0.15s' }}><List size={12} strokeWidth={1.5} /> List</button>
                   <button onClick={() => setViewMode('week')} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 11px', border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 500, background: viewMode === 'week' ? T.ink : 'transparent', color: viewMode === 'week' ? 'white' : T.sub, fontFamily: T.sans, transition: 'all 0.15s' }}><AlignJustify size={12} strokeWidth={1.5} /> Week</button>
                   <button onClick={() => setViewMode('calendar')} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 11px', border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 500, background: viewMode === 'calendar' ? T.ink : 'transparent', color: viewMode === 'calendar' ? 'white' : T.sub, fontFamily: T.sans, transition: 'all 0.15s' }}><Calendar size={12} strokeWidth={1.5} /> Calendar</button>
-        ) : viewMode === 'week' ? (
-          <WeekView items={filtered} weekStart={weekStart} setWeekStart={setWeekStart} onItemClick={setDetail} onDayClick={(dateStr, e) => { setDayPopup({ dateStr, x: e.clientX, y: e.clientY }); e.stopPropagation() }} />
                 </div>
                 <a href={`/settings/export?board=${activeBoard}`} data-tour="export-button"
                   style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 13px', borderRadius: 4, border: `0.5px solid ${T.border}`, color: T.inkMid, fontSize: 12, fontWeight: 500, textDecoration: 'none', background: 'white', fontFamily: T.sans }}>
