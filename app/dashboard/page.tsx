@@ -1063,7 +1063,7 @@ function ItemCard({ item, onClick, onSwipeComplete, isFirst = false, cardDensity
       </div>
 
       {/* Row */}
-      <div onClick={() => { if (swipeX < 5) { if (isSelecting) toggleSelect(item.id); else onClick() } }}
+      <div onClick={() => { if (swipeX < 5) { if (isSelecting) { onLongPress?.() } else onClick() } }}
         onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
         className="cb-row-item"
         style={{
