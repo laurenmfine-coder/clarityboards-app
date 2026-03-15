@@ -1,39 +1,39 @@
 {
   "nav": {
     "signIn": "Sign in",
-    "getStarted": "Get started free â†’"
+    "getStarted": "Get started free \u00e2\u2020\u2019"
   },
   "hero": {
-    "badge": "âœ¦ Life management, finally simple",
+    "badge": "\u00e2\u0153\u00a6 Life management, finally simple",
     "headline": "Everything on your plate,",
     "headlineAccent": "organized in seconds.",
-    "subheadline": "Text anything to Clarityboards. AI figures out the rest â€” dates, checklists, which board it belongs on. No app switching. No formatting.",
-    "ctaPrimary": "Start free â€” no credit card",
-    "ctaSecondary": "See it in action â†“",
-    "pricingNote": "Free forever Â. Pro from $4.99/mo Â. No app download required"
+    "subheadline": "Text anything to Clarityboards. AI figures out the rest \u00e2\u20ac\u201d dates, checklists, which board it belongs on. No app switching. No formatting.",
+    "ctaPrimary": "Start free \u00e2\u20ac\u201d no credit card",
+    "ctaSecondary": "See it in action \u00e2\u2020\u201c",
+    "pricingNote": "Free forever \u00c2. Pro from $4.99/mo \u00c2. No app download required"
   },
   "demo": {
     "chromeUrl": "clarityboards-app.vercel.app/dashboard",
-    "tryIt": "Try it â†“",
+    "tryIt": "Try it \u00e2\u2020\u201c",
     "allBoards": "All boards",
     "noItems": "No items on this board yet.",
     "clickToExplore": "Click any item to explore",
-    "footerHint": "This is a live demo â€” click items, check off tasks, explore boards. Your real data lives in your own account."
+    "footerHint": "This is a live demo \u00e2\u20ac\u201d click items, check off tasks, explore boards. Your real data lives in your own account."
   },
   "detail": {
     "checklist": "Checklist",
-    "sharedBoard": "ðŸ”- Shared board",
-    "markComplete": "Mark complete âœ“",
-    "completed": "âœ“ Completed",
+    "sharedBoard": "\u00f0\u0178\u201d- Shared board",
+    "markComplete": "Mark complete \u00e2\u0153\u201c",
+    "completed": "\u00e2\u0153\u201c Completed",
     "done": "Done!",
     "priority": "{level} priority",
     "today": "Today!",
     "daysAway": "{n}d away"
   },
   "sms": {
-    "badge": "âœ¦ The magic",
+    "badge": "\u00e2\u0153\u00a6 The magic",
     "headline": "Just text it.",
-    "subheadline": "No app to open, no form to fill. Send a text like you'd send to a friend â€” AI handles the rest.",
+    "subheadline": "No app to open, no form to fill. Send a text like you'd send to a friend \u00e2\u20ac\u201d AI handles the rest.",
     "phone": "+1 (877) 318-9322",
     "name": "Clarityboards"
   },
@@ -41,37 +41,37 @@
     "maria": {
       "persona": "Maria, Soccer Mom",
       "userText": "Jake's soccer tournament Saturday 8am, bring snacks for 12 kids",
-      "appText": "âœ... Added to ActivityBoard: \"Jake soccer tournament\" Â. Sat Mar 15 Â. reminder set for Friday night ðŸŠ",
-      "result": "Appeared instantly in ActivityBoard â€” date, time, even the snack reminder."
+      "appText": "\u00e2\u0153... Added to ActivityBoard: \"Jake soccer tournament\" \u00c2. Sat Mar 15 \u00c2. reminder set for Friday night \u00f0\u0178\u008d\u0160",
+      "result": "Appeared instantly in ActivityBoard \u00e2\u20ac\u201d date, time, even the snack reminder."
     },
     "priya": {
       "persona": "Priya, Pre-Med Student",
       "userText": "BIO 301 midterm March 18, study: chapters 4-7, practice MCQs, review labs",
-      "appText": "âœ... Added to StudyBoard: \"BIO 301 midterm\" Â. Tue Mar 18 Â. 3 checklist tasks added ðŸ“‹",
+      "appText": "\u00e2\u0153... Added to StudyBoard: \"BIO 301 midterm\" \u00c2. Tue Mar 18 \u00c2. 3 checklist tasks added \u00f0\u0178\u201c\u2039",
       "result": "The checklist built itself. She opened the app to find it already organized."
     },
     "derek": {
       "persona": "Derek, Job Seeker",
       "userText": "Applied to Google SWE role today, follow up in 2 weeks if no response",
-      "appText": "âœ... Added to CareerBoard: \"Google SWE application\" Â. submitted Â. follow-up reminder Mar 30 ðŸ“...",
-      "result": "Application logged, follow-up scheduled â€” without opening the app once."
+      "appText": "\u00e2\u0153... Added to CareerBoard: \"Google SWE application\" \u00c2. submitted \u00c2. follow-up reminder Mar 30 \u00f0\u0178\u201c...",
+      "result": "Application logged, follow-up scheduled \u00e2\u20ac\u201d without opening the app once."
     },
     "tom": {
       "persona": "Tom, Empty Nester",
       "userText": "RSVP deadline for Martins' dinner party is this Friday, plus need to buy wine",
-      "appText": "âœ... Added 2 items:\nâ€¢ \"Martins dinner party RSVP\" Â. Fri Mar 14 â†’ EventBoard\nâ€¢ \"Buy wine for dinner party\" â†’ TaskBoard",
+      "appText": "\u00e2\u0153... Added 2 items:\n\u00e2\u20ac\u00a2 \"Martins dinner party RSVP\" \u00c2. Fri Mar 14 \u00e2\u2020\u2019 EventBoard\n\u00e2\u20ac\u00a2 \"Buy wine for dinner party\" \u00e2\u2020\u2019 TaskBoard",
       "result": "One text became two separate items on the right boards automatically."
     }
   },
   "features": {
-    "sectionBadge": "âœ¦ Features",
+    "sectionBadge": "\u00e2\u0153\u00a6 Features",
     "headline": "Everything you need.",
     "headlineAccent": "Nothing you don't.",
-    "subheadline": "Built for real life â€” not productivity theater.",
+    "subheadline": "Built for real life \u00e2\u20ac\u201d not productivity theater.",
     "items": {
       "capture": {
         "title": "Text to capture",
-        "desc": "Send any message to your Clarityboards number. AI parses dates, checklists, deadlines â€” no formatting needed."
+        "desc": "Send any message to your Clarityboards number. AI parses dates, checklists, deadlines \u00e2\u20ac\u201d no formatting needed."
       },
       "boards": {
         "title": "5 smart boards",
@@ -91,7 +91,7 @@
       },
       "recurring": {
         "title": "Recurring items",
-        "desc": "Daily standups, weekly reviews, monthly bills â€” set it once and it reappears automatically."
+        "desc": "Daily standups, weekly reviews, monthly bills \u00e2\u20ac\u201d set it once and it reappears automatically."
       }
     }
   },
@@ -113,7 +113,7 @@
     "pro": {
       "name": "Pro",
       "price": "$4.99",
-      "desc": "/month Â. or $49.99/yr",
+      "desc": "/month \u00c2. or $49.99/yr",
       "features": [
         "All 5 boards",
         "Unlimited items",
@@ -129,11 +129,11 @@
     "headline": "Ready to get your life",
     "headlineAccent": "out of your head?",
     "subheadline": "Join families, students, and professionals who text their way to organized.",
-    "button": "Start free today â†’",
-    "footnote": "No credit card Â. Cancel anytime Â. Works from any phone"
+    "button": "Start free today \u00e2\u2020\u2019",
+    "footnote": "No credit card \u00c2. Cancel anytime \u00c2. Works from any phone"
   },
   "footer": {
-    "copyright": "Â(c) 2026 Clarityboards",
+    "copyright": "\u00c2(c) 2026 Clarityboards",
     "privacy": "Privacy",
     "terms": "Terms"
   },
@@ -142,10 +142,10 @@
     "welcomeUser": "Welcome, {name}.",
     "welcome": "Welcome.",
     "subheadline": "Choose the two areas of life you want to organize first.",
-    "upgradeNote": "Upgrade to Pro anytime to unlock all five â€”",
+    "upgradeNote": "Upgrade to Pro anytime to unlock all five \u00e2\u20ac\u201d",
     "upgradeNoteBold": "free during our demo period.",
-    "ctaReady": "Build my boards â†’",
-    "ctaSaving": "Setting up your boardsâ€¦",
+    "ctaReady": "Build my boards \u00e2\u2020\u2019",
+    "ctaSaving": "Setting up your boards\u00e2\u20ac\u00a6",
     "ctaSelectMore": "Select {n} more board",
     "ctaSelectMorePlural": "Select {n} more boards",
     "boards": {
@@ -178,28 +178,53 @@
       },
       "career": {
         "who": "Job seekers & professionals",
-        "examples": ["Interview prep", "Applications", "Follow-up tasks", "STAR stories"]
+        "examples": [
+          "Interview prep",
+          "Applications",
+          "Follow-up tasks",
+          "STAR stories"
+        ]
       },
       "meal": {
         "who": "Home cooks & meal planners",
-        "examples": ["Weekly dinners", "Grocery lists", "Batch cooking", "Recipe ideas"]
+        "examples": [
+          "Weekly dinners",
+          "Grocery lists",
+          "Batch cooking",
+          "Recipe ideas"
+        ]
       },
       "travel": {
         "who": "Travelers & trip planners",
-        "examples": ["Packing lists", "Itineraries", "Bookings", "Travel docs"]
+        "examples": [
+          "Packing lists",
+          "Itineraries",
+          "Bookings",
+          "Travel docs"
+        ]
       },
       "wishlist": {
         "who": "Shoppers & gift givers",
-        "examples": ["Gift ideas", "Wish lists", "Price tracking", "Special occasions"]
+        "examples": [
+          "Gift ideas",
+          "Wish lists",
+          "Price tracking",
+          "Special occasions"
+        ]
       },
       "task": {
         "who": "Anyone with a to-do list",
-        "examples": ["Personal projects", "Household tasks", "Recurring reminders", "Any deadline"]
+        "examples": [
+          "Personal projects",
+          "Household tasks",
+          "Recurring reminders",
+          "Any deadline"
+        ]
       }
     }
   },
   "dashboard": {
-    "searchPlaceholder": "Search items, notesâ€¦",
+    "searchPlaceholder": "Search items, notes\u00e2\u20ac\u00a6",
     "allBoards": "All Boards",
     "addItem": "Add Item",
     "signOut": "Sign out",
@@ -209,7 +234,7 @@
     "tomorrow": "Tomorrow",
     "daysAway": "{n}d away",
     "daysOverdue": "{n}d overdue",
-    "noItems": "No items yet â€” add one above or text your Clarityboards number.",
+    "noItems": "No items yet \u00e2\u20ac\u201d add one above or text your Clarityboards number.",
     "upgradePrompt": "Upgrade to Pro to unlock all 5 boards",
     "comingSoon": "Coming soon",
     "shareComingSoon": "Board sharing is coming soon!",
@@ -236,7 +261,7 @@
       "submitted": "Submitted",
       "applied": "Applied"
     },
-    "loading": "Loading your boardsâ€¦",
+    "loading": "Loading your boards\u00e2\u20ac\u00a6",
     "boardSharing": "Board Sharing",
     "smsForwarding": "SMS Forwarding",
     "calendarExport": "Calendar Export (iCal)",
@@ -270,7 +295,7 @@
       "title": "Phone number",
       "subtitle": "Link your number to capture items via SMS",
       "save": "Save number",
-      "saving": "Savingâ€¦",
+      "saving": "Saving\u00e2\u20ac\u00a6",
       "saved": "Saved!",
       "placeholder": "+1 (555) 000-0000"
     },
@@ -293,7 +318,7 @@
     }
   },
   "common": {
-    "loading": "Loadingâ€¦",
+    "loading": "Loading\u00e2\u20ac\u00a6",
     "error": "Something went wrong. Please try again.",
     "close": "Close",
     "back": "Back",
@@ -302,87 +327,87 @@
   },
   "languages": {
     "en": "English",
-    "es": "EspaÃ±ol",
-    "fr": "FranÃ§ais",
+    "es": "Espa\u00c3\u00b1ol",
+    "fr": "Fran\u00c3\u00a7ais",
     "it": "Italiano",
-    "pt": "PortuguÃªs",
-    "pt-BR": "PortuguÃªs (Brasil)",
+    "pt": "Portugu\u00c3\u00aas",
+    "pt-BR": "Portugu\u00c3\u00aas (Brasil)",
     "de": "Deutsch"
   },
   "tour": {
     "welcome": {
-      "title": "Welcome to Clarityboards ðŸŽ‰",
+      "title": "Welcome to Clarityboards \u00f0\u0178\u017d\u2030",
       "body": "You've got events, school, activities, career moves, and a to-do list that never quits. Clarityboards is one place for all of it. Let's take a 60-second tour.",
-      "cta": "Let's go â†’"
+      "cta": "Let's go \u00e2\u2020\u2019"
     },
     "boards": {
       "title": "Your Boards",
       "body": "Each board is tuned for a different part of your life. EventBoard for milestones, StudyBoard for school, ActivityBoard for kids, CareerBoard for work, TaskBoard for everything else.",
-      "cta": "Got it â†’"
+      "cta": "Got it \u00e2\u2020\u2019"
     },
     "addItem": {
       "title": "Add anything in seconds",
-      "body": "Hit + to add an item to any board. Give it a title, a date, a status â€” done. Takes about 10 seconds.",
-      "cta": "Nice â†’"
+      "body": "Hit + to add an item to any board. Give it a title, a date, a status \u00e2\u20ac\u201d done. Takes about 10 seconds.",
+      "cta": "Nice \u00e2\u2020\u2019"
     },
     "checklist": {
       "title": "Break it down with checklists",
       "body": "Every item has a built-in checklist. Add steps, check them off as you go. Watch the progress bar fill up.",
-      "cta": "Love it â†’"
+      "cta": "Love it \u00e2\u2020\u2019"
     },
     "status": {
       "title": "Smart status tags",
       "body": "Status labels are tuned to each board. EventBoard has RSVP Needed, Accepted, Declined. CareerBoard has Applied, In Progress. Not just generic 'To Do'.",
-      "cta": "Smart â†’"
+      "cta": "Smart \u00e2\u2020\u2019"
     },
     "unified": {
       "title": "Everything in one feed",
       "body": "Switch to All Boards view to see every item from every board, sorted by date. One scroll to know what's coming up across your whole life.",
-      "cta": "Wow â†’"
+      "cta": "Wow \u00e2\u2020\u2019"
     },
     "upgrade": {
       "title": "Want all 5 boards?",
-      "body": "You're on the Free plan with 2 boards. Upgrade to Pro for $4.99/mo (or $49.99/yr) to unlock all 5 boards plus SMS and email forwarding â€” coming soon.",
-      "cta": "Got it â†’"
+      "body": "You're on the Free plan with 2 boards. Upgrade to Pro for $4.99/mo (or $49.99/yr) to unlock all 5 boards plus SMS and email forwarding \u00e2\u20ac\u201d coming soon.",
+      "cta": "Got it \u00e2\u2020\u2019"
     },
     "done": {
-      "title": "You're all set! ðŸš€",
+      "title": "You're all set! \u00f0\u0178\u0161\u20ac",
       "body": "That's Clarityboards. Add your first real item, check off a task, or just explore. You can replay this tour anytime from the Help menu.",
       "cta": "Start using Clarityboards"
     },
     "stepOf": "Step {current} of {total}",
-    "back": "â† Back",
+    "back": "\u00e2\u2020\u0090 Back",
     "skip": "Skip tour",
-    "startTour": "Start the tour â†’",
+    "startTour": "Start the tour \u00e2\u2020\u2019",
     "skipTour": "Skip tour, take me to the dashboard",
-    "allBoards": "ðŸ”€ All Boards",
-    "upgradeBadge": "â­ Upgrade to Pro",
+    "allBoards": "\u00f0\u0178\u201d\u20ac All Boards",
+    "upgradeBadge": "\u00e2\u00ad\u0090 Upgrade to Pro",
     "tourComplete": "You're all set!",
-    "tourCompleteBody": "Tour complete. Head to your dashboard and add your first item â€” it takes about 10 seconds.",
-    "goToDashboard": "Go to Dashboard â†’",
-    "replayTour": "â†(c) Replay tour",
+    "tourCompleteBody": "Tour complete. Head to your dashboard and add your first item \u00e2\u20ac\u201d it takes about 10 seconds.",
+    "goToDashboard": "Go to Dashboard \u00e2\u2020\u2019",
+    "replayTour": "\u00e2\u2020(c) Replay tour",
     "welcomeTitle": "Welcome to",
     "welcomeApp": "Clarityboards",
-    "welcomeBody": "One platform for every part of your busy life. Let's take a quick tour â€” it only takes 60 seconds.",
+    "welcomeBody": "One platform for every part of your busy life. Let's take a quick tour \u00e2\u20ac\u201d it only takes 60 seconds.",
     "recurring": {
       "title": "Recurring items",
-      "body": "Set any item to repeat â€” daily, weekly, monthly, or custom. Open an item, set a date, and a Repeat picker appears. Clarityboards creates the next occurrence automatically every night.",
-      "cta": "Got it â†’"
+      "body": "Set any item to repeat \u00e2\u20ac\u201d daily, weekly, monthly, or custom. Open an item, set a date, and a Repeat picker appears. Clarityboards creates the next occurrence automatically every night.",
+      "cta": "Got it \u00e2\u2020\u2019"
     },
     "move": {
       "title": "Move items between boards",
-      "body": "Things shift. An activity becomes a task, a study item becomes a career move. Open any item and scroll to \"Move to Board\" â€” one tap and it lands in the right place.",
-      "cta": "Handy â†’"
+      "body": "Things shift. An activity becomes a task, a study item becomes a career move. Open any item and scroll to \"Move to Board\" \u00e2\u20ac\u201d one tap and it lands in the right place.",
+      "cta": "Handy \u00e2\u2020\u2019"
     },
     "ical": {
       "title": "Calendar sync",
-      "body": "Subscribe to any .ics calendar (TeamSnap, school, sports leagues) under Settings â†’ Subscribe to Calendars. Events appear automatically in the right board. Google Calendar two-way sync is also available.",
-      "cta": "Nice â†’"
+      "body": "Subscribe to any .ics calendar (TeamSnap, school, sports leagues) under Settings \u00e2\u2020\u2019 Subscribe to Calendars. Events appear automatically in the right board. Google Calendar two-way sync is also available.",
+      "cta": "Nice \u00e2\u2020\u2019"
     },
     "export": {
       "title": "Export & Connect",
-      "body": "Your Clarityboards data works great in AI tools. Use Export & Connect to send any board to NotebookLM, ChatGPT, Claude, or Obsidian â€” as Markdown, plain text, or a ready-to-paste AI prompt.",
-      "cta": "Brilliant â†’"
+      "body": "Your Clarityboards data works great in AI tools. Use Export & Connect to send any board to NotebookLM, ChatGPT, Claude, or Obsidian \u00e2\u20ac\u201d as Markdown, plain text, or a ready-to-paste AI prompt.",
+      "cta": "Brilliant \u00e2\u2020\u2019"
     }
   },
   "settingsPhone": {
@@ -393,7 +418,7 @@
     "howItWorks": [
       "Text your Clarityboards number: +1 (877) 318-9322",
       "AI reads your message and adds it to the right board automatically",
-      "Dates, times, checklists, urgency â€” all parsed from natural language",
+      "Dates, times, checklists, urgency \u00e2\u20ac\u201d all parsed from natural language",
       "Try: \"Soccer game Friday 4pm\" or \"Pick up: milk, eggs, bread\""
     ],
     "yourNumberTitle": "Your mobile number",
@@ -402,13 +427,13 @@
     "placeholder": "+1 (555) 000-0000 or 10-digit US number",
     "hint": "US numbers: enter 10 digits (we'll add +1). International: include country code (+44...).",
     "remove": "Remove",
-    "saving": "Savingâ€¦",
+    "saving": "Saving\u00e2\u20ac\u00a6",
     "update": "Update number",
     "save": "Save number",
     "savedPhone": "Phone number saved! You can now text your boards.",
     "removedPhone": "Phone number removed.",
-    "twilioTitle": "â³ Toll-free verification in progress",
-    "twilioBody": "SMS forwarding will activate once our number (+1 877-318-9322) completes carrier verification â€” typically 3â€“7 business days. Your number will be ready to go the moment it clears.",
+    "twilioTitle": "\u00e2\u008f\u00b3 Toll-free verification in progress",
+    "twilioBody": "SMS forwarding will activate once our number (+1 877-318-9322) completes carrier verification \u00e2\u20ac\u201d typically 3\u00e2\u20ac\u201c7 business days. Your number will be ready to go the moment it clears.",
     "errorInvalid": "Enter a valid US number (10 digits) or international format (+1...)"
   },
   "settingsIcal": {
@@ -436,7 +461,7 @@
     "remove": "Remove",
     "cancel": "Cancel",
     "sendInvite": "Send Invite",
-    "sending": "Sendingâ€¦",
+    "sending": "Sending\u00e2\u20ac\u00a6",
     "inviteTitle": "Invite someone",
     "boardLabel": "Board",
     "roleLabel": "Role",

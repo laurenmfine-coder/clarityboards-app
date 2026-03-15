@@ -1,11 +1,11 @@
-'use client'
+﻿'use client'
 export const dynamic = 'force-dynamic'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { supabase } from '@/lib/supabase'
 
-// ── Types ─────────────────────────────────────────────────
+// â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type Board = 'event' | 'study' | 'activity' | 'career' | 'task'
 type DemoItem = {
   id: string
@@ -19,7 +19,7 @@ type DemoItem = {
   shared?: boolean
 }
 
-// ── Board config ──────────────────────────────────────────
+// â”€â”€ Board config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const BOARDS = {
   event:    { label: 'EventBoard',    letter: 'E', color: '#2874A6', light: '#EBF5FB' },
   study:    { label: 'StudyBoard',    letter: 'S', color: '#1E8449', light: '#EAFAF1' },
@@ -28,21 +28,21 @@ const BOARDS = {
   task:     { label: 'TaskBoard',     letter: 'T', color: '#C0392B', light: '#FDEDEC' },
 }
 
-// ── Demo data (sample titles stay as-is — not UI strings) ─
+// â”€â”€ Demo data (sample titles stay as-is â€” not UI strings) â”€
 const DEMO_ITEMS: DemoItem[] = [
-  { id: '1', board: 'event',    title: "Sofia's quinceañera",      date: '2026-04-10', status: 'accepted',    priority: 'high',   shared: true, checklist: [{text:'Buy dress',done:true},{text:'Book hotel',done:false},{text:'RSVP catering',done:false}] },
-  { id: '2', board: 'event',    title: 'Book club — March',        date: '2026-03-20', status: 'rsvp-needed', tags: ['book-club'] },
+  { id: '1', board: 'event',    title: "Sofia's quinceaÃ±era",      date: '2026-04-10', status: 'accepted',    priority: 'high',   shared: true, checklist: [{text:'Buy dress',done:true},{text:'Book hotel',done:false},{text:'RSVP catering',done:false}] },
+  { id: '2', board: 'event',    title: 'Book club â€” March',        date: '2026-03-20', status: 'rsvp-needed', tags: ['book-club'] },
   { id: '3', board: 'activity', title: 'Jake soccer tournament',   date: '2026-03-15', status: 'todo',        priority: 'medium', shared: true },
   { id: '4', board: 'activity', title: 'Emma violin recital',      date: '2026-03-22', status: 'todo' },
   { id: '5', board: 'study',    title: 'BIO 301 midterm',          date: '2026-03-18', status: 'in-progress', priority: 'high',   tags: ['BIO301'] },
   { id: '6', board: 'study',    title: 'CHEM lab report',          date: '2026-03-25', status: 'todo',        tags: ['CHEM202'] },
   { id: '7', board: 'career',   title: 'Google SWE application',   date: '2026-03-16', status: 'submitted' },
-  { id: '8', board: 'career',   title: 'Meta PM — follow up',      date: '2026-03-19', status: 'in-progress' },
+  { id: '8', board: 'career',   title: 'Meta PM â€” follow up',      date: '2026-03-19', status: 'in-progress' },
   { id: '9', board: 'task',     title: 'Call insurance re: claim', date: '2026-03-14', status: 'todo', priority: 'high' },
   { id: '10', board: 'task',    title: 'Renew car registration',   date: '2026-03-28', status: 'todo' },
 ]
 
-// ── Helpers ───────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function fmt(d: string | null) {
   if (!d) return ''
   return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
@@ -59,7 +59,7 @@ function urgencyColor(d: string | null) {
   return '#5A7A94'
 }
 
-// ── Mini board monogram ───────────────────────────────────
+// â”€â”€ Mini board monogram â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Mono({ board, size = 24 }: { board: Board; size?: number }) {
   const b = BOARDS[board]
   return (
@@ -73,14 +73,14 @@ function Mono({ board, size = 24 }: { board: Board; size?: number }) {
   )
 }
 
-// ── Priority dot ──────────────────────────────────────────
+// â”€â”€ Priority dot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function PriorityDot({ p }: { p?: string }) {
   if (!p) return null
   const colors: Record<string, string> = { high: '#E74C3C', medium: '#E67E22', low: '#27AE60' }
   return <span style={{ width: 7, height: 7, borderRadius: '50%', background: colors[p], display: 'inline-block', flexShrink: 0 }} />
 }
 
-// ── Demo item card ────────────────────────────────────────
+// â”€â”€ Demo item card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function DemoCard({ item, onClick, selected }: { item: DemoItem; onClick: () => void; selected: boolean }) {
   const b = BOARDS[item.board]
   const n = daysUntil(item.date)
@@ -108,7 +108,7 @@ function DemoCard({ item, onClick, selected }: { item: DemoItem; onClick: () => 
           {item.tags?.map(t => (
             <span key={t} style={{ fontSize: 10, padding: '1px 6px', borderRadius: 20, background: b.light, color: b.color, fontWeight: 600 }}>#{t}</span>
           ))}
-          {item.shared && <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 20, background: '#EBF5FB', color: '#2874A6', fontWeight: 600 }}>🔗</span>}
+          {item.shared && <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 20, background: '#EBF5FB', color: '#2874A6', fontWeight: 600 }}>ðŸ”—</span>}
         </div>
       </div>
       <PriorityDot p={item.priority} />
@@ -116,7 +116,7 @@ function DemoCard({ item, onClick, selected }: { item: DemoItem; onClick: () => 
   )
 }
 
-// ── Detail panel ──────────────────────────────────────────
+// â”€â”€ Detail panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function DetailPanel({ item, onClose }: { item: DemoItem; onClose: () => void }) {
   const t = useTranslations('detail')
   const b = BOARDS[item.board]
@@ -150,7 +150,7 @@ function DetailPanel({ item, onClose }: { item: DemoItem; onClose: () => void })
           ))}
           <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <div style={{ background:'white', borderRadius:16, padding:'16px 28px', textAlign:'center', boxShadow:'0 4px 24px rgba(0,0,0,0.12)' }}>
-              <div style={{ fontSize:32 }}>🎉</div>
+              <div style={{ fontSize:32 }}>ðŸŽ‰</div>
               <div style={{ fontWeight:800, color:'#1A2B3C', fontSize:15, marginTop:4 }}>{t('done')}</div>
             </div>
           </div>
@@ -163,13 +163,13 @@ function DetailPanel({ item, onClose }: { item: DemoItem; onClose: () => void })
             <div style={{ fontWeight:700, color:'#1A2B3C', fontSize:15 }}>{item.title}</div>
             <div style={{ fontSize:11, color: b.color, fontWeight:600, marginTop:1 }}>{b.label}</div>
           </div>
-          <button onClick={onClose} style={{ color:'#9B8E7E', background:'none', border:'none', cursor:'pointer', fontSize:18, lineHeight:1 }}>×</button>
+          <button onClick={onClose} style={{ color:'#9B8E7E', background:'none', border:'none', cursor:'pointer', fontSize:18, lineHeight:1 }}>Ã—</button>
         </div>
       </div>
       <div style={{ padding:'14px 18px', fontSize:13, color:'#5A7A94' }}>
         {item.date && (
           <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
-            <span>📅</span>
+            <span>ðŸ“…</span>
             <span style={{ color: urgencyColor(item.date), fontWeight:600 }}>{fmt(item.date)}</span>
             {daysUntil(item.date) !== null && daysUntil(item.date)! <= 7 && daysUntil(item.date)! >= 0 && (
               <span style={{ fontSize:11, background:'#FEF3E8', color:'#E67E22', padding:'2px 8px', borderRadius:20, fontWeight:700 }}>
@@ -204,7 +204,7 @@ function DetailPanel({ item, onClose }: { item: DemoItem; onClose: () => void })
                 <div key={i} onClick={() => setChecks(prev => prev.map((x,j) => j===i?{...x,done:!x.done}:x))}
                   style={{ display:'flex', alignItems:'center', gap:8, padding:'6px 10px', cursor:'pointer', borderRadius:6 }}>
                   <div style={{ width:16, height:16, borderRadius:4, border:`2px solid ${c.done?b.color:'#CCC'}`, background:c.done?b.color:'white', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'all 0.15s' }}>
-                    {c.done && <span style={{ color:'white', fontSize:10, fontWeight:900 }}>✓</span>}
+                    {c.done && <span style={{ color:'white', fontSize:10, fontWeight:900 }}>âœ“</span>}
                   </div>
                   <span style={{ fontSize:12, color: c.done?'#9B8E7E':'#1A2B3C', textDecoration:c.done?'line-through':'none' }}>{c.text}</span>
                 </div>
@@ -227,7 +227,7 @@ function DetailPanel({ item, onClose }: { item: DemoItem; onClose: () => void })
   )
 }
 
-// ── SMS story bubble ──────────────────────────────────────
+// â”€â”€ SMS story bubble â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function SMSBubble({ msg, visible, delay }: { msg: {from:string;text:string}; visible: boolean; delay: number }) {
   const isUser = msg.from === 'user'
   return (
@@ -253,7 +253,7 @@ function SMSBubble({ msg, visible, delay }: { msg: {from:string;text:string}; vi
   )
 }
 
-// ── Main landing page ─────────────────────────────────────
+// â”€â”€ Main landing page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function LandingPage() {
   const router = useRouter()
   const tNav      = useTranslations('nav')
@@ -267,27 +267,27 @@ export default function LandingPage() {
   const tFooter   = useTranslations('footer')
 
   const SMS_STORIES = [
-    { persona: tSmsS('maria.persona'), emoji: '⚽', color: '#E67E22',
+    { persona: tSmsS('maria.persona'), emoji: 'âš½', color: '#E67E22',
       texts: [{ from: 'user', text: tSmsS('maria.userText') }, { from: 'app', text: tSmsS('maria.appText') }],
       result: tSmsS('maria.result') },
-    { persona: tSmsS('priya.persona'), emoji: '📚', color: '#1E8449',
+    { persona: tSmsS('priya.persona'), emoji: 'ðŸ“š', color: '#1E8449',
       texts: [{ from: 'user', text: tSmsS('priya.userText') }, { from: 'app', text: tSmsS('priya.appText') }],
       result: tSmsS('priya.result') },
-    { persona: tSmsS('derek.persona'), emoji: '💼', color: '#8E44AD',
+    { persona: tSmsS('derek.persona'), emoji: 'ðŸ’¼', color: '#8E44AD',
       texts: [{ from: 'user', text: tSmsS('derek.userText') }, { from: 'app', text: tSmsS('derek.appText') }],
       result: tSmsS('derek.result') },
-    { persona: tSmsS('tom.persona'), emoji: '🏠', color: '#2874A6',
+    { persona: tSmsS('tom.persona'), emoji: 'ðŸ ', color: '#2874A6',
       texts: [{ from: 'user', text: tSmsS('tom.userText') }, { from: 'app', text: tSmsS('tom.appText') }],
       result: tSmsS('tom.result') },
   ]
 
   const FEATURES = [
-    { icon: '📱', title: tFeatures('items.capture.title'),  desc: tFeatures('items.capture.desc') },
-    { icon: '🎯', title: tFeatures('items.boards.title'),   desc: tFeatures('items.boards.desc') },
-    { icon: '🔗', title: tFeatures('items.share.title'),    desc: tFeatures('items.share.desc') },
-    { icon: '🔴', title: tFeatures('items.priority.title'), desc: tFeatures('items.priority.desc') },
-    { icon: '📅', title: tFeatures('items.calendar.title'), desc: tFeatures('items.calendar.desc') },
-    { icon: '🔁', title: tFeatures('items.recurring.title'),desc: tFeatures('items.recurring.desc') },
+    { icon: 'ðŸ“±', title: tFeatures('items.capture.title'),  desc: tFeatures('items.capture.desc') },
+    { icon: 'ðŸŽ¯', title: tFeatures('items.boards.title'),   desc: tFeatures('items.boards.desc') },
+    { icon: 'ðŸ”—', title: tFeatures('items.share.title'),    desc: tFeatures('items.share.desc') },
+    { icon: 'ðŸ”´', title: tFeatures('items.priority.title'), desc: tFeatures('items.priority.desc') },
+    { icon: 'ðŸ“…', title: tFeatures('items.calendar.title'), desc: tFeatures('items.calendar.desc') },
+    { icon: 'ðŸ”', title: tFeatures('items.recurring.title'),desc: tFeatures('items.recurring.desc') },
   ]
 
   useEffect(() => {
@@ -421,14 +421,14 @@ export default function LandingPage() {
                   <DetailPanel item={selectedItem} onClose={() => setSelectedItem(null)} />
                 ) : (
                   <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8, color: '#B0A898' }}>
-                    <div style={{ fontSize: 32 }}>👆</div>
+                    <div style={{ fontSize: 32 }}>ðŸ‘†</div>
                     <div style={{ fontSize: 13, fontFamily: 'system-ui' }}>{tDemo('clickToExplore')}</div>
                   </div>
                 )}
               </div>
             </div>
             <div style={{ padding: '10px 18px', background: '#F0F7FF', borderTop: '1px solid #E0EEFA', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 13 }}>✦</span>
+              <span style={{ fontSize: 13 }}>âœ¦</span>
               <span style={{ fontSize: 12, color: '#2874A6', fontFamily: 'system-ui', fontWeight: 600 }}>{tDemo('footerHint')}</span>
             </div>
           </div>
@@ -450,7 +450,7 @@ export default function LandingPage() {
                   <div style={{ fontSize: 24, flexShrink: 0 }}>{s.emoji}</div>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 700, color: activeStory === i ? 'white' : 'rgba(255,255,255,0.7)', fontFamily: 'system-ui' }}>{s.persona}</div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 2, fontFamily: 'system-ui' }}>{s.result.slice(0, 48)}…</div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 2, fontFamily: 'system-ui' }}>{s.result.slice(0, 48)}â€¦</div>
                   </div>
                   {activeStory === i && <div style={{ marginLeft:'auto', width:6, height:6, borderRadius:'50%', background: s.color, flexShrink:0 }} />}
                 </button>
@@ -469,7 +469,7 @@ export default function LandingPage() {
                 {story.texts.map((msg, i) => <SMSBubble key={`${activeStory}-${i}`} msg={msg} visible={visibleBubbles[i] ?? false} delay={0} />)}
               </div>
               <div style={{ margin: '0 14px 14px', padding: '10px 14px', borderRadius: 10, background: story.color + '20', border: `1px solid ${story.color}40`, opacity: visibleBubbles[1] ? 1 : 0, transition: 'opacity 0.4s 0.3s' }}>
-                <div style={{ fontSize: 12, color: story.color, fontWeight: 700, fontFamily: 'system-ui' }}>✦ {story.result}</div>
+                <div style={{ fontSize: 12, color: story.color, fontWeight: 700, fontFamily: 'system-ui' }}>âœ¦ {story.result}</div>
               </div>
             </div>
           </div>
@@ -519,7 +519,7 @@ export default function LandingPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 24 }}>
                     {features.map((f: string) => (
                       <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: highlighted ? 'rgba(255,255,255,0.8)' : '#5A7A94', fontFamily: 'system-ui' }}>
-                        <span style={{ color: highlighted ? '#2874A6' : '#27AE60', fontWeight: 800 }}>✓</span> {f}
+                        <span style={{ color: highlighted ? '#2874A6' : '#27AE60', fontWeight: 800 }}>âœ“</span> {f}
                       </div>
                     ))}
                   </div>
@@ -553,9 +553,10 @@ export default function LandingPage() {
           clarity<span style={{ color: '#2874A6' }}>boards</span>
         </div>
         <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontFamily: 'system-ui' }}>
-          {tFooter('copyright')} · <a href="/privacy" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>{tFooter('privacy')}</a> · <a href="/terms" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>{tFooter('terms')}</a>
+          {tFooter('copyright')} Â· <a href="/privacy" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>{tFooter('privacy')}</a> Â· <a href="/terms" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>{tFooter('terms')}</a>
         </div>
       </footer>
     </div>
   )
 }
+
