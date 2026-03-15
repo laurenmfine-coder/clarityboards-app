@@ -1,4 +1,4 @@
-﻿import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
 let _supabase: SupabaseClient | null = null
 
@@ -12,6 +12,7 @@ export function getSupabase() {
   return _supabase
 }
 
+// Proxy object so existing `supabase.xxx` calls still work
 export const supabase = new Proxy({} as SupabaseClient, {
   get(_target, prop) {
     return (getSupabase() as any)[prop]
@@ -24,13 +25,15 @@ export interface ChecklistItem {
   id: string
   text: string
   done: boolean
+  due_date?: string | null
 }
 
+// Sprint 1: archived checklist items retain full history
 export interface ArchivedChecklistItem {
   id: string
   text: string
-  done: boolean
-  archived_at: string
+  done: boolean          // always true at archive time
+  archived_at: string    // ISO timestamp
 }
 
 export interface Item {
@@ -42,6 +45,6 @@ export interface Item {
   notes: string | null
   status: string
   checklist: ChecklistItem[]
-  checklist_archive: ArchivedChecklistItem[]
+  checklist_archive: ArchivedChecklistItem[]   // Sprint 1
   created_at: string
 }

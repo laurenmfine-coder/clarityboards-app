@@ -283,31 +283,137 @@ function ShareModal({ board, userId, onClose }: { board: string; userId: string 
   )
 }
 
-// ─── Add Item Modal ───────────────────────────────────────
-function AddModal({ defaultBoard, onSave, onClose }: {
+// ─── Board field config ───────────────────────────────────
+const BOARD_FIELD_CONFIG: Record<string, { showDate: boolean; showNotes: boolean; showRepeat: boolean; showLocation: boolean; notesPlaceholder: string }> = {
+  meal:     { showDate: true,  showNotes: true,  showRepeat: true,  showLocation: false, notesPlaceholder: 'Recipe link, dietary notes, prep instructions…' },
+  event:    { showDate: true,  showNotes: true,  showRepeat: false, showLocation: true,  notesPlaceholder: 'Venue, dress code, RSVP details…' },
+  study:    { showDate: true,  showNotes: true,  showRepeat: false, showLocation: false, notesPlaceholder: 'Assignment details, resources, notes…' },
+  activity: { showDate: true,  showNotes: true,  showRepeat: true,  showLocation: true,  notesPlaceholder: 'Location, coach contact, what to bring…' },
+  career:   { showDate: true,  showNotes: true,  showRepeat: false, showLocation: false, notesPlaceholder: 'Details, next steps, contacts…' },
+  task:     { showDate: true,  showNotes: true,  showRepeat: false, showLocation: false, notesPlaceholder: 'Details, links, acceptance criteria…' },
+  travel:   { showDate: true,  showNotes: true,  showRepeat: false, showLocation: true,  notesPlaceholder: 'Booking links, confirmation numbers, packing notes…' },
+  wishlist: { showDate: false, showNotes: true,  showRepeat: false, showLocation: false, notesPlaceholder: 'Link, size, color, who it is for…' },
+}
+const getBoardFields = (board: string) => BOARD_FIELD_CONFIG[board] ?? { showDate: true, showNotes: true, showRepeat: true, showLocation: false, notesPlaceholder: 'Notes…' }
+
+// ─── Quick Add Overlay (⌘J compact mode) ─────────────────
+function QuickAddOverlay({ defaultBoard, onSave, onExpand, onClose }: {
   defaultBoard: string
+  onSave: (item: Partial<Item>, recurRule?: RecurRule | null) => void
+  onExpand: () => void
+  onClose: () => void
+}) {
+  const resolvedDefault = (() => {
+    if (defaultBoard !== 'all' && defaultBoard !== 'event') return defaultBoard
+    try { return localStorage.getItem('cb_last_board') || 'event' } catch { return 'event' }
+  })()
+  const [board, setBoard] = useState(resolvedDefault)
+  const [title, setTitle] = useState('')
+  const [date, setDate] = useState('')
+  const cfg = BOARD_MAP[board as keyof typeof BOARD_MAP]
+  const handleSaveQ = () => {
+    if (!title.trim()) return
+    try { localStorage.setItem('cb_last_board', board) } catch {}
+    onSave({ board: board as Item['board'], title: title.trim(), date: date || null, notes: null, status: cfg?.statuses[0]?.value ?? 'todo', checklist: [], checklist_archive: [] })
+  }
+  const handleKeyDownQ = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSaveQ() }
+    if (e.key === 'Escape') onClose()
+    if ((e.metaKey || e.ctrlKey) && e.key === 'j') { e.preventDefault(); onExpand() }
+  }
+  return (
+    <>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 55 }} onClick={onClose} />
+      <div style={{ position: 'fixed', top: '40%', left: '50%', transform: 'translate(-50%, -50%)', width: '90%', maxWidth: 480, background: T.ivory, borderRadius: 16, boxShadow: '0 8px 48px rgba(26,23,20,0.22)', border: `1px solid ${T.border}`, zIndex: 56, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', gap: 4, padding: '12px 16px 10px', overflowX: 'auto', borderBottom: `1px solid ${T.border}` }}>
+          {BOARDS.map(b => (
+            <button key={b.id} onClick={() => setBoard(b.id)}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 600, fontFamily: T.sans, whiteSpace: 'nowrap', flexShrink: 0, transition: 'all 0.12s',
+                background: board === b.id ? b.color : T.sand,
+                color: board === b.id ? '#fff' : T.sub,
+              }}>
+              <span style={{ fontFamily: T.serif }}>{b.letter}</span>{b.label.replace('Board', '')}
+            </button>
+          ))}
+        </div>
+        <div style={{ padding: '14px 16px 10px' }}>
+          <input autoFocus value={title} onChange={e => setTitle(e.target.value)} onKeyDown={handleKeyDownQ}
+            placeholder={`Add to ${cfg?.label ?? 'board'}… (Enter to save)`}
+            style={{ width: '100%', fontSize: 16, border: 'none', outline: 'none', background: 'transparent', color: T.ink, fontFamily: T.sans, padding: 0 }} />
+        </div>
+        <div style={{ padding: '0 16px 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <input type="datetime-local" value={date} onChange={e => setDate(e.target.value)}
+            style={{ fontSize: 12, border: `1px solid ${T.border}`, borderRadius: 6, padding: '4px 8px', background: T.sand, color: T.sub, fontFamily: T.sans, outline: 'none' }} />
+          <span style={{ flex: 1 }} />
+          <button onClick={onExpand} style={{ fontSize: 12, color: T.sub, background: 'none', border: 'none', cursor: 'pointer', fontFamily: T.sans, textDecoration: 'underline' }}>More options</button>
+          <button onClick={handleSaveQ} disabled={!title.trim()}
+            style={{ padding: '6px 16px', borderRadius: 8, border: 'none', background: title.trim() ? (cfg?.color ?? T.ink) : T.border, color: 'white', fontSize: 13, fontWeight: 600, cursor: title.trim() ? 'pointer' : 'default', fontFamily: T.sans }}>
+            Add
+          </button>
+        </div>
+        <div style={{ padding: '6px 16px 10px', borderTop: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 11, color: T.muted, fontFamily: T.sans }}>Enter to save · Esc to close</span>
+          <span style={{ fontSize: 11, color: T.muted, fontFamily: T.sans }}>Cmd+J for full form</span>
+        </div>
+      </div>
+    </>
+  )
+}
+
+// ─── Add Item Modal ───────────────────────────────────────
+function AddModal({ defaultBoard, defaultDate = '', onSave, onClose }: {
+  defaultBoard: string
+  defaultDate?: string
   onSave: (item: Partial<Item>, recurRule?: RecurRule | null) => void
   onClose: () => void
 }) {
-  const [board, setBoard] = useState(defaultBoard)
+  const resolvedDefault = (() => {
+    if (defaultBoard !== 'all' && defaultBoard !== 'event') return defaultBoard
+    try { return localStorage.getItem('cb_last_board') || 'event' } catch { return 'event' }
+  })()
+  const [board, setBoard] = useState(resolvedDefault)
   const [title, setTitle] = useState('')
-  const [date, setDate] = useState('')
+  const [date, setDate] = useState(defaultDate)
   const [notes, setNotes] = useState('')
-  const [recurRule, setRecurRule] = useState<RecurRule | null>(null)
+  const [location, setLocation] = useState('')
+  const [recurRule, setRecurRule] = useState<RecurRule | null>(() => {
+    try {
+      const saved = localStorage.getItem(`cb_last_repeat_${resolvedDefault}`)
+      return saved ? JSON.parse(saved) : null
+    } catch { return null }
+  })
   const cfg = BOARD_MAP[board as keyof typeof BOARD_MAP]
-
+  const fields = getBoardFields(board)
+  const handleBoardChange = (newBoard: string) => {
+    setBoard(newBoard)
+    try {
+      const saved = localStorage.getItem(`cb_last_repeat_${newBoard}`)
+      setRecurRule(saved ? JSON.parse(saved) : null)
+    } catch {}
+  }
+  const handleSave = () => {
+    if (!title.trim()) return
+    try {
+      localStorage.setItem('cb_last_board', board)
+      if (recurRule) localStorage.setItem(`cb_last_repeat_${board}`, JSON.stringify(recurRule))
+      else localStorage.removeItem(`cb_last_repeat_${board}`)
+    } catch {}
+    const notesWithLocation = location.trim()
+      ? (notes.trim() ? `${notes.trim()}\n\n📍 ${location.trim()}` : `📍 ${location.trim()}`)
+      : notes || null
+    onSave({ board: board as Item['board'], title: title.trim(), date: date || null, notes: notesWithLocation, status: cfg?.statuses[0]?.value ?? 'todo', checklist: [], checklist_archive: [] }, recurRule)
+  }
   return (
     <BottomSheet onClose={onClose} maxWidth={520}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
         <div style={{ fontFamily: T.serif, fontSize: 24, color: T.ink, fontWeight: 500 }}>Add Item</div>
         <button onClick={onClose} style={closeBtn}>×</button>
       </div>
-
       <div style={{ marginBottom: 18 }}>
         <Label>Board</Label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
           {BOARDS.map(b => (
-            <button key={b.id} onClick={() => setBoard(b.id)}
+            <button key={b.id} onClick={() => handleBoardChange(b.id)}
               style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: T.sans, transition: 'all 0.15s',
                 background: board === b.id ? b.color : T.sand,
                 color: board === b.id ? '#fff' : T.sub,
@@ -318,38 +424,45 @@ function AddModal({ defaultBoard, onSave, onClose }: {
           ))}
         </div>
       </div>
-
       <div style={{ marginBottom: 14 }}>
         <Label>Title *</Label>
         <input autoFocus value={title} onChange={e => setTitle(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSave() } }}
           placeholder={`e.g. ${cfg?.tagline}`} style={sheetInput} />
       </div>
-
-      <div style={{ marginBottom: 14 }}>
-        <Label>Date</Label>
-        <input type="date" value={date} onChange={e => setDate(e.target.value)} style={sheetInput} />
-      </div>
-
-      {date && (
+      {fields.showDate && (
         <div style={{ marginBottom: 14 }}>
-          <Label>Repeat</Label>
-          <RecurringPicker value={recurRule} onChange={setRecurRule} color={cfg?.color} />
+          <Label>Date &amp; Time</Label>
+          <input type="datetime-local" value={date} onChange={e => setDate(e.target.value)} style={sheetInput} />
         </div>
       )}
-
-      <div style={{ marginBottom: 22 }}>
-        <Label>Notes</Label>
-        <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3}
-          placeholder="Location, instructions, reminders…"
-          style={{ ...sheetInput, resize: 'none' }} />
-      </div>
-
+      {fields.showLocation && (
+        <div style={{ marginBottom: 14 }}>
+          <Label>Location</Label>
+          <input value={location} onChange={e => setLocation(e.target.value)}
+            placeholder="Address, venue, or link" style={sheetInput} />
+        </div>
+      )}
+      {fields.showDate && date && fields.showRepeat && (
+        <div style={{ marginBottom: 14 }}>
+          <Label>Repeat</Label>
+          <RecurringPicker value={recurRule} onChange={r => {
+            setRecurRule(r)
+            try { if (r) localStorage.setItem(`cb_last_repeat_${board}`, JSON.stringify(r)); else localStorage.removeItem(`cb_last_repeat_${board}`) } catch {}
+          }} color={cfg?.color} />
+        </div>
+      )}
+      {fields.showNotes && (
+        <div style={{ marginBottom: 22 }}>
+          <Label>Notes</Label>
+          <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3}
+            placeholder={fields.notesPlaceholder}
+            style={{ ...sheetInput, resize: 'none' }} />
+        </div>
+      )}
       <div style={{ display: 'flex', gap: 10 }}>
         <button onClick={onClose} style={ghostBtn}>Cancel</button>
-        <button onClick={() => {
-          if (!title.trim()) return
-          onSave({ board: board as Item['board'], title: title.trim(), date: date || null, notes: notes || null, status: cfg?.statuses[0]?.value ?? 'todo', checklist: [], checklist_archive: [] }, recurRule)
-        }} style={primaryBtn(cfg?.color ?? T.ink)}>Add Item</button>
+        <button onClick={handleSave} style={primaryBtn(cfg?.color ?? T.ink)}>Add Item</button>
       </div>
       <div style={{ marginTop: 14, paddingTop: 12, borderTop: `1px solid ${T.border}`, textAlign: 'center' }}>
         <span style={{ fontSize: 12, color: T.sub, fontFamily: T.sans }}>Want a head start? </span>
@@ -360,135 +473,42 @@ function AddModal({ defaultBoard, onSave, onClose }: {
 }
 
 
-// ─── Archive Sheet (Sprint 1) ─────────────────────────────
-function ArchiveSheet({ item, onRestore, onDeleteArchived, onClose }: {
-  item: Item; onRestore: (id: string) => void; onDeleteArchived: (id: string) => void; onClose: () => void
-}) {
-  const cfg = BOARD_MAP[item.board]
-  const [confirmPurgeAll, setConfirmPurgeAll] = useState(false)
-  const archive = item.checklist_archive ?? []
-  const fmtA = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-  return (
-    <BottomSheet onClose={onClose} maxWidth={520}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 8, background: `${cfg?.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Archive size={16} color={cfg?.color} />
-        </div>
-        <div>
-          <div style={{ fontFamily: T.serif, fontSize: 20, color: T.ink, fontWeight: 500 }}>Checklist Archive</div>
-          <div style={{ fontSize: 12, color: T.sub }}>{archive.length} archived {archive.length === 1 ? 'item' : 'items'} · {item.title}</div>
-        </div>
-        <button onClick={onClose} style={{ ...closeBtn, marginLeft: 'auto' }}>×</button>
-      </div>
-      {archive.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '40px 0' }}>
-          <Archive size={32} color={T.muted} style={{ margin: '0 auto 12px', display: 'block' }} />
-          <div style={{ fontFamily: T.serif, fontSize: 18, color: T.sub, fontStyle: 'italic' }}>Nothing archived yet</div>
-          <div style={{ fontSize: 12, color: T.muted, marginTop: 6, lineHeight: 1.5 }}>When you archive completed checklist items, they appear here. You can restore them at any time.</div>
-        </div>
-      ) : (
-        <>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 20, borderRadius: 10, border: `1px solid ${T.border}`, overflow: 'hidden' }}>
-            {archive.map((a, idx) => (
-              <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderBottom: idx < archive.length - 1 ? `0.5px solid ${T.borderSoft}` : 'none', background: T.ivory }}>
-                <div style={{ width: 18, height: 18, borderRadius: 4, flexShrink: 0, background: `${cfg?.color}30`, border: `1.5px solid ${cfg?.color}60`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Check size={10} color={cfg?.color} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, color: T.inkMid, textDecoration: 'line-through', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.text}</div>
-                  <div style={{ fontSize: 10, color: T.muted, marginTop: 2 }}>Archived {fmtA(a.archived_at)}</div>
-                </div>
-                <button onClick={() => onRestore(a.id)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 6, border: `1px solid ${T.border}`, background: 'transparent', color: T.inkMid, fontSize: 11, fontWeight: 500, cursor: 'pointer', fontFamily: T.sans, flexShrink: 0, whiteSpace: 'nowrap' }}>
-                  <RotateCcw size={11} /> Restore
-                </button>
-                <button onClick={() => onDeleteArchived(a.id)} style={{ padding: '5px 7px', borderRadius: 6, border: 'none', background: 'transparent', color: T.muted, cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-                  <Trash2 size={13} />
-                </button>
-              </div>
-            ))}
-          </div>
-          {!confirmPurgeAll ? (
-            <button onClick={() => setConfirmPurgeAll(true)} style={{ width: '100%', padding: '10px', borderRadius: 8, border: `1px solid ${T.border}`, background: 'transparent', color: T.muted, fontSize: 12, cursor: 'pointer', fontFamily: T.sans }}>
-              Delete all archived items permanently
-            </button>
-          ) : (
-            <div style={{ background: '#FDF6F3', borderRadius: 10, padding: 14 }}>
-              <div style={{ fontSize: 13, color: T.ink, marginBottom: 12, fontFamily: T.sans }}>Permanently delete all {archive.length} archived items? This cannot be undone.</div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => setConfirmPurgeAll(false)} style={ghostBtn}>Cancel</button>
-                <button onClick={() => { archive.forEach(a => onDeleteArchived(a.id)); setConfirmPurgeAll(false); onClose() }} style={primaryBtn('#C0392B')}>Delete All</button>
-              </div>
-            </div>
-          )}
-        </>
-      )}
-    </BottomSheet>
-  )
-}
-
-// ─── All-Done Prompt (Sprint 1) ────────────────────────────
-function AllDonePrompt({ item, onArchiveAll, onKeep, onClose }: { item: Item; onArchiveAll: () => void; onKeep: () => void; onClose: () => void }) {
-  const cfg = BOARD_MAP[item.board]
-  return (
-    <BottomSheet onClose={onClose} maxWidth={400}>
-      <div style={{ textAlign: 'center', padding: '8px 0 20px' }}>
-        <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
-        <div style={{ fontFamily: T.serif, fontSize: 22, color: T.ink, fontWeight: 500, marginBottom: 6 }}>All done!</div>
-        <div style={{ fontSize: 13, color: T.sub, lineHeight: 1.6, marginBottom: 24 }}>Every item in <strong>{item.title}</strong> is checked off.<br />What would you like to do with the completed items?</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <button onClick={onArchiveAll} style={{ ...primaryBtn(cfg?.color ?? '#1A1714'), display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-            <Archive size={14} /> Archive them (recommended)
-          </button>
-          <button onClick={onKeep} style={{ ...ghostBtn, flex: 'none', width: '100%' }}>Keep them visible</button>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: T.muted, fontSize: 12, cursor: 'pointer', fontFamily: T.sans, padding: '6px' }}>Decide later</button>
-        </div>
-      </div>
-    </BottomSheet>
-  )
-}
-
 // ─── Notes Field (markdown read / plain write) ───────────
 function renderMarkdown(text: string): string {
   const e = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   const b = e.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
   const i = b.replace(/\*(.+?)\*/g, '<em>$1</em>')
-  const c = i.replace(/`([^`]+)`/g, '<code style="background:#EDE8E2;padding:1px 4px;border-radius:3px;font-size:0.9em">$1</code>')
-  const l = c.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#2874A6;text-decoration:underline">$1</a>')
-  const p = l.replace(/^[-*]\s+(.+)$/gm, '<li style="margin-left:16px;margin-bottom:2px">$1</li>')
-  const u = p.replace(/(<li[^>]*>[\s\S]*?<\/li>)+/g, (m: string) => '<ul style="padding:0;list-style:disc;margin:4px 0">' + m + '</ul>')
+  const co = i.replace(/`([^`]+)`/g, '<code style="background:#EDE8E2;padding:1px 4px;border-radius:3px;font-size:0.9em">$1</code>')
+  const l = co.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#2874A6;text-decoration:underline">$1</a>')
+  const m = l.replace(/@(\w+)/g, '<span style="color:#2874A6;background:#2874A614;padding:1px 4px;border-radius:3px;font-weight:500">@$1</span>')
+  const p = m.replace(/^[-*]\s+(.+)$/gm, '<li style="margin-left:16px;margin-bottom:2px">$1</li>')
+  const u = p.replace(/(<li[^>]*>[\s\S]*?<\/li>)+/g, (match: string) => '<ul style="padding:0;list-style:disc;margin:4px 0">' + match + '</ul>')
   return u.replace(/\n/g, '<br/>')
 }
 
-function NotesField({ value, onChange, onSave, readOnly, sheetInput, T }: {
+function NotesField({ value, onChange, onSave, readOnly, sheetInput: inputStyle, T: theme }: {
   value: string; onChange: (v: string) => void; onSave: () => void
-  readOnly: boolean; sheetInput: React.CSSProperties; T: typeof import('./page').default extends never ? any : any
+  readOnly: boolean; sheetInput: Record<string, any>; T: Record<string, any>
 }) {
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] = (useState as any)(false)
   const empty = !value.trim()
-
   if (readOnly || !editing) {
     return (
       <div
         onClick={() => !readOnly && setEditing(true)}
-        style={{ minHeight: 64, padding: '10px 13px', borderRadius: 6, border: `1px solid ${T.border}`, fontSize: 13, color: empty ? T.muted : T.ink, background: T.ivory, cursor: readOnly ? 'default' : 'text', lineHeight: 1.7, fontFamily: T.sans }}
-        dangerouslySetInnerHTML={{ __html: empty ? 'Notes, instructions, reminders…' : renderMarkdown(value) }}
+        style={{ minHeight: 64, padding: '10px 13px', borderRadius: 6, border: `1px solid ${theme.border}`, fontSize: 13, color: empty ? theme.muted : theme.ink, background: theme.ivory, cursor: readOnly ? 'default' : 'text', lineHeight: 1.7, fontFamily: theme.sans }}
+        dangerouslySetInnerHTML={{ __html: empty ? 'Notes, instructions, reminders\u2026' : renderMarkdown(value) }}
       />
     )
   }
-
   return (
     <div>
-      <textarea
-        autoFocus
-        value={value}
-        onChange={e => onChange(e.target.value)}
+      <textarea autoFocus value={value} onChange={e => onChange(e.target.value)}
         onBlur={() => { onSave(); setEditing(false) }}
-        rows={4}
-        placeholder="Notes, instructions, reminders… (supports **bold**, *italic*, - bullets, [links](url))"
-        style={{ ...sheetInput, resize: 'none', marginBottom: 4 }}
-      />
-      <div style={{ fontSize: 11, color: T.muted, fontFamily: T.sans }}>
-        **bold** · *italic* · - bullet · [text](url)
+        rows={4} placeholder="Notes\u2026 (**bold**, *italic*, - bullets, [links](url))"
+        style={{ ...inputStyle, resize: 'none', marginBottom: 4 }} />
+      <div style={{ fontSize: 11, color: theme.muted, fontFamily: theme.sans }}>
+        **bold** &middot; *italic* &middot; - bullet &middot; [text](url) &middot; @mention
       </div>
     </div>
   )
@@ -619,7 +639,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
           <StatusPill status={item.status} board={item.board} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <Calendar size={12} color={T.sub} />
-            <input type="date" value={editDate} onChange={e => setEditDate(e.target.value)} onBlur={saveDate}
+            <input type="datetime-local" value={editDate} onChange={e => setEditDate(e.target.value)} onBlur={saveDate}
               style={{ fontSize: 12, background: 'transparent', border: 'none', outline: 'none', color: urgencyColor(editDate || null), fontFamily: T.sans }} />
             {editDate && <span style={{ fontSize: 11, color: urgencyColor(editDate) }}>· {urgencyLabel(editDate)}</span>}
           </div>
@@ -757,7 +777,22 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
                   <span onDoubleClick={() => startEdit(c)} style={{ flex: 1, fontSize: 13, fontWeight: c.done ? 400 : 500, color: c.done ? '#9C8878' : '#1A1714', textDecoration: c.done ? 'line-through' : 'none', cursor: 'pointer' }}>{c.text}</span>
                 )}
                 {editingId !== c.id && (
-                  <div style={{ display: 'flex', gap: 2 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    {(c as any).due_date && (
+                      <span style={{ fontSize: 10, color: new Date((c as any).due_date) < new Date() && !c.done ? '#C0392B' : T.muted, fontFamily: T.sans, marginRight: 2 }}>
+                        {new Date((c as any).due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </span>
+                    )}
+                    {!isReadOnly && (
+                      <button onClick={() => onUpdate({ checklist: item.checklist.map(ci => ci.id === c.id ? { ...ci, due_date: (c as any).due_date ? null : new Date().toISOString().slice(0,10) } as any : ci) })}
+                        title={(c as any).due_date ? 'Remove due date' : 'Set due date'}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: (c as any).due_date ? '#2874A6' : T.border, padding: '2px 3px', fontSize: 10, fontFamily: T.sans }}>due</button>
+                    )}
+                    {(c as any).due_date && !isReadOnly && (
+                      <input type="date" value={((c as any).due_date ?? '').slice(0,10)}
+                        onChange={e => onUpdate({ checklist: item.checklist.map(ci => ci.id === c.id ? { ...ci, due_date: e.target.value } as any : ci) })}
+                        style={{ fontSize: 10, border: 'none', background: 'transparent', color: T.sub, fontFamily: T.sans, padding: 0, width: 88, outline: 'none' }} />
+                    )}
                     {c.done && (
                       <button onClick={() => archiveTask(c.id)} title="Archive this item"
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted, padding: 2, display: 'flex' }}>
@@ -898,8 +933,8 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
 }
 
 // ─── Item Card ────────────────────────────────────────────
-function ItemCard({ item, onClick, onSwipeComplete, isFirst = false, cardDensity = 'compact' }: {
-  item: Item; onClick: () => void; onSwipeComplete: () => void; isFirst?: boolean; cardDensity?: 'compact' | 'comfortable'
+function ItemCard({ item, onClick, onSwipeComplete, isFirst = false, cardDensity = 'compact', isSelected = false, onLongPress, isSelecting = false }: {
+  item: Item; onClick: () => void; onSwipeComplete: () => void; isFirst?: boolean; cardDensity?: 'compact' | 'comfortable'; isSelected?: boolean; onLongPress?: () => void; isSelecting?: boolean
 }) {
   const t = useTranslations('dashboard')
   const cfg = BOARD_MAP[item.board]
@@ -912,22 +947,34 @@ function ItemCard({ item, onClick, onSwipeComplete, isFirst = false, cardDensity
   const isPinned = (item as any).priority === 'pinned'
   const isComfortable = cardDensity === 'comfortable'
 
-  const onTouchStart = (e: React.TouchEvent) => { startX.current = e.touches[0].clientX; setSwipeX(0) }
-  const onTouchMove  = (e: React.TouchEvent) => { const dx = e.touches[0].clientX - startX.current; if (dx > 0) setSwipeX(Math.min(dx, 90)) }
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const onTouchStart = (e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX; setSwipeX(0)
+    if (onLongPress) { longPressTimer.current = setTimeout(() => { onLongPress(); longPressTimer.current = null }, 500) }
+  }
+  const onTouchMove  = (e: React.TouchEvent) => { const dx = e.touches[0].clientX - startX.current; if (dx > 5 && longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null } if (dx > 0) setSwipeX(Math.min(dx, 90)) }
   const onTouchEnd   = () => {
     if (swipeX > 55) { setSwiped(true); setTimeout(() => { onSwipeComplete(); setSwiped(false); setSwipeX(0) }, 350) }
     else setSwipeX(0)
+    if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null }
   }
 
   return (
-    <div style={{ position: 'relative', overflow: 'hidden', borderBottom: `0.5px solid ${T.borderSoft}` }}>
+    <div style={{ position: 'relative', overflow: 'hidden', borderBottom: `0.5px solid ${T.borderSoft}`, background: isSelected ? '#2874A614' : undefined }}>
+      {(isSelecting || isSelected) && (
+        <div style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', zIndex: 2, pointerEvents: 'none' }}>
+          <div style={{ width: 20, height: 20, borderRadius: 10, border: `2px solid ${isSelected ? '#2874A6' : '#C8BFB5'}`, background: isSelected ? '#2874A6' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {isSelected && <Check size={11} color="white" />}
+          </div>
+        </div>
+      )}
       {/* Swipe reveal */}
       <div style={{ position: 'absolute', inset: '0 auto 0 0', display: 'flex', alignItems: 'center', paddingLeft: 18, background: '#3D6B52', width: Math.max(swipeX, 0), opacity: swipeX > 10 ? 1 : 0, transition: 'opacity 0.1s' }}>
         <Check size={14} color="white" strokeWidth={2} />
       </div>
 
       {/* Row */}
-      <div onClick={() => { if (swipeX < 5) onClick() }}
+      <div onClick={() => { if (swipeX < 5) { if (isSelecting) toggleSelect(item.id); else onClick() } }}
         onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
         className="cb-row-item"
         style={{
@@ -1049,7 +1096,7 @@ function UpgradeModal({ onClose, itemCount }: { onClose: () => void; itemCount: 
 }
 
 // ─── Calendar View ────────────────────────────────────────
-function CalendarView({ items, onItemClick }: { items: Item[]; onItemClick: (item: Item) => void }) {
+function CalendarView({ items, onItemClick, onDayClick }: { items: Item[]; onItemClick: (item: Item) => void; onDayClick?: (dateStr: string) => void }) {
   const [currentMonth, setCurrentMonth] = useState(() => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), 1) })
   const year = currentMonth.getFullYear()
   const month = currentMonth.getMonth()
@@ -1060,6 +1107,7 @@ function CalendarView({ items, onItemClick }: { items: Item[]; onItemClick: (ite
 
   const itemsByDate: Record<string, Item[]> = {}
   items.forEach(item => { if (item.date) { const k = item.date.slice(0,10); if (!itemsByDate[k]) itemsByDate[k] = []; itemsByDate[k].push(item) } })
+  Object.keys(itemsByDate).forEach(k => { itemsByDate[k].sort((a, b) => (a.date ?? '').localeCompare(b.date ?? '')) })
 
   const cells: Array<{ day: number | null; dateStr: string | null }> = []
   for (let i = 0; i < firstDay; i++) cells.push({ day: null, dateStr: null })
@@ -1101,22 +1149,30 @@ function CalendarView({ items, onItemClick }: { items: Item[]; onItemClick: (ite
           const isToday = cellDate.getTime() === today.getTime()
           const isPast  = cellDate < today
           const dayItems = itemsByDate[cell.dateStr] ?? []
+          const hasOverdue = isPast && !isToday && dayItems.some(i => i.status !== 'done')
           return (
-            <div key={cell.dateStr} style={{ background: T.ivory, minHeight: 100, padding: 8, opacity: isPast && !isToday ? 0.6 : 1 }}>
-              <div style={{ marginBottom: 4 }}>
+            <div key={cell.dateStr}
+              onClick={() => { if (dayItems.length === 0 && onDayClick) onDayClick(cell.dateStr!) }}
+              style={{ background: T.ivory, minHeight: 100, padding: 8, opacity: isPast && !isToday ? 0.65 : 1, cursor: dayItems.length === 0 && onDayClick ? 'pointer' : 'default' }}>
+              <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ display: 'inline-flex', width: 24, height: 24, alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: 12, fontWeight: 600, background: isToday ? T.ink : 'transparent', color: isToday ? '#fff' : T.ink }}>{cell.day}</span>
+                {hasOverdue && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C0392B', display: 'inline-block' }} />}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {dayItems.slice(0, 3).map(item => {
                   const cfg = BOARD_MAP[item.board]
+                  const timeStr = item.date && item.date.length > 10
+                    ? new Date(item.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+                    : null
                   return (
-                    <button key={item.id} onClick={() => onItemClick(item)}
+                    <button key={item.id} onClick={e => { e.stopPropagation(); onItemClick(item) }}
                       style={{ width: '100%', textAlign: 'left', padding: '3px 6px', borderRadius: 4, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 500, color: cfg?.color, background: `${cfg?.color}14`, borderLeft: `2px solid ${cfg?.color}`, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: T.sans }}>
-                      {item.title}
+                      {timeStr && <span style={{ opacity: 0.75, marginRight: 3 }}>{timeStr}</span>}{item.title}
                     </button>
                   )
                 })}
                 {dayItems.length > 3 && <div style={{ fontSize: 10, color: T.muted, paddingLeft: 2, fontWeight: 500 }}>+{dayItems.length - 3} more</div>}
+                {dayItems.length === 0 && onDayClick && <div style={{ fontSize: 10, color: T.border, paddingLeft: 2, marginTop: 2 }}>+</div>}
               </div>
             </div>
           )
@@ -1155,7 +1211,9 @@ export default function Dashboard() {
   const [items,       setItems]       = useState<Item[]>([])
   const [loading,     setLoading]     = useState(true)
   const [activeBoard, setActiveBoard] = useState<string>('all')
-  const [showAdd,     setShowAdd]     = useState(false)
+  const [showAdd,      setShowAdd]      = useState(false)
+  const [showQuickAdd, setShowQuickAdd] = useState(false)
+  const [calendarDefaultDate, setCalendarDefaultDate] = useState<string>('')
   const [detail,      setDetail]      = useState<Item | null>(null)
   const [shareBoard,  setShareBoard]  = useState<string | null>(null)
   const [search,      setSearch]      = useState('')
@@ -1167,6 +1225,12 @@ export default function Dashboard() {
   const [viewMode,     setViewMode]     = useState<'list' | 'calendar'>('list')
   const [dueSoonOnly,  setDueSoonOnly]  = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [showInbox,    setShowInbox]    = useState(false)
+  const [selectedIds,   setSelectedIds]   = useState<Set<string>>(new Set())
+  const [showTemplates, setShowTemplates]  = useState(false)
+  const isSelecting = selectedIds.size > 0
+  const [notifications, setNotifications] = useState<any[]>([])
+  const [inboxLoading, setInboxLoading] = useState(false)
   const [priorityFilter, setPriorityFilter] = useState<string>('')
   const [activeTag,    setActiveTag]    = useState<string>('')
   const [showConfetti, setShowConfetti] = useState(false)
@@ -1217,6 +1281,32 @@ export default function Dashboard() {
 
   useEffect(() => { const seen = localStorage.getItem('cb_tour_complete'); if (!seen) setShowTour(true) }, [])
   useEffect(() => { try { const saved = localStorage.getItem('cb_board_names'); if (saved) setBoardNames(JSON.parse(saved)) } catch {} }, [])
+
+  const loadNotifications = useCallback(async () => {
+    setInboxLoading(true)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+      const res = await fetch('/api/notifications', { headers: { Authorization: `Bearer ${session.access_token}` } })
+      const json = await res.json()
+      setNotifications(json.notifications ?? [])
+    } catch {}
+    setInboxLoading(false)
+  }, [])
+
+  const dismissNotification = async (id: string) => {
+    setNotifications(n => n.filter(x => x.id !== id))
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return
+    await fetch('/api/notifications', { method: 'PATCH', headers: { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'dismiss', id }) })
+  }
+
+  const dismissAll = async () => {
+    setNotifications([])
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return
+    await fetch('/api/notifications', { method: 'PATCH', headers: { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'dismiss_all' }) })
+  }
 
   const loadItems = useCallback(async (uid: string) => {
     const { data, error } = await supabase.from('items').select('*').eq('user_id', uid).order('date', { ascending: true, nullsFirst: false })
@@ -1326,6 +1416,33 @@ export default function Dashboard() {
     toast(`"${item?.title ?? 'Item'}" deleted`, 'info')
   }
 
+  const bulkMarkDone = async () => {
+    const ids = [...selectedIds]
+    await supabase.from('items').update({ status: 'done' }).in('id', ids)
+    setItems(prev => prev.map(i => selectedIds.has(i.id) ? { ...i, status: 'done' } : i))
+    setSelectedIds(new Set()); toast(`${ids.length} item${ids.length > 1 ? 's' : ''} marked done`)
+  }
+  const bulkArchive = async () => {
+    const ids = [...selectedIds]
+    await supabase.from('items').update({ status: 'archived' } as any).in('id', ids)
+    setItems(prev => prev.filter(i => !selectedIds.has(i.id)))
+    setSelectedIds(new Set()); toast(`${ids.length} archived`)
+  }
+  const bulkDelete = async () => {
+    const ids = [...selectedIds]
+    await supabase.from('items').delete().in('id', ids)
+    setItems(prev => prev.filter(i => !selectedIds.has(i.id)))
+    setSelectedIds(new Set()); toast(`${ids.length} deleted`, 'info')
+  }
+  const bulkMove = async (targetBoard: string) => {
+    const ids = [...selectedIds]
+    await supabase.from('items').update({ board: targetBoard }).in('id', ids)
+    setItems(prev => prev.map(i => selectedIds.has(i.id) ? { ...i, board: targetBoard as any } : i))
+    setSelectedIds(new Set()); toast(`Moved to ${BOARD_MAP[targetBoard as keyof typeof BOARD_MAP]?.label ?? targetBoard}`)
+  }
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next })
+  }
   const swipeComplete = async (id: string) => {
     const item = items.find(i => i.id === id)
     if (!item || item.status === 'done') return
@@ -1427,6 +1544,14 @@ export default function Dashboard() {
             {/* Right actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
               <NavIconBtn onClick={() => setSearchOpen(true)} title="Search (⌘K)"><Search size={14} strokeWidth={1.5} /></NavIconBtn>
+              <div style={{ position: 'relative' }}>
+                <NavIconBtn onClick={() => { setShowInbox(s => !s); if (!showInbox) loadNotifications() }} title="Notifications">
+                  <Bell size={14} strokeWidth={1.5} />
+                </NavIconBtn>
+                {notifications.filter(n => !n.read_at).length > 0 && !showInbox && (
+                  <span style={{ position: 'absolute', top: 4, right: 4, width: 7, height: 7, borderRadius: '50%', background: '#C0392B', border: '1.5px solid #1A1714', pointerEvents: 'none' }} />
+                )}
+              </div>
               <NavIconBtn onClick={() => setShowUpgrade(true)} title="Pro">
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="8,1 10,6 15,6 11,10 12.5,15 8,12 3.5,15 5,10 1,6 6,6"/></svg>
               </NavIconBtn>
@@ -1610,7 +1735,7 @@ export default function Dashboard() {
         })()}
 
         {viewMode === 'calendar' ? (
-          <CalendarView items={filtered} onItemClick={setDetail} />
+          <CalendarView items={filtered} onItemClick={setDetail} onDayClick={(dateStr) => { setCalendarDefaultDate(dateStr); setShowAdd(true) }} />
         ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '72px 0' }}>
             <div style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 300, color: T.sub, fontStyle: 'italic', marginBottom: 8, letterSpacing: '0.01em' }}>Nothing here yet</div>
@@ -1620,7 +1745,7 @@ export default function Dashboard() {
         ) : (
           <div style={{ border: `0.5px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
             {filtered.map((item, index) => (
-              <ItemCard key={item.id} item={item} onClick={() => setDetail(item)} onSwipeComplete={() => swipeComplete(item.id)} isFirst={index === 0} cardDensity={cardDensity} />
+              <ItemCard key={item.id} item={item} onClick={() => { if (isSelecting) toggleSelect(item.id); else setDetail(item) }} onSwipeComplete={() => swipeComplete(item.id)} isFirst={index === 0} cardDensity={cardDensity} isSelected={selectedIds.has(item.id)} onLongPress={() => toggleSelect(item.id)} isSelecting={isSelecting} />
             ))}
           </div>
         )}
@@ -1663,7 +1788,92 @@ export default function Dashboard() {
       </nav>
 
       {/* MODALS */}
-      {showAdd     && <AddModal defaultBoard={activeBoard === 'all' ? 'event' : activeBoard} onSave={(item, rule) => addItem(item, rule)} onClose={() => setShowAdd(false)} />}
+      {isSelecting && (
+        <>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 48 }} onClick={() => setSelectedIds(new Set())} />
+          <div style={{ position: 'fixed', bottom: 'max(88px, calc(80px + env(safe-area-inset-bottom)))', left: '50%', transform: 'translateX(-50%)', zIndex: 49, background: T.ink, borderRadius: 16, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 24px rgba(26,23,20,0.3)', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: T.sans, marginRight: 4 }}>{selectedIds.size} selected</span>
+            <button onClick={bulkMarkDone} style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: '#1E8449', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: T.sans }}>Done</button>
+            <button onClick={bulkArchive} style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: '#2874A6', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: T.sans }}>Archive</button>
+            <button onClick={bulkDelete} style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: '#C0392B', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: T.sans }}>Delete</button>
+            <div style={{ position: 'relative' }}>
+              <button style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: '#8E44AD', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: T.sans }}
+                onClick={e => { e.stopPropagation(); const el = document.getElementById('bmm'); if (el) el.style.display = el.style.display === 'none' ? 'flex' : 'none' }}>
+                Move
+              </button>
+              <div id="bmm" style={{ display: 'none', position: 'absolute', bottom: '110%', right: 0, background: T.ivory, borderRadius: 10, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', border: `1px solid ${T.border}`, padding: 6, flexDirection: 'column', gap: 2, minWidth: 140, zIndex: 50 }}>
+                {BOARDS.map(b => (
+                  <button key={b.id} onClick={() => { bulkMove(b.id); const el = document.getElementById('bmm'); if (el) el.style.display = 'none' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', borderRadius: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 12, color: T.ink, fontFamily: T.sans, textAlign: 'left' as const }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: b.color, flexShrink: 0 }} />{b.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <button onClick={() => setSelectedIds(new Set())} style={{ padding: '6px 10px', borderRadius: 8, border: 'none', background: 'rgba(255,255,255,0.15)', color: 'white', fontSize: 14, cursor: 'pointer' }}>×</button>
+          </div>
+        </>
+      )}
+      {showTemplates && <TemplatesModal onApply={items => { items.forEach(p => addItem(p)); setShowTemplates(false) }} onClose={() => setShowTemplates(false)} />}
+      {showInbox && (
+        <>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 44 }} onClick={() => setShowInbox(false)} />
+          <div style={{ position: 'fixed', top: 52, right: 12, width: 340, maxHeight: 'calc(100dvh - 70px)', background: T.ivory, borderRadius: 12, boxShadow: '0 4px 32px rgba(26,23,20,0.18)', border: `1px solid ${T.border}`, zIndex: 45, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px 10px', borderBottom: `1px solid ${T.border}` }}>
+              <span style={{ fontFamily: T.serif, fontSize: 18, color: T.ink, fontWeight: 500 }}>Notifications</span>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                {notifications.length > 0 && (
+                  <button onClick={dismissAll} style={{ fontSize: 12, color: T.sub, background: 'none', border: 'none', cursor: 'pointer', fontFamily: T.sans }}>Dismiss all</button>
+                )}
+                <button onClick={() => setShowInbox(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.sub, fontSize: 18, lineHeight: 1 }}>×</button>
+              </div>
+            </div>
+            <div style={{ overflowY: 'auto', flex: 1 }}>
+              {inboxLoading ? (
+                <div style={{ padding: 24, textAlign: 'center', color: T.muted, fontSize: 13, fontFamily: T.sans }}>Loading…</div>
+              ) : notifications.length === 0 ? (
+                <div style={{ padding: 32, textAlign: 'center' }}>
+                  <div style={{ fontSize: 28, marginBottom: 8 }}>&#x1F514;</div>
+                  <div style={{ fontSize: 13, color: T.muted, fontFamily: T.sans }}>You're all caught up</div>
+                </div>
+              ) : (
+                notifications.map(n => {
+                  const cfg = BOARD_MAP[n.board as keyof typeof BOARD_MAP]
+                  const isUnread = !n.read_at
+                  const timeAgo = (() => {
+                    const diff = Date.now() - new Date(n.created_at).getTime()
+                    const mins = Math.floor(diff / 60000)
+                    if (mins < 1) return 'just now'
+                    if (mins < 60) return `${mins}m ago`
+                    const hrs = Math.floor(mins / 60)
+                    if (hrs < 24) return `${hrs}h ago`
+                    return `${Math.floor(hrs / 24)}d ago`
+                  })()
+                  return (
+                    <div key={n.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 16px', borderBottom: `1px solid ${T.border}`, background: isUnread ? `${cfg?.color}08` : 'transparent' }}>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: cfg?.color ?? T.muted, flexShrink: 0, marginTop: 5 }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, color: T.ink, fontFamily: T.sans, lineHeight: 1.4 }}>
+                          {n.actor_email && <span style={{ fontWeight: 600 }}>{n.actor_email.split('@')[0]} </span>}
+                          <span style={{ color: T.sub }}>{n.action} </span>
+                          <span style={{ fontWeight: 500 }}>'{n.item_title}'</span>
+                          {n.detail && <span style={{ color: T.muted }}> · {n.detail}</span>}
+                        </div>
+                        <div style={{ fontSize: 11, color: T.muted, fontFamily: T.sans, marginTop: 3 }}>
+                          {cfg?.label ?? n.board} · {timeAgo}
+                        </div>
+                      </div>
+                      <button onClick={() => dismissNotification(n.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.border, fontSize: 16, lineHeight: 1, padding: '0 2px', flexShrink: 0 }} title="Dismiss">×</button>
+                    </div>
+                  )
+                })
+              )}
+            </div>
+          </div>
+        </>
+      )}
+      {showQuickAdd && <QuickAddOverlay defaultBoard={activeBoard === 'all' ? 'event' : activeBoard} onSave={(item, rule) => { addItem(item, rule); setShowQuickAdd(false) }} onExpand={() => { setShowQuickAdd(false); setShowAdd(true) }} onClose={() => setShowQuickAdd(false)} />}
+      {showAdd     && <AddModal defaultBoard={activeBoard === 'all' ? 'event' : activeBoard} defaultDate={calendarDefaultDate} onSave={(item, rule) => addItem(item, rule)} onClose={() => { setShowAdd(false); setCalendarDefaultDate('') }} />}
       {detail      && <DetailModal item={detail} onUpdate={u => updateItem(detail.id, u)} onDelete={() => deleteItem(detail.id)} onClose={() => setDetail(null)} boardNames={boardNames} />}
       {shareBoard  && <ShareModal board={shareBoard} userId={user?.id ?? null} onClose={() => setShareBoard(null)} />}
       {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} itemCount={items.length} />}
@@ -1683,7 +1893,7 @@ export default function Dashboard() {
       )}
 
       <PWAManager />
-      <KeyboardShortcut onSearch={() => setSearchOpen(true)} onQuickAdd={() => setShowAdd(true)} />
+      <KeyboardShortcut onSearch={() => setSearchOpen(true)} onQuickAdd={() => setShowQuickAdd(true)} />
     </div>
   )
 }
@@ -1744,6 +1954,73 @@ const ghostBtn: React.CSSProperties = {
 const closeBtn: React.CSSProperties = {
   background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#6B6059',
   padding: 0, lineHeight: 1, flexShrink: 0,
+}
+
+
+// ─── Board Templates ──────────────────────────────────────
+const BUILT_IN_TEMPLATES = [
+  {name:'Weekly Meal Plan',board:'meal',tasks:[{id:'0',text:'Monday dinner',done:false}, {id:'1',text:'Tuesday dinner',done:false}, {id:'2',text:'Wednesday dinner',done:false}, {id:'3',text:'Thursday dinner',done:false}, {id:'4',text:'Friday dinner',done:false}, {id:'5',text:'Saturday dinner',done:false}, {id:'6',text:'Sunday dinner',done:false}]},
+  {name:'Trip Packing List',board:'travel',tasks:[{id:'0',text:'Passport and ID',done:false}, {id:'1',text:'Phone charger and adapter',done:false}, {id:'2',text:'Medications',done:false}, {id:'3',text:'Toiletries',done:false}, {id:'4',text:'Casual clothes',done:false}, {id:'5',text:'Comfortable shoes',done:false}, {id:'6',text:'Travel snacks',done:false}, {id:'7',text:'Travel insurance docs',done:false}]},
+  {name:'Event Planning',board:'event',tasks:[{id:'0',text:'Choose venue',done:false}, {id:'1',text:'Set guest list',done:false}, {id:'2',text:'Send invitations',done:false}, {id:'3',text:'Arrange catering',done:false}, {id:'4',text:'Confirm AV and tech',done:false}, {id:'5',text:'Order decorations',done:false}, {id:'6',text:'Plan transport',done:false}, {id:'7',text:'Day-of timeline',done:false}, {id:'8',text:'Thank you notes',done:false}]},
+  {name:'Weekly Review',board:'task',tasks:[{id:'0',text:'Review last week goals',done:false}, {id:'1',text:'Clear email inbox',done:false}, {id:'2',text:'Update task list',done:false}, {id:'3',text:'Schedule next week',done:false}, {id:'4',text:'Personal reflection',done:false}]},
+  {name:'Home Maintenance',board:'task',tasks:[{id:'0',text:'Check smoke detectors',done:false}, {id:'1',text:'Clean HVAC filter',done:false}, {id:'2',text:'Test CO detector',done:false}, {id:'3',text:'Check for leaks',done:false}, {id:'4',text:'Inspect weather stripping',done:false}]},
+  {name:'Grocery Run',board:'meal',tasks:[{id:'0',text:'Produce',done:false}, {id:'1',text:'Proteins',done:false}, {id:'2',text:'Dairy',done:false}, {id:'3',text:'Pantry staples',done:false}, {id:'4',text:'Snacks',done:false}, {id:'5',text:'Beverages',done:false}, {id:'6',text:'Frozen items',done:false}, {id:'7',text:'Household supplies',done:false}]}
+]
+
+function TemplatesModal({ onApply, onClose }: { onApply: (items: Partial<Item>[]) => void; onClose: () => void }) {
+  const [preview, setPreview] = useState<typeof BUILT_IN_TEMPLATES[0] | null>(null)
+  const apply = (tpl: typeof BUILT_IN_TEMPLATES[0]) => {
+    onApply(tpl.tasks.map(task => ({
+      board: tpl.board as Item['board'], title: task.text, date: null, notes: null,
+      status: BOARD_MAP[tpl.board as keyof typeof BOARD_MAP]?.statuses[0]?.value ?? 'todo',
+      checklist: [] as ChecklistItem[], checklist_archive: [] as ArchivedChecklistItem[],
+    })))
+  }
+  return (
+    <BottomSheet onClose={onClose} maxWidth={520}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+        <div style={{ fontFamily: T.serif, fontSize: 22, color: T.ink, fontWeight: 500 }}>Templates</div>
+        <button onClick={onClose} style={closeBtn}>×</button>
+      </div>
+      {preview ? (
+        <div>
+          <button onClick={() => setPreview(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.sub, fontSize: 13, fontFamily: T.sans, marginBottom: 16, padding: 0 }}>← Back</button>
+          <div style={{ fontFamily: T.serif, fontSize: 18, color: T.ink, marginBottom: 4 }}>{preview.name}</div>
+          <div style={{ fontSize: 12, color: T.muted, fontFamily: T.sans, marginBottom: 16 }}>{preview.tasks.length} items · {BOARD_MAP[preview.board as keyof typeof BOARD_MAP]?.label}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 20 }}>
+            {preview.tasks.map((task, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: T.sand, borderRadius: 8 }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: BOARD_MAP[preview.board as keyof typeof BOARD_MAP]?.color, flexShrink: 0 }} />
+                <span style={{ fontSize: 13, color: T.ink, fontFamily: T.sans }}>{task.text}</span>
+              </div>
+            ))}
+          </div>
+          <button onClick={() => apply(preview)} style={primaryBtn(BOARD_MAP[preview.board as keyof typeof BOARD_MAP]?.color ?? T.ink)}>
+            Add {preview.tasks.length} items to {BOARD_MAP[preview.board as keyof typeof BOARD_MAP]?.label}
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {BUILT_IN_TEMPLATES.map(tpl => {
+            const cfg = BOARD_MAP[tpl.board as keyof typeof BOARD_MAP]
+            return (
+              <button key={tpl.name} onClick={() => setPreview(tpl)}
+                style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 10, border: `1px solid ${T.border}`, background: T.ivory, cursor: 'pointer', textAlign: 'left' as const, width: '100%', fontFamily: T.sans }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: cfg?.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: 'white' }}>{cfg?.letter}</span>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: T.ink, marginBottom: 2 }}>{tpl.name}</div>
+                  <div style={{ fontSize: 12, color: T.sub }}>{tpl.tasks.length} items · {cfg?.label}</div>
+                </div>
+                <span style={{ fontSize: 18, color: T.muted }}>›</span>
+              </button>
+            )
+          })}
+        </div>
+      )}
+    </BottomSheet>
+  )
 }
 
 function KeyboardShortcut({ onSearch, onQuickAdd }: { onSearch: () => void; onQuickAdd: () => void }) {
