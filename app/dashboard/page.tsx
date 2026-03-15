@@ -275,7 +275,7 @@ function ShareModal({ board, userId, onClose }: { board: string; userId: string 
 
           <div style={{ marginTop: 16, paddingTop: 14, borderTop: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, color: T.muted, fontFamily: T.sans }}>Manage existing shares</span>
-            <a href="/settings/sharing" style={{ fontSize: 11, color: T.accent, fontFamily: T.sans, textDecoration: 'none', fontWeight: 500 }}>Settings ></a>
+            <a href="/settings/sharing" style={{ fontSize: 11, color: T.accent, fontFamily: T.sans, textDecoration: 'none', fontWeight: 500 }}>Settings &gt;</a>
           </div>
         </>
       )}
@@ -466,7 +466,7 @@ function AddModal({ defaultBoard, defaultDate = '', onSave, onClose }: {
       </div>
       <div style={{ marginTop: 14, paddingTop: 12, borderTop: `1px solid ${T.border}`, textAlign: 'center' }}>
         <span style={{ fontSize: 12, color: T.sub, fontFamily: T.sans }}>Want a head start? </span>
-        <a href="/settings/templates" style={{ fontSize: 12, color: T.accent, fontFamily: T.sans, fontWeight: 500, textDecoration: 'none' }}>Browse templates ></a>
+        <a href="/settings/templates" style={{ fontSize: 12, color: T.accent, fontFamily: T.sans, fontWeight: 500, textDecoration: 'none' }}>Browse templates &gt;</a>
       </div>
     </BottomSheet>
   )
@@ -1203,7 +1203,7 @@ function UpgradeModal({ onClose, itemCount }: { onClose: () => void; itemCount: 
           </div>
         ))}
       </div>
-      <button onClick={onClose} style={primaryBtn(T.ink)}>Unlock Pro - Free Now ></button>
+      <button onClick={onClose} style={primaryBtn(T.ink)}>Unlock Pro - Free Now &gt;</button>
       <button onClick={onClose} style={{ width: '100%', padding: '10px', background: 'none', border: 'none', color: T.sub, fontSize: 13, cursor: 'pointer', marginTop: 6, fontFamily: T.sans }}>Maybe later</button>
     </BottomSheet>
   )
@@ -2121,11 +2121,12 @@ export default function Dashboard() {
       )}
       {showActivity && (
         <>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 44 }} onClick={() => setShowActivity(false)} />
           <div style={{ position: 'fixed', top: 52, right: 12, width: 380, maxHeight: 'calc(100dvh - 70px)', background: T.ivory, borderRadius: 12, boxShadow: '0 4px 32px rgba(26,23,20,0.18)', border: '1px solid ' + T.border, zIndex: 45, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px 10px', borderBottom: '1px solid ' + T.border }}>
               <span style={{ fontFamily: T.serif, fontSize: 18, color: T.ink, fontWeight: 500 }}>Activity</span>
               <button onClick={() => setShowActivity(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.sub, fontSize: 18, lineHeight: 1 }}>x</button>
-            <div style={{ padding: '8px 12px', borderBottom: '1px solid ' + T.border, display: 'flex', gap: 6, flexWrap: 'wrap' as const }}>
+            </div>
             <div style={{ padding: '8px 12px', borderBottom: '1px solid ' + T.border, display: 'flex', gap: 6, flexWrap: 'wrap' as const }}>
               {(['all', ...Object.keys(BOARD_MAP)] as string[]).map(b => {
                 const cfg = BOARD_MAP[b as keyof typeof BOARD_MAP]
@@ -2151,6 +2152,7 @@ export default function Dashboard() {
                   const mins = Math.floor(diff / 60000)
                   const timeAgo = mins < 1 ? 'just now' : mins < 60 ? mins + 'm ago' : Math.floor(mins/60) < 24 ? Math.floor(mins/60) + 'h ago' : Math.floor(mins/1440) + 'd ago'
                   const actionVerb: Record<string, string> = { added: 'added', updated: 'updated', deleted: 'deleted', status_changed: 'changed status of', reminder: 'reminder for' }
+                  return (
                     <div key={n.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 16px', borderBottom: '1px solid ' + T.border }}>
                       <div style={{ width: 8, height: 8, borderRadius: '50%', background: cfg?.color ?? T.muted, flexShrink: 0, marginTop: 5 }} />
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -2298,7 +2300,7 @@ const BUILT_IN_TEMPLATES = [
   {name:'Grocery Run',board:'meal',tasks:[{id:'0',text:'Produce',done:false}, {id:'1',text:'Proteins',done:false}, {id:'2',text:'Dairy',done:false}, {id:'3',text:'Pantry staples',done:false}, {id:'4',text:'Snacks',done:false}, {id:'5',text:'Beverages',done:false}, {id:'6',text:'Frozen items',done:false}, {id:'7',text:'Household supplies',done:false}]}
 ]
 
-function TemplatesModal({ onApply, onClose }: { onApply: (items: Partial<Item>[]) => void; onClose: () => void }) {
+function TemplatesModal({ onApply, onClose, userTemplates = [], onDeleteUserTemplate = (_id: string) => {} }: { onApply: (items: Partial<Item>[]) => void; onClose: () => void; userTemplates?: any[]; onDeleteUserTemplate?: (id: string) => void }) {
   const [preview, setPreview] = useState<typeof BUILT_IN_TEMPLATES[0] | null>(null)
   const apply = (tpl: typeof BUILT_IN_TEMPLATES[0]) => {
     onApply(tpl.tasks.map(task => ({
@@ -2315,7 +2317,7 @@ function TemplatesModal({ onApply, onClose }: { onApply: (items: Partial<Item>[]
       </div>
       {preview ? (
         <div>
-          <button onClick={() => setPreview(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.sub, fontSize: 13, fontFamily: T.sans, marginBottom: 16, padding: 0 }}>< Back</button>
+          <button onClick={() => setPreview(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.sub, fontSize: 13, fontFamily: T.sans, marginBottom: 16, padding: 0 }}>&lt; Back</button>
           <div style={{ fontFamily: T.serif, fontSize: 18, color: T.ink, marginBottom: 4 }}>{preview.name}</div>
           <div style={{ fontSize: 12, color: T.muted, fontFamily: T.sans, marginBottom: 16 }}>{preview.tasks.length} items . {BOARD_MAP[preview.board as keyof typeof BOARD_MAP]?.label}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 20 }}>
