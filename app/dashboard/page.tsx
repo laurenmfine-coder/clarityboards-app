@@ -1722,7 +1722,7 @@ export default function Dashboard() {
 
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: T.cream }}>
-      <div style={{ fontFamily: T.serif, fontSize: 22, color: T.sub, fontStyle: 'italic' }}>Loading…</div>
+      <div style={{ fontFamily: T.serif, fontSize: 22, color: T.sub, fontStyle: 'italic' }}>Loading...</div>
     </div>
   )
 
@@ -2126,7 +2126,7 @@ export default function Dashboard() {
               <span style={{ fontFamily: T.serif, fontSize: 18, color: T.ink, fontWeight: 500 }}>Activity</span>
               <button onClick={() => setShowActivity(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.sub, fontSize: 18, lineHeight: 1 }}>x</button>
             <div style={{ padding: '8px 12px', borderBottom: '1px solid ' + T.border, display: 'flex', gap: 6, flexWrap: 'wrap' as const }}>
-            <div style={{ padding: '8px 12px', borderBottom: 1px solid , display: 'flex', gap: 6, flexWrap: 'wrap' as const }}>
+            <div style={{ padding: '8px 12px', borderBottom: '1px solid ' + T.border, display: 'flex', gap: 6, flexWrap: 'wrap' as const }}>
               {(['all', ...Object.keys(BOARD_MAP)] as string[]).map(b => {
                 const cfg = BOARD_MAP[b as keyof typeof BOARD_MAP]
                 return (
