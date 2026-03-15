@@ -76,7 +76,7 @@ export default function LoginPage() {
           fontSize: 26, fontWeight: 800, color: '#1A2B3C',
           fontFamily: 'Georgia, serif', margin: '0 0 8px',
         }}>
-          Welcome back
+          Welcome to Clarityboards
         </h1>
         <p style={{ fontSize: 14, color: '#5A7A94', margin: '0 0 36px' }}>
           Sign in to access your boards
@@ -114,12 +114,6 @@ export default function LoginPage() {
           </svg>
           {loading ? 'Signing in…' : 'Continue with Google'}
         </button>
-
-        <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 24 }}>
-          New to Clarityboards?{' '}
-          <a href="/onboarding" style={{ color: '#2874A6', textDecoration: 'none', fontWeight: 600 }}>
-            Get started free →
-          </a>
         </p>
       </div>
     </div>
