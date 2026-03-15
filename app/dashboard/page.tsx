@@ -1334,10 +1334,10 @@ function CalendarView({ items, onItemClick, onDayClick }: { items: Item[]; onIte
           ))}
         </div>
         </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, background: T.border, borderRadius: 12, overflow: 'hidden', border: '1px solid ' + T.border }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, background: T.border, borderRadius: 12, overflow: 'hidden', border: '1px solid ' + T.border, width: '100%' }}>
         {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (<div key={d} style={{ textAlign: 'center', fontSize: 10, fontWeight: 700, color: T.sub, padding: '6px 0', textTransform: 'uppercase', letterSpacing: '0.08em', background: T.sand }}>{d}</div>))}
         {cells.map((cell, idx) => {
-          if (!cell.day || !cell.dateStr) return <div key={`e-${idx}`} style={{ background: T.cream, minHeight: 100 }} />
+          if (!cell.day || !cell.dateStr) return <div key={e-} style={{ background: T.cream, minHeight: 100, minWidth: 0 }} />
           const cellDate = new Date(cell.dateStr + 'T00:00:00')
           const isToday = cellDate.getTime() === today.getTime()
           const isPast  = cellDate < today
@@ -1346,7 +1346,7 @@ function CalendarView({ items, onItemClick, onDayClick }: { items: Item[]; onIte
           return (
             <div key={cell.dateStr}
               onClick={e => { if (onDayClick) onDayClick(cell.dateStr!, e) }}
-              style={{ background: T.ivory, minHeight: 100, padding: 8, opacity: isPast && !isToday ? 0.65 : 1, cursor: onDayClick ? 'pointer' : 'default' }}>
+              style={{ background: T.ivory, minHeight: 100, padding: 8, opacity: isPast && !isToday ? 0.65 : 1, cursor: onDayClick ? 'pointer' : 'default', minWidth: 0, overflow: 'hidden' }}>
               <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ display: 'inline-flex', width: 24, height: 24, alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: 12, fontWeight: 600, background: isToday ? T.ink : 'transparent', color: isToday ? '#fff' : T.ink }}>{cell.day}</span>
                 {hasOverdue && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C0392B', display: 'inline-block' }} />}
