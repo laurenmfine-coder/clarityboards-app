@@ -23,7 +23,7 @@ import PWAManager from '@/components/PWAManager'
 import GlobalSearch from '@/components/GlobalSearch'
 
 // ─── Design tokens ───────────────────────────────────────
-// Hardcoded warm editorial palette — no CSS variable dependency.
+// Hardcoded warm editorial palette - no CSS variable dependency.
 // Dark mode is handled by toggling a separate darkT object below.
 const WARM = {
   cream:      '#F7F4F0',
@@ -57,7 +57,7 @@ const DARK = {
   sans:       "'DM Sans', system-ui, sans-serif",
 }
 
-// T is set at runtime based on theme state — updated in Dashboard
+// T is set at runtime based on theme state - updated in Dashboard
 // and passed down via a module-level reference that components read.
 // Default to WARM so components render correctly before hydration.
 let T = { ...WARM }
@@ -197,7 +197,7 @@ function ShareModal({ board, userId, onClose }: { board: string; userId: string 
       })
       if (!res.ok) { const d = await res.json(); setErr(d.error ?? 'Something went wrong'); }
       else setSent(true)
-    } catch { setErr('Network error — please try again') }
+    } catch { setErr('Network error - please try again') }
     setSending(false)
   }
 
@@ -275,7 +275,7 @@ function ShareModal({ board, userId, onClose }: { board: string; userId: string 
 
           <div style={{ marginTop: 16, paddingTop: 14, borderTop: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, color: T.muted, fontFamily: T.sans }}>Manage existing shares</span>
-            <a href="/settings/sharing" style={{ fontSize: 11, color: T.accent, fontFamily: T.sans, textDecoration: 'none', fontWeight: 500 }}>Settings →</a>
+            <a href="/settings/sharing" style={{ fontSize: 11, color: T.accent, fontFamily: T.sans, textDecoration: 'none', fontWeight: 500 }}>Settings ></a>
           </div>
         </>
       )}
@@ -352,7 +352,7 @@ function QuickAddOverlay({ defaultBoard, onSave, onExpand, onClose }: {
           </button>
         </div>
         <div style={{ padding: '6px 16px 10px', borderTop: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 11, color: T.muted, fontFamily: T.sans }}>Enter to save · Esc to close</span>
+          <span style={{ fontSize: 11, color: T.muted, fontFamily: T.sans }}>Enter to save . Esc to close</span>
           <span style={{ fontSize: 11, color: T.muted, fontFamily: T.sans }}>Cmd+J for full form</span>
         </div>
       </div>
@@ -466,7 +466,7 @@ function AddModal({ defaultBoard, defaultDate = '', onSave, onClose }: {
       </div>
       <div style={{ marginTop: 14, paddingTop: 12, borderTop: `1px solid ${T.border}`, textAlign: 'center' }}>
         <span style={{ fontSize: 12, color: T.sub, fontFamily: T.sans }}>Want a head start? </span>
-        <a href="/settings/templates" style={{ fontSize: 12, color: T.accent, fontFamily: T.sans, fontWeight: 500, textDecoration: 'none' }}>Browse templates →</a>
+        <a href="/settings/templates" style={{ fontSize: 12, color: T.accent, fontFamily: T.sans, fontWeight: 500, textDecoration: 'none' }}>Browse templates ></a>
       </div>
     </BottomSheet>
   )
@@ -529,7 +529,7 @@ function ArchiveSheet({ item, onRestore, onDeleteArchived, onClose }: {
         </div>
         <div>
           <div style={{ fontFamily: T.serif, fontSize: 20, color: T.ink, fontWeight: 500 }}>Checklist Archive</div>
-          <div style={{ fontSize: 12, color: T.sub }}>{archive.length} archived {archive.length === 1 ? 'item' : 'items'} · {item.title}</div>
+          <div style={{ fontSize: 12, color: T.sub }}>{archive.length} archived {archive.length === 1 ? 'item' : 'items'} . {item.title}</div>
         </div>
         <button onClick={onClose} style={{ ...closeBtn, marginLeft: 'auto' }}>×</button>
       </div>
@@ -755,7 +755,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
             <Calendar size={12} color={T.sub} />
             <input type="datetime-local" value={editDate} onChange={e => setEditDate(e.target.value)} onBlur={saveDate}
               style={{ fontSize: 12, background: 'transparent', border: 'none', outline: 'none', color: urgencyColor(editDate || null), fontFamily: T.sans }} />
-            {editDate && <span style={{ fontSize: 11, color: urgencyColor(editDate) }}>· {urgencyLabel(editDate)}</span>}
+            {editDate && <span style={{ fontSize: 11, color: urgencyColor(editDate) }}>. {urgencyLabel(editDate)}</span>}
           </div>
           <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
             {PRIORITY_OPTIONS.map(p => (
@@ -819,7 +819,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
           </div>
         </div>
 
-        {/* Notes — read/write markdown */}
+        {/* Notes - read/write markdown */}
         <div>
           <Label>Notes</Label>
           <NotesField
@@ -860,7 +860,7 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
         <div style={{ borderTop: '1.5px solid #D8D0C8', paddingTop: 20, marginTop: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <Label style={{ marginBottom: 0 }}>
-              Checklist <Hint text="Check off tasks as you complete them. Completed items can be archived — they disappear from the list but stay recoverable. Tap the archived count to browse and restore them." />
+              Checklist <Hint text="Check off tasks as you complete them. Completed items can be archived - they disappear from the list but stay recoverable. Tap the archived count to browse and restore them." />
               {(item.checklist_archive ?? []).length > 0 && (
                 <button onClick={() => setShowArchiveSheet(true)}
                   style={{ marginLeft: 8, display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, fontWeight: 500, padding: '2px 7px', borderRadius: 10, border: `1.5px solid ${cfg?.color}40`, background: `${cfg?.color}12`, color: cfg?.color, cursor: 'pointer', fontFamily: T.sans, transition: 'all 0.15s' }}>
@@ -999,12 +999,12 @@ function DetailModal({ item, onUpdate, onDelete, onClose, boardNames = {} }: {
           </div>
         </div>
 
-        {/* Archive or Delete — sticky footer, hidden for viewer-role shared items */}
+        {/* Archive or Delete - sticky footer, hidden for viewer-role shared items */}
         {!isReadOnly && (
           confirmDelete ? (
             <div style={{ background: '#FDF6F3', borderRadius: 12, padding: 14 }}>
               <div style={{ fontFamily: T.serif, fontSize: 16, color: T.ink, marginBottom: 6 }}>Permanently delete this item?</div>
-              <div style={{ fontSize: 12, color: T.sub, marginBottom: 12, fontFamily: T.sans }}>This cannot be undone. Consider archiving instead — you can restore it later.</div>
+              <div style={{ fontSize: 12, color: T.sub, marginBottom: 12, fontFamily: T.sans }}>This cannot be undone. Consider archiving instead - you can restore it later.</div>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => setConfirmDelete(false)} style={ghostBtn}>Cancel</button>
                 <button onClick={onDelete} style={primaryBtn('#C0392B')}>Delete permanently</button>
@@ -1099,7 +1099,7 @@ function ItemCard({ item, onClick, onSwipeComplete, isFirst = false, cardDensity
           opacity: isDone ? 0.5 : swiped ? 0 : 1,
         }}
       >
-        {/* Board color accent — 2px left bar */}
+        {/* Board color accent - 2px left bar */}
         <div style={{ width: 2, alignSelf: 'stretch', background: cfg?.color, flexShrink: 0 }} />
 
         <div style={{ flex: 1, padding: '13px 16px', minWidth: 0 }}>
@@ -1183,8 +1183,8 @@ function UpgradeModal({ onClose, itemCount }: { onClose: () => void; itemCount: 
       </div>
       <div style={{ background: T.sand, borderRadius: 14, padding: '18px', marginBottom: 20, textAlign: 'center' }}>
         <div style={{ fontFamily: T.serif, fontSize: 36, color: T.ink, fontWeight: 500 }}>$7.99<span style={{ fontSize: 16, fontWeight: 400, color: T.sub }}>/mo</span></div>
-        <div style={{ fontSize: 13, color: T.sub, marginTop: 4 }}>or <strong style={{ color: T.ink }}>$79/year</strong> — save 17%</div>
-        <div style={{ fontSize: 11, color: T.muted, marginTop: 4 }}>🎉 Free during demo · No card required</div>
+        <div style={{ fontSize: 13, color: T.sub, marginTop: 4 }}>or <strong style={{ color: T.ink }}>$79/year</strong> - save 17%</div>
+        <div style={{ fontSize: 11, color: T.muted, marginTop: 4 }}>🎉 Free during demo . No card required</div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 22 }}>
         {[
@@ -1203,7 +1203,7 @@ function UpgradeModal({ onClose, itemCount }: { onClose: () => void; itemCount: 
           </div>
         ))}
       </div>
-      <button onClick={onClose} style={primaryBtn(T.ink)}>Unlock Pro — Free Now →</button>
+      <button onClick={onClose} style={primaryBtn(T.ink)}>Unlock Pro - Free Now ></button>
       <button onClick={onClose} style={{ width: '100%', padding: '10px', background: 'none', border: 'none', color: T.sub, fontSize: 13, cursor: 'pointer', marginTop: 6, fontFamily: T.sans }}>Maybe later</button>
     </BottomSheet>
   )
@@ -1326,7 +1326,7 @@ function CalendarView({ items, onItemClick, onDayClick }: { items: Item[]; onIte
             style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, border: `1px solid ${T.border}`, background: T.ivory, color: T.sub, cursor: 'pointer', fontFamily: T.sans }}>Today</button>
         </div>
         <div style={{ display: 'flex', gap: 4 }}>
-          {[['←', () => setCurrentMonth(new Date(year, month-1, 1))], ['→', () => setCurrentMonth(new Date(year, month+1, 1))]].map(([arrow, fn]) => (
+          {[['<', () => setCurrentMonth(new Date(year, month-1, 1))], ['>', () => setCurrentMonth(new Date(year, month+1, 1))]].map(([arrow, fn]) => (
             <button key={arrow as string} onClick={fn as any}
               style={{ width: 32, height: 32, borderRadius: '50%', border: `1px solid ${T.border}`, background: T.ivory, color: T.sub, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {arrow as string}
@@ -1591,7 +1591,7 @@ export default function Dashboard() {
         }
       }
       setItems(prev => [...prev, newItem].sort((a,b) => (a.date ?? 'z') > (b.date ?? 'z') ? 1 : -1))
-      toast(`Added to ${BOARD_MAP[(partial.board as string)]?.label ?? 'your board'}${recurRule ? ' · repeating' : ''}`)
+      toast(`Added to ${BOARD_MAP[(partial.board as string)]?.label ?? 'your board'}${recurRule ? ' . repeating' : ''}`)
     }
     setShowAdd(false)
   }
@@ -1758,7 +1758,7 @@ export default function Dashboard() {
 
             <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.12)', flexShrink: 0 }} />
 
-            {/* Board tabs — flat underline style */}
+            {/* Board tabs - flat underline style */}
             <div data-tour="board-tabs" style={{ display: 'flex', alignItems: 'center', flex: 1, overflowX: 'auto' }}>
               <button data-tour="unified-feed" className="cb-tab" onClick={() => setActiveBoard('all')}
                 style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 11px', border: 'none', borderBottom: activeBoard === 'all' ? '2px solid rgba(255,255,255,0.55)' : '2px solid transparent', cursor: 'pointer', fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap', fontFamily: T.sans, transition: 'color 0.15s', letterSpacing: '0.01em', background: 'transparent', color: activeBoard === 'all' ? 'white' : 'rgba(255,255,255,0.4)' }}>
@@ -1872,7 +1872,7 @@ export default function Dashboard() {
                 )}
               </div>
 
-              {/* Avatar — always visible in nav, never clipped */}
+              {/* Avatar - always visible in nav, never clipped */}
               <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.12)', margin: '0 4px', flexShrink: 0 }} />
               {user?.user_metadata?.avatar_url ? (
                 <img src={user.user_metadata.avatar_url} alt=""
@@ -2104,10 +2104,10 @@ export default function Dashboard() {
                           {n.actor_email && <span style={{ fontWeight: 600 }}>{n.actor_email.split('@')[0]} </span>}
                           <span style={{ color: T.sub }}>{n.action} </span>
                           <span style={{ fontWeight: 500 }}>'{n.item_title}'</span>
-                          {n.detail && <span style={{ color: T.muted }}> · {n.detail}</span>}
+                          {n.detail && <span style={{ color: T.muted }}> . {n.detail}</span>}
                         </div>
                         <div style={{ fontSize: 11, color: T.muted, fontFamily: T.sans, marginTop: 3 }}>
-                          {cfg?.label ?? n.board} · {timeAgo}
+                          {cfg?.label ?? n.board} . {timeAgo}
                         </div>
                       </div>
                       <button onClick={() => dismissNotification(n.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.border, fontSize: 16, lineHeight: 1, padding: '0 2px', flexShrink: 0 }} title="Dismiss">×</button>
@@ -2317,9 +2317,9 @@ function TemplatesModal({ onApply, onClose }: { onApply: (items: Partial<Item>[]
       </div>
       {preview ? (
         <div>
-          <button onClick={() => setPreview(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.sub, fontSize: 13, fontFamily: T.sans, marginBottom: 16, padding: 0 }}>← Back</button>
+          <button onClick={() => setPreview(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.sub, fontSize: 13, fontFamily: T.sans, marginBottom: 16, padding: 0 }}>< Back</button>
           <div style={{ fontFamily: T.serif, fontSize: 18, color: T.ink, marginBottom: 4 }}>{preview.name}</div>
-          <div style={{ fontSize: 12, color: T.muted, fontFamily: T.sans, marginBottom: 16 }}>{preview.tasks.length} items · {BOARD_MAP[preview.board as keyof typeof BOARD_MAP]?.label}</div>
+          <div style={{ fontSize: 12, color: T.muted, fontFamily: T.sans, marginBottom: 16 }}>{preview.tasks.length} items . {BOARD_MAP[preview.board as keyof typeof BOARD_MAP]?.label}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 20 }}>
             {preview.tasks.map((task, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: T.sand, borderRadius: 8 }}>
@@ -2344,7 +2344,7 @@ function TemplatesModal({ onApply, onClose }: { onApply: (items: Partial<Item>[]
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: T.ink, marginBottom: 2 }}>{tpl.name}</div>
-                  <div style={{ fontSize: 12, color: T.sub }}>{tpl.tasks.length} items · {cfg?.label}</div>
+                  <div style={{ fontSize: 12, color: T.sub }}>{tpl.tasks.length} items . {cfg?.label}</div>
                 </div>
                 <span style={{ fontSize: 18, color: T.muted }}>›</span>
               </button>
