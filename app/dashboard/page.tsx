@@ -1332,12 +1332,12 @@ function CalendarView({ items, onItemClick, onDayClick }: { items: Item[]; onIte
               {arrow as string}
             </button>
           ))}
-        </div>
+      </div>
         </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, background: T.border, borderRadius: 12, overflow: 'hidden', border: '1px solid ' + T.border, width: '100%' }}>
         {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (<div key={d} style={{ textAlign: 'center', fontSize: 10, fontWeight: 700, color: T.sub, padding: '6px 0', textTransform: 'uppercase', letterSpacing: '0.08em', background: T.sand }}>{d}</div>))}
         {cells.map((cell, idx) => {
-          if (!cell.day || !cell.dateStr) return <div key={e-} style={{ background: T.cream, minHeight: 100, minWidth: 0 }} />
+          if (!cell.day || !cell.dateStr) return <div key={`e-${idx}`} style={{ background: T.cream, minHeight: 100, minWidth: 0 }} />
           const cellDate = new Date(cell.dateStr + 'T00:00:00')
           const isToday = cellDate.getTime() === today.getTime()
           const isPast  = cellDate < today
