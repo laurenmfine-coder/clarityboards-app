@@ -514,6 +514,95 @@ function NotesField({ value, onChange, onSave, readOnly, sheetInput: inputStyle,
   )
 }
 
+function ArchiveSheet({ item, onRestore, onDeleteArchived, onClose }: {
+  item: Item; onRestore: (id: string) => void; onDeleteArchived: (id: string) => void; onClose: () => void
+}) {
+  const cfg = BOARD_MAP[item.board]
+  const [confirmPurgeAll, setConfirmPurgeAll] = useState(false)
+  const archive = item.checklist_archive ?? []
+  const fmtA = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  return (
+    <BottomSheet onClose={onClose} maxWidth={520}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 8, background: `${cfg?.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Archive size={16} color={cfg?.color} />
+        </div>
+        <div>
+          <div style={{ fontFamily: T.serif, fontSize: 20, color: T.ink, fontWeight: 500 }}>Checklist Archive</div>
+          <div style={{ fontSize: 12, color: T.sub }}>{archive.length} archived {archive.length === 1 ? 'item' : 'items'} · {item.title}</div>
+        </div>
+        <button onClick={onClose} style={{ ...closeBtn, marginLeft: 'auto' }}>×</button>
+      </div>
+      {archive.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '40px 0' }}>
+          <Archive size={32} color={T.muted} style={{ margin: '0 auto 12px', display: 'block' }} />
+          <div style={{ fontFamily: T.serif, fontSize: 18, color: T.sub, fontStyle: 'italic' }}>Nothing archived yet</div>
+          <div style={{ fontSize: 12, color: T.muted, marginTop: 6, lineHeight: 1.5 }}>When you archive completed checklist items, they appear here. You can restore them at any time.</div>
+        </div>
+      ) : (
+        <>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 20, borderRadius: 10, border: `1px solid ${T.border}`, overflow: 'hidden' }}>
+            {archive.map((a, idx) => (
+              <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderBottom: idx < archive.length - 1 ? `0.5px solid ${T.borderSoft}` : 'none', background: T.ivory }}>
+                <div style={{ width: 18, height: 18, borderRadius: 4, flexShrink: 0, background: `${cfg?.color}30`, border: `1.5px solid ${cfg?.color}60`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Check size={10} color={cfg?.color} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, color: T.inkMid, textDecoration: 'line-through', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.text}</div>
+                  <div style={{ fontSize: 10, color: T.muted, marginTop: 2 }}>Archived {fmtA(a.archived_at)}</div>
+                </div>
+                <button onClick={() => onRestore(a.id)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 6, border: `1px solid ${T.border}`, background: 'transparent', color: T.inkMid, fontSize: 11, fontWeight: 500, cursor: 'pointer', fontFamily: T.sans, flexShrink: 0, whiteSpace: 'nowrap' }}>
+                  <RotateCcw size={11} /> Restore
+                </button>
+                <button onClick={() => onDeleteArchived(a.id)} style={{ padding: '5px 7px', borderRadius: 6, border: 'none', background: 'transparent', color: T.muted, cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                  <Trash2 size={13} />
+                </button>
+              </div>
+            ))}
+          </div>
+          {!confirmPurgeAll ? (
+            <button onClick={() => setConfirmPurgeAll(true)} style={{ width: '100%', padding: '10px', borderRadius: 8, border: `1px solid ${T.border}`, background: 'transparent', color: T.muted, fontSize: 12, cursor: 'pointer', fontFamily: T.sans }}>
+              Delete all archived items permanently
+            </button>
+          ) : (
+            <div style={{ background: '#FDF6F3', borderRadius: 10, padding: 14 }}>
+              <div style={{ fontSize: 13, color: T.ink, marginBottom: 12, fontFamily: T.sans }}>Permanently delete all {archive.length} archived items? This cannot be undone.</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setConfirmPurgeAll(false)} style={ghostBtn}>Cancel</button>
+                <button onClick={() => { archive.forEach(a => onDeleteArchived(a.id)); setConfirmPurgeAll(false); onClose() }} style={primaryBtn('#C0392B')}>Delete All</button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </BottomSheet>
+  )
+}
+
+// ─── All-Done Prompt (Sprint 1) ────────────────────────────
+
+function AllDonePrompt({ item, onArchiveAll, onKeep, onClose }: { item: Item; onArchiveAll: () => void; onKeep: () => void; onClose: () => void }) {
+  const cfg = BOARD_MAP[item.board]
+  return (
+    <BottomSheet onClose={onClose} maxWidth={400}>
+      <div style={{ textAlign: 'center', padding: '8px 0 20px' }}>
+        <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
+        <div style={{ fontFamily: T.serif, fontSize: 22, color: T.ink, fontWeight: 500, marginBottom: 6 }}>All done!</div>
+        <div style={{ fontSize: 13, color: T.sub, lineHeight: 1.6, marginBottom: 24 }}>Every item in <strong>{item.title}</strong> is checked off.<br />What would you like to do with the completed items?</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <button onClick={onArchiveAll} style={{ ...primaryBtn(cfg?.color ?? '#1A1714'), display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <Archive size={14} /> Archive them (recommended)
+          </button>
+          <button onClick={onKeep} style={{ ...ghostBtn, flex: 'none', width: '100%' }}>Keep them visible</button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: T.muted, fontSize: 12, cursor: 'pointer', fontFamily: T.sans, padding: '6px' }}>Decide later</button>
+        </div>
+      </div>
+    </BottomSheet>
+  )
+}
+
+// ─── Notes Field (markdown read / plain write) ───────────
+
 // ─── Detail Modal ─────────────────────────────────────────
 const PRIORITY_OPTIONS = [
   { value: 'high',   label: '🔴 High',   color: '#C0392B' },
