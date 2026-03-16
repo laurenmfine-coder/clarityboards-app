@@ -1,4 +1,4 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+﻿import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
 let _supabase: SupabaseClient | null = null
 
@@ -25,8 +25,6 @@ export interface ChecklistItem {
   id: string
   text: string
   done: boolean
-  due_date?: string | null
-  attachments?: { name: string; url: string; type: string }[]
 }
 
 // Sprint 1: archived checklist items retain full history
