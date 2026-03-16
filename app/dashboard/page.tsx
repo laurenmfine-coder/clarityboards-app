@@ -1814,7 +1814,7 @@ export default function Dashboard() {
                 {showSettings && (
                   <>
                     <div style={{ position: 'fixed', inset: 0, zIndex: 40 }} onClick={() => setShowSettings(false)} />
-                    <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, width: 240, background: T.ivory, borderRadius: 8, boxShadow: '0 4px 24px rgba(26,23,20,0.14)', border: `0.5px solid ${T.border}`, zIndex: 50, overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, width: 240, background: T.ivory, borderRadius: 8, boxShadow: '0 4px 24px rgba(26,23,20,0.14)', border: `0.5px solid ${T.border}`, zIndex: 50, overflow: 'hidden', maxHeight: 'calc(100dvh - 70px)', overflowY: 'auto' }}>
                       <div style={{ padding: '8px 14px 4px', fontSize: 9, fontWeight: 600, color: T.sub, textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>Boards</div>
                       {[
                         { href: '/settings/meal',     label: 'MealBoard',    icon: <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 2v12M4 4c0-2 1.5-2 2-2M12 4c0-2-1.5-2-2-2M3 6h10"/></svg> },
