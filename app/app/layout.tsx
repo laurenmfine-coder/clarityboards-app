@@ -39,10 +39,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     const headersList = headers()
     const xLocale = headersList.get('x-locale')
     if (xLocale && SUPPORTED_LOCALES.includes(xLocale)) locale = xLocale
-    messages = (await import(`../messages/${locale}.json`)).default
+    messages = (await import(`../../messages/${locale}.json`)).default
   } catch {
     try {
-      messages = (await import('../messages/en.json')).default
+      messages = (await import('../../messages/en.json')).default
     } catch {}
   }
 
