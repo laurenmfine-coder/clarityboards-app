@@ -1,7 +1,12 @@
-'use client'
+﻿'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createBrowserClient } from '@supabase/ssr'
+
+const supabase = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export default function LoginPage() {
   const router = useRouter()
@@ -9,10 +14,20 @@ export default function LoginPage() {
   const [checking, setChecking] = useState(true)
 
   useEffect(() => {
+    // Check existing session
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) router.replace('/dashboard')
       else setChecking(false)
     })
+
+    // Also listen for auth state changes (handles callback redirect)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        router.replace('/dashboard')
+      }
+    })
+
+    return () => subscription.unsubscribe()
   }, [router])
 
   const signInWithGoogle = async () => {
@@ -112,6 +127,7 @@ export default function LoginPage() {
             <path d="M24 44c5.4 0 10.2-2 13.8-5.3l-6.4-5.4C29.3 35.3 26.8 36 24 36c-5.3 0-9.6-3-11.3-7.5l-6.6 5.1C9.5 39.6 16.2 44 24 44z" fill="#4CAF50"/>
             <path d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.5l6.4 5.4C37.3 39 44 34 44 24c0-1.2-.1-2.3-.4-3.5z" fill="#1976D2"/>
           </svg>
+          {loading ? 'Signing in…' : 'Continue with Google'}
         </button>
       </div>
     </div>
