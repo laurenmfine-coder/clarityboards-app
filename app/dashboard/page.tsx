@@ -1547,9 +1547,16 @@ export default function Dashboard() {
   const loadItems = useCallback(async (uid: string) => {
     const { data, error } = await supabase.from('items').select('*').eq('user_id', uid).order('date', { ascending: true, nullsFirst: false })
     if (error) { setLoading(false); return }
-    if (!data || data.length === 0) { router.push('/onboarding'); return }
 
-    const sentinel = data.find(i => i.title?.startsWith('__boards__'))
+    // Check for shared boards before redirecting to onboarding
+    if (!data || data.length === 0) {
+      const { data: shares } = await supabase.from('board_shares').select('id').eq('shared_user_id', uid).eq('status', 'active').limit(1)
+      if (!shares?.length) { router.push('/onboarding'); return }
+      // Has shared boards — set up empty own items and continue to load shares
+      setActiveBoards(BOARDS.map(b => b.id))
+    }
+
+    const sentinel = data?.find(i => i.title?.startsWith('__boards__'))
     setActiveBoards(sentinel ? (DEMO_MODE ? BOARDS.map(b => b.id) : sentinel.title.replace('__boards__','').split(',')) : BOARDS.map(b => b.id))
 
     const realItems = data.filter(i => !i.title?.startsWith('__boards__'))
