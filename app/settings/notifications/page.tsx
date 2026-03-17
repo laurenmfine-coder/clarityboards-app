@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -75,7 +75,7 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) { router.push('/'); return }
+      if (!data.user) { router.push('/login'); return }
       setUserId(data.user.id)
       loadPrefs(data.user.id)
     })

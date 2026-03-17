@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 export const dynamic = 'force-dynamic'
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -76,7 +76,7 @@ export default function ICalSubscriptionsPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { router.push('/'); return }
+      if (!user) { router.push('/login'); return }
       setUserId(user.id)
       load(user.id)
     })

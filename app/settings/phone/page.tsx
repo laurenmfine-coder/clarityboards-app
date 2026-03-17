@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 export const dynamic = 'force-dynamic'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -18,7 +18,7 @@ export default function PhoneSettingsPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) { router.push('/'); return }
+      if (!data.user) { router.push('/login'); return }
       setUserId(data.user.id)
       // Load existing phone from profiles
       const { data: profile } = await supabase
