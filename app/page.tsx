@@ -108,7 +108,7 @@ function DemoCard({ item, onClick, selected }: { item: DemoItem; onClick: () => 
           {item.tags?.map(t => (
             <span key={t} style={{ fontSize: 10, padding: '1px 6px', borderRadius: 20, background: b.light, color: b.color, fontWeight: 600 }}>#{t}</span>
           ))}
-          {item.shared && <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 20, background: '#EBF5FB', color: '#2874A6', fontWeight: 600 }}>ðŸ”--</span>}
+          {item.shared && <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 20, background: '#EBF5FB', color: '#2874A6', fontWeight: 600 }}>●</span>}
         </div>
       </div>
       <PriorityDot p={item.priority} />
@@ -150,7 +150,7 @@ function DetailPanel({ item, onClose }: { item: DemoItem; onClose: () => void })
           ))}
           <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <div style={{ background:'white', borderRadius:16, padding:'16px 28px', textAlign:'center', boxShadow:'0 4px 24px rgba(0,0,0,0.12)' }}>
-              <div style={{ fontSize:32 }}>ðŸŽ‰</div>
+              <div style={{ fontSize:32 }}>🎉</div>
               <div style={{ fontWeight:800, color:'#1A2B3C', fontSize:15, marginTop:4 }}>{t('done')}</div>
             </div>
           </div>
@@ -169,7 +169,7 @@ function DetailPanel({ item, onClose }: { item: DemoItem; onClose: () => void })
       <div style={{ padding:'14px 18px', fontSize:13, color:'#5A7A94' }}>
         {item.date && (
           <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
-            <span>ðŸ“…</span>
+            <span>●</span>
             <span style={{ color: urgencyColor(item.date), fontWeight:600 }}>{fmt(item.date)}</span>
             {daysUntil(item.date) !== null && daysUntil(item.date)! <= 7 && daysUntil(item.date)! >= 0 && (
               <span style={{ fontSize:11, background:'#FEF3E8', color:'#E67E22', padding:'2px 8px', borderRadius:20, fontWeight:700 }}>
@@ -270,24 +270,24 @@ export default function LandingPage() {
     { persona: tSmsS('maria.persona'), emoji: '⚽', color: '#E67E22',
       texts: [{ from: 'user', text: tSmsS('maria.userText') }, { from: 'app', text: tSmsS('maria.appText') }],
       result: tSmsS('maria.result') },
-    { persona: tSmsS('priya.persona'), emoji: 'ðŸ“š', color: '#1E8449',
+    { persona: tSmsS('priya.persona'), emoji: '●', color: '#1E8449',
       texts: [{ from: 'user', text: tSmsS('priya.userText') }, { from: 'app', text: tSmsS('priya.appText') }],
       result: tSmsS('priya.result') },
-    { persona: tSmsS('derek.persona'), emoji: 'ðŸ’¼', color: '#8E44AD',
+    { persona: tSmsS('derek.persona'), emoji: '●', color: '#8E44AD',
       texts: [{ from: 'user', text: tSmsS('derek.userText') }, { from: 'app', text: tSmsS('derek.appText') }],
       result: tSmsS('derek.result') },
-    { persona: tSmsS('tom.persona'), emoji: 'ðŸ ', color: '#2874A6',
+    { persona: tSmsS('tom.persona'), emoji: '🏠', color: '#2874A6',
       texts: [{ from: 'user', text: tSmsS('tom.userText') }, { from: 'app', text: tSmsS('tom.appText') }],
       result: tSmsS('tom.result') },
   ]
 
   const FEATURES = [
-    { icon: 'ðŸ“±', title: tFeatures('items.capture.title'),  desc: tFeatures('items.capture.desc') },
-    { icon: 'ðŸŽ¯', title: tFeatures('items.boards.title'),   desc: tFeatures('items.boards.desc') },
-    { icon: 'ðŸ”--', title: tFeatures('items.share.title'),    desc: tFeatures('items.share.desc') },
-    { icon: 'ðŸ”´', title: tFeatures('items.priority.title'), desc: tFeatures('items.priority.desc') },
-    { icon: 'ðŸ“…', title: tFeatures('items.calendar.title'), desc: tFeatures('items.calendar.desc') },
-    { icon: 'ðŸ”', title: tFeatures('items.recurring.title'),desc: tFeatures('items.recurring.desc') },
+    { icon: '📱', title: tFeatures('items.capture.title'),  desc: tFeatures('items.capture.desc') },
+    { icon: '🎯', title: tFeatures('items.boards.title'),   desc: tFeatures('items.boards.desc') },
+    { icon: '🔗', title: tFeatures('items.share.title'),    desc: tFeatures('items.share.desc') },
+    { icon: '📌', title: tFeatures('items.priority.title'), desc: tFeatures('items.priority.desc') },
+    { icon: '📅', title: tFeatures('items.calendar.title'), desc: tFeatures('items.calendar.desc') },
+    { icon: '🔁', title: tFeatures('items.recurring.title'),desc: tFeatures('items.recurring.desc') },
   ]
 
   useEffect(() => {
@@ -421,7 +421,7 @@ export default function LandingPage() {
                   <DetailPanel item={selectedItem} onClose={() => setSelectedItem(null)} />
                 ) : (
                   <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8, color: '#B0A898' }}>
-                    <div style={{ fontSize: 32 }}>ðŸ‘†</div>
+                    <div style={{ fontSize: 32 }}>●</div>
                     <div style={{ fontSize: 13, fontFamily: 'system-ui' }}>{tDemo('clickToExplore')}</div>
                   </div>
                 )}
