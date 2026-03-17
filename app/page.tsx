@@ -30,7 +30,7 @@ const BOARDS = {
 
 // -- Demo data (sample titles stay as-is — not UI strings) -
 const DEMO_ITEMS: DemoItem[] = [
-  { id: '1', board: 'event',    title: "Sofia's quinceaÃ±era",      date: '2026-04-10', status: 'accepted',    priority: 'high',   shared: true, checklist: [{text:'Buy dress',done:true},{text:'Book hotel',done:false},{text:'RSVP catering',done:false}] },
+  { id: '1', board: 'event',    title: "Sofia's quinceañera",      date: '2026-04-10', status: 'accepted',    priority: 'high',   shared: true, checklist: [{text:'Buy dress',done:true},{text:'Book hotel',done:false},{text:'RSVP catering',done:false}] },
   { id: '2', board: 'event',    title: 'Book club — March',        date: '2026-03-20', status: 'rsvp-needed', tags: ['book-club'] },
   { id: '3', board: 'activity', title: 'Jake soccer tournament',   date: '2026-03-15', status: 'todo',        priority: 'medium', shared: true },
   { id: '4', board: 'activity', title: 'Emma violin recital',      date: '2026-03-22', status: 'todo' },
@@ -163,7 +163,7 @@ function DetailPanel({ item, onClose }: { item: DemoItem; onClose: () => void })
             <div style={{ fontWeight:700, color:'#1A2B3C', fontSize:15 }}>{item.title}</div>
             <div style={{ fontSize:11, color: b.color, fontWeight:600, marginTop:1 }}>{b.label}</div>
           </div>
-          <button onClick={onClose} style={{ color:'#9B8E7E', background:'none', border:'none', cursor:'pointer', fontSize:18, lineHeight:1 }}>Ã--</button>
+          <button onClick={onClose} style={{ color:'#9B8E7E', background:'none', border:'none', cursor:'pointer', fontSize:18, lineHeight:1 }}>×</button>
         </div>
       </div>
       <div style={{ padding:'14px 18px', fontSize:13, color:'#5A7A94' }}>
