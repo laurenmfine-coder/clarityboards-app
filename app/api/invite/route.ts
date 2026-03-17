@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+﻿export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
     // Create the board_shares row
     const insertData: Record<string, string> = {
       owner_id,
+      board: board_type,
       board_type,
       invited_name,
       role,
