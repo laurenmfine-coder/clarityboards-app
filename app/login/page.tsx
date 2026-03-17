@@ -33,7 +33,7 @@ function LoginInner() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `https://www.clarityboards.com/auth/callback${redirectTo !== '/dashboard' ? '?redirect=' + encodeURIComponent(redirectTo) : ''}`,
+        redirectTo: `https://clarityboards.com/auth/callback${redirectTo !== '/dashboard' ? '?redirect=' + encodeURIComponent(redirectTo) : ''}`,
       },
     })
     if (error) {
