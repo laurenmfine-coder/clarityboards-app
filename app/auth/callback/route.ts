@@ -11,8 +11,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL('/login?error=no_code', origin))
   }
 
+  const redirect = requestUrl.searchParams.get('redirect') || '/dashboard'
   const cookieStore = cookies()
-  const response = NextResponse.redirect(new URL('/dashboard', origin))
+  const response = NextResponse.redirect(new URL(redirect, origin))
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

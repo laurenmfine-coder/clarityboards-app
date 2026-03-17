@@ -1,36 +1,39 @@
 ﻿'use client'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { Suspense } from 'react'
 
-export default function LoginPage() {
+function LoginInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/dashboard'
   const [loading, setLoading] = useState(false)
   const [checking, setChecking] = useState(true)
 
   useEffect(() => {
     // Check existing session
     supabase.auth.getUser().then(({ data }) => {
-      if (data.user) router.replace('/dashboard')
+      if (data.user) router.replace(redirectTo)
       else setChecking(false)
     })
 
     // Also listen for auth state changes (handles callback redirect)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        router.replace('/dashboard')
+        router.replace(redirectTo)
       }
     })
 
     return () => subscription.unsubscribe()
-  }, [router])
+  }, [router, redirectTo])
 
   const signInWithGoogle = async () => {
     setLoading(true)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://www.clarityboards.com/auth/callback',
+        redirectTo: `https://www.clarityboards.com/auth/callback${redirectTo !== '/dashboard' ? '?redirect=' + encodeURIComponent(redirectTo) : ''}`,
       },
     })
     if (error) {
@@ -126,5 +129,13 @@ export default function LoginPage() {
         </button>
       </div>
     </div>
+  )
+}
+
+export default function LoginPageWrapper() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#F4F7FA' }} />}>
+      <LoginInner />
+    </Suspense>
   )
 }
