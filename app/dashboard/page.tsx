@@ -180,7 +180,7 @@ function ShareModal({ board, userId, onClose }: { board: string; userId: string 
   const cfg = BOARD_MAP[board as keyof typeof BOARD_MAP]
   const [inviteValue, setInviteValue] = useState('')
   const [inviteName,  setInviteName]  = useState('')
-  const [role,        setRole]        = useState<'viewer' | 'editor'>('editor')
+  const [role,        setRole]        = useState<'viewer' | 'contributor'>('contributor')
   const [method,      setMethod]      = useState<'email' | 'sms'>('email')
   const [sending,     setSending]     = useState(false)
   const [sent,        setSent]        = useState(false)
@@ -227,7 +227,7 @@ function ShareModal({ board, userId, onClose }: { board: string; userId: string 
           <div style={{ marginBottom: 18 }}>
             <Label>Role</Label>
             <div style={{ display: 'flex', gap: 8 }}>
-              {([['viewer','Viewer','Can see all items, cannot edit'],['editor','Contributor','Can add and edit items']] as const).map(([v, label, desc]) => (
+              {([['viewer','Viewer','Can see all items, cannot edit'],['contributor','Contributor','Can add and edit items']] as const).map(([v, label, desc]) => (
                 <button key={v} onClick={() => setRole(v)}
                   style={{ flex: 1, padding: '10px 12px', borderRadius: 8, border: `1.5px solid ${role === v ? cfg?.color : T.border}`, background: role === v ? `${cfg?.color}10` : 'transparent', cursor: 'pointer', textAlign: 'left' as const, transition: 'all 0.15s' }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: role === v ? cfg?.color : T.ink, marginBottom: 2, fontFamily: T.sans }}>{label}</div>
