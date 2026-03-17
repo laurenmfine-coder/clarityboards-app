@@ -1420,6 +1420,7 @@ export default function Dashboard() {
   const [showSettings, setShowSettings] = useState(false)
   const [showInbox,    setShowInbox]    = useState(false)
   const [selectedIds,   setSelectedIds]   = useState<Set<string>>(new Set())
+  const [showCompleted, setShowCompleted] = useState(true)
   const [showTemplates, setShowTemplates]  = useState(false)
   const [showActivity,  setShowActivity]   = useState(false)
   const [dayPopup, setDayPopup] = useState<{ dateStr: string; x: number; y: number } | null>(null)
@@ -1695,6 +1696,18 @@ export default function Dashboard() {
     if ((item as any).urgent || item.checklist.length >= 3) setShowConfetti(true)
   }
 
+  const restoreItem = async (id: string) => {
+    await supabase.from('items').update({ status: 'todo' }).eq('id', id)
+    setItems(prev => prev.map(i => i.id === id ? { ...i, status: 'todo' } : i))
+    toast('Item restored')
+  }
+  const archiveItem = async (id: string) => {
+    const item = items.find(i => i.id === id)
+    await supabase.from('items').update({ status: 'archived' } as any).eq('id', id)
+    setItems(prev => prev.filter(i => i.id !== id))
+    toast(`"${item?.title ?? 'Item'}" archived`)
+  }
+
   const boardLabel = (id: string) => boardNames[id] || BOARD_MAP[id as keyof typeof BOARD_MAP]?.label || id
 
   const filtered = items
@@ -1720,6 +1733,7 @@ export default function Dashboard() {
   const thisWeek       = items.filter(i => { const n = daysUntil(i.date); return n !== null && n >= 0 && n <= 7 }).length
   const rsvpNeed       = items.filter(i => i.status === 'rsvp-needed').length
   const openTasks      = items.filter(i => i.status !== 'done').length
+  const completedItems = items.filter(i => i.status === 'done' && (activeBoard === 'all' || i.board === activeBoard))
 
   const signOut = async () => { await supabase.auth.signOut(); router.push('/') }
 
@@ -1995,6 +2009,47 @@ export default function Dashboard() {
             {filtered.map((item, index) => (
               <ItemCard key={item.id} item={item} onClick={() => { if (isSelecting) toggleSelect(item.id); else setDetail(item) }} onSwipeComplete={() => swipeComplete(item.id)} isFirst={index === 0} cardDensity={cardDensity} isSelected={selectedIds.has(item.id)} onLongPress={() => toggleSelect(item.id)} isSelecting={isSelecting} />
             ))}
+          </div>
+        )}
+
+        {/* RECENTLY COMPLETED */}
+        {completedItems.length > 0 && viewMode === 'list' && (
+          <div style={{ marginTop: 32 }}>
+            <button
+              onClick={() => setShowCompleted(v => !v)}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginBottom: 12, fontFamily: T.sans }}
+            >
+              <div style={{ width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.2s', transform: showCompleted ? 'rotate(0deg)' : 'rotate(-90deg)' }}>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke={T.sub} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 600, color: T.sub, textTransform: 'uppercase' as const, letterSpacing: '0.08em' }}>
+                Completed · {completedItems.length}
+              </span>
+            </button>
+            {showCompleted && (
+              <div style={{ border: `0.5px solid ${T.border}`, borderRadius: 8, overflow: 'hidden', opacity: 0.85 }}>
+                {completedItems.map((item, index) => {
+                  const cfg = BOARD_MAP[item.board as keyof typeof BOARD_MAP]
+                  return (
+                    <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: T.ivory, borderBottom: index < completedItems.length - 1 ? `0.5px solid ${T.border}` : 'none' }}>
+                      <div style={{ width: 18, height: 18, borderRadius: 4, background: cfg?.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </div>
+                      <span style={{ flex: 1, fontSize: 13, color: T.sub, fontFamily: T.sans, textDecoration: 'line-through', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
+                      <button onClick={() => restoreItem(item.id)} title="Restore" style={{ padding: '4px 8px', borderRadius: 5, border: `0.5px solid ${T.border}`, background: 'transparent', color: T.sub, fontSize: 11, fontWeight: 500, cursor: 'pointer', fontFamily: T.sans, whiteSpace: 'nowrap' }}>
+                        Restore
+                      </button>
+                      <button onClick={() => archiveItem(item.id)} title="Archive" style={{ padding: '4px 8px', borderRadius: 5, border: `0.5px solid ${T.border}`, background: 'transparent', color: '#2874A6', fontSize: 11, fontWeight: 500, cursor: 'pointer', fontFamily: T.sans, whiteSpace: 'nowrap' }}>
+                        Archive
+                      </button>
+                      <button onClick={() => deleteItem(item.id)} title="Delete" style={{ padding: '4px 8px', borderRadius: 5, border: `0.5px solid ${T.border}`, background: 'transparent', color: '#C0392B', fontSize: 11, fontWeight: 500, cursor: 'pointer', fontFamily: T.sans, whiteSpace: 'nowrap' }}>
+                        Delete
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
         )}
       </main>
