@@ -135,6 +135,11 @@ textarea{min-height:56px;resize:vertical}
 .dtog{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
 .dtog button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);font-size:12px;font-weight:600;color:var(--muted)}
 .dtog button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.anyt{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:8px 12px;font-size:14px;font-weight:500;display:inline-flex;gap:8px;align-items:center}
+.chip b{color:var(--coin);font-weight:600}
+.chip:active{transform:scale(.97)}
+.kindsel{width:auto;padding:4px 8px;font-size:13px}
 .dtog .link{width:auto;height:auto;border:0;background:none;color:var(--back);font-size:13px}
 .addform.rate{grid-template-columns:1fr 1.4fr auto}
 .money-in{position:relative}
@@ -207,7 +212,8 @@ const byOrder=(a,b)=>(num(a.order)-num(b.order))||String(a.name).localeCompare(S
 const kid=id=>S.kids.find(k=>k.id===id);
 const wk=(k,ws)=>S.weeks[k+'_'+ws];
 const choresFor=k=>S.chores.filter(c=>c.kidId===k&&c.active!==false).sort(byOrder);
-const scheduled=(k,date)=>{const wd=P(date).getUTCDay();return choresFor(k).filter(c=>(Array.isArray(c.days)?c.days:ALL).includes(wd))};
+const anytimeFor=k=>choresFor(k).filter(c=>c.kind==='anytime');
+const scheduled=(k,date)=>{const wd=P(date).getUTCDay();return choresFor(k).filter(c=>c.kind!=='anytime'&&(Array.isArray(c.days)?c.days:ALL).includes(wd))};
 const itemOf=(k,date,cid)=>wk(k,sundayOf(date))?.days?.[date]?.[cid];
 const extrasFor=(k,date)=>Object.entries(wk(k,sundayOf(date))?.extras||{}).map(([eid,e])=>({eid,...e})).filter(e=>e.date===date&&e.status!=='deleted').sort((a,b)=>num(a.at)-num(b.at));
 function allItems(w){const out=[];for(const [date,m] of Object.entries(w.days||{}))for(const [cid,it] of Object.entries(m||{}))out.push({...it,date,cid});for(const [eid,e] of Object.entries(w.extras||{}))if(e.status!=='deleted')out.push({...e,eid,extra:true});return out}
@@ -309,13 +315,16 @@ function renderKid(k){
   h+=`</div>`;
   const d=ui.day;const sch=scheduled(k,d);const ex=extrasFor(k,d);
   h+=`<section class="panel"><h3>${longDay(d)}</h3>`;
-  if(!sch.length&&!ex.length)h+=`<p class="empty">No chores set for this day. Add an extra one below if you helped out.</p>`;
+  if(!sch.length&&!ex.length)h+=`<p class="empty">No daily chores today. Log anytime chores below.</p>`;
   h+=`<ul class="list">`;
   for(const c of sch){const it=itemOf(k,d,c.id)||{};h+=rowHtml(k,d,{cid:c.id},c.name,(it.status==='approved'||it.status==='pending')?num(it.value):num(c.value),it,false)}
-  h+=`</ul><div class="sub"><span class="eyebrow">Extra chores</span></div>`;
+  h+=`</ul>`;
+  const any=anytimeFor(k);
+  h+=`<div class="sub"><span class="eyebrow">Anytime chores</span><span class="muted small">Tap each time you do one</span></div>`;
+  if(any.length)h+=`<div class="anyt">${any.map(c=>`<button class="chip" data-act="logAny" data-id="${esc(c.id)}" data-kid="${esc(k)}" data-date="${d}">+ ${esc(c.name)} <b class="num">${money(c.value)}</b></button>`).join('')}</div>`;
   if(ex.length){h+=`<ul class="list">`;for(const e of ex)h+=rowHtml(k,d,{eid:e.eid},e.name,num(e.value),e,true);h+=`</ul>`}
   if(ui.addExtra)h+=`<form class="addform" data-form="extra" data-kid="${esc(k)}" data-date="${d}"><input type="text" id="x-name" data-draft="x-name" placeholder="What did you do?" value="${esc(dval('x-name'))}" aria-label="Extra chore"><div class="money-in"><span>$</span><input type="number" id="x-val" data-draft="x-val" min="0" step="0.25" inputmode="decimal" placeholder="0.00" value="${esc(dval('x-val'))}" aria-label="Amount"></div><button class="btn" type="submit">Add</button></form>`;
-  else h+=`<button class="dashed" data-act="openExtra">+ Add an extra chore</button>`;
+  else h+=`<button class="dashed" data-act="openExtra">+ Add something not on the list</button>`;
   return h+`</section>`;
 }
 
@@ -378,14 +387,14 @@ function renderParent(){
     <p class="muted small num" style="margin:0">${rate>0?`On today's ${money(bal)} that pays about ${money(Math.max(0,bal*rate/100))} per ${per==='week'?'week':'month'}.`:'Interest is off.'}</p></section>`;
   // chores
   const list=choresFor(ui.pk);const st=weekStats(ui.pk,ws);
-  h+=`<section class="panel"><h2>${esc(K.name)}'s chores and pay</h2><p class="muted small num">Each amount is paid per day the chore is done. Most ${esc(K.name)} can earn in a week: <b>${money(st.potential)}</b> plus extras.</p><div>`;
+  h+=`<section class="panel"><h2>${esc(K.name)}'s chores and pay</h2><p class="muted small num">Daily chores pay per day done. Anytime chores pay each time ${esc(K.name)} logs one. Most ${esc(K.name)} can earn from daily chores in a week: <b>${money(st.potential)}</b>, plus anytime chores.</p><div>`;
   if(!list.length)h+=`<p class="empty">No chores yet.</p>`;
   for(const c of list){
-    const days=Array.isArray(c.days)?c.days:ALL;
+    const days=Array.isArray(c.days)?c.days:ALL;const anyK=c.kind==='anytime';
     h+=`<div class="chore-ed"><div class="line"><input type="text" id="cn-${esc(c.id)}" data-draft="cn-${esc(c.id)}" data-change="choreName" data-id="${esc(c.id)}" value="${esc(dval('cn-'+c.id,c.name))}" aria-label="Chore name"><div class="money-in"><span>$</span><input type="number" id="cv-${esc(c.id)}" data-draft="cv-${esc(c.id)}" data-change="choreVal" data-id="${esc(c.id)}" min="0" step="0.25" inputmode="decimal" value="${esc(dval('cv-'+c.id,num(c.value).toFixed(2)))}" aria-label="Pay per day"></div></div>
-    <div class="dtog">${DL.map((l,i)=>`<button data-act="dayTog" data-id="${esc(c.id)}" data-i="${i}" aria-pressed="${days.includes(i)}" aria-label="${DAYS[i]}">${l}</button>`).join('')}<span style="flex:1"></span>${ui.confirm===c.id?`<button class="link danger" data-act="removeChore" data-id="${esc(c.id)}">Tap again to remove</button>`:`<button class="link danger" data-act="ask" data-id="${esc(c.id)}">Remove</button>`}</div></div>`;
+    <div class="dtog"><select class="kindsel" id="kd-${esc(c.id)}" data-change="choreKind" data-id="${esc(c.id)}" aria-label="Chore type"><option value="daily" ${anyK?'':'selected'}>Daily</option><option value="anytime" ${anyK?'selected':''}>Anytime</option></select>${anyK?'<span class="muted small">Paid each time</span>':DL.map((l,i)=>`<button data-act="dayTog" data-id="${esc(c.id)}" data-i="${i}" aria-pressed="${days.includes(i)}" aria-label="${DAYS[i]}">${l}</button>`).join('')}<span style="flex:1"></span>${ui.confirm===c.id?`<button class="link danger" data-act="removeChore" data-id="${esc(c.id)}">Tap again to remove</button>`:`<button class="link danger" data-act="ask" data-id="${esc(c.id)}">Remove</button>`}</div></div>`;
   }
-  h+=`</div><button class="dashed" data-act="addChore">+ Add a chore row</button></section>`;
+  h+=`</div><div class="grid2"><button class="dashed" data-act="addChore" data-kind="daily">+ Daily chore</button><button class="dashed" data-act="addChore" data-kind="anytime">+ Anytime chore</button></div></section>`;
   // kid settings
   h+=`<section class="panel"><h2>${esc(K.name)}'s login</h2><p class="muted small">${K.hasPin?'A PIN is set.':'No PIN yet. Set one so '+esc(K.name)+' can log in.'}</p><form class="pin" data-form="kidpin" data-kid="${esc(ui.pk)}"><input type="password" id="kp-${esc(ui.pk)}" inputmode="numeric" autocomplete="new-password" placeholder="4 to 8 digits" aria-label="Kid PIN"><button class="btn" type="submit">${K.hasPin?'Change':'Set'} PIN</button></form>
     <div class="pin"><input type="text" id="kn-${esc(ui.pk)}" data-draft="kn-${esc(ui.pk)}" data-change="kidName" data-id="${esc(ui.pk)}" value="${esc(dval('kn-'+ui.pk,K.name))}" aria-label="Name"></div></section>`;
@@ -419,7 +428,8 @@ document.addEventListener('click',e=>{
     case 'cancelBack':delete ui.sendBack[d.key];break;
     case 'dayTog':{const c=S.chores.find(c=>c.id===d.id);if(!c)return;const s=new Set(Array.isArray(c.days)?c.days:ALL);const i=num(d.i);s.has(i)?s.delete(i):s.add(i);return act({action:'updateChore',id:c.id,days:[...s]})}
     case 'removeChore':ui.confirm=null;return act({action:'updateChore',id:d.id,active:false});
-    case 'addChore':return act({action:'addChore',kid:ui.pk});
+    case 'addChore':return act({action:'addChore',kid:ui.pk,kind:d.kind});
+    case 'logAny':{const c=S.chores.find(c=>c.id===d.id);act({action:'addExtra',kid:d.kid,date:d.date,preset:d.id}).then(()=>c&&toast(`Logged: ${c.name}`));return}
     case 'ledgerDel':ui.confirm=null;return act({action:'ledgerDelete',kid:d.kid,id:d.id});
   }
   render();
@@ -431,6 +441,7 @@ document.addEventListener('change',e=>{
   else if(c==='since')act({action:'setSince',kid:t.dataset.kid,since:v});
   else if(c==='choreName'){delete drafts[t.dataset.draft];if(v.trim())act({action:'updateChore',id:t.dataset.id,name:v})}
   else if(c==='choreVal'){delete drafts[t.dataset.draft];act({action:'updateChore',id:t.dataset.id,value:num(v)})}
+  else if(c==='choreKind')act({action:'updateChore',id:t.dataset.id,kind:v});
   else if(c==='kidName'){delete drafts[t.dataset.draft];if(v.trim())act({action:'renameKid',kid:t.dataset.id,name:v})}
 });
 document.addEventListener('submit',async e=>{
