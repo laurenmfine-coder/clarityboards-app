@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#2C7A68">
+<title>Chore Bank</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#EEF3F1; --surface:#FFFFFF; --sunk:#E3EBE8; --line:#D3DEDA;
+  --ink:#12312B; --muted:#5B726D;
+  --accent:#2C7A68; --accent-ink:#FFFFFF; --accent-soft:#D6EBE4;
+  --coin:#B47A0C; --coin-soft:#FBEFD2;
+  --pending:#5A6CC8; --pending-soft:#E3E7FA;
+  --back:#C2503A; --back-soft:#FBE3DD;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0E1916; --surface:#16241F; --sunk:#1D2E29; --line:#2A3F39;
+  --ink:#E4EFEB; --muted:#94AAA4;
+  --accent:#4DB598; --accent-ink:#0B1A16; --accent-soft:#1E3C34;
+  --coin:#F0BB48; --coin-soft:#3A3018;
+  --pending:#8E9DF0; --pending-soft:#262C4A;
+  --back:#EE7B63; --back-soft:#40231D;
+  color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(12px + env(safe-area-inset-top,0px)) 104px}
+.wrap{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:26px;font-weight:800}
+h2{font-size:20px;font-weight:700}
+h3{font-size:17px;font-weight:700}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;background:var(--sunk);padding:4px;border-radius:999px}
+.tab{border:0;background:transparent;padding:8px 14px;border-radius:999px;font-weight:600;color:var(--muted)}
+.tab[aria-current="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--pending);color:#fff;font-size:12px}
+.card{background:var(--surface);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--line)}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.big{font-family:var(--display);font-weight:800;font-size:44px;line-height:1;color:var(--coin)}
+.big.neg{color:var(--back)}
+.vault{background:linear-gradient(135deg,var(--coin-soft),var(--surface) 70%)}
+.bar{height:16px;border-radius:999px;background:var(--sunk);overflow:hidden;display:flex}
+.bar .a{background:var(--accent);transition:width .4s ease}
+.bar .p{background:repeating-linear-gradient(45deg,var(--pending) 0 6px,var(--pending-soft) 6px 12px);transition:width .4s ease}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.totals{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tot{background:var(--sunk);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tot b{font-family:var(--display);font-size:24px;font-weight:700}
+.tot input[type=date]{background:transparent;border:1px solid var(--line);border-radius:8px;padding:2px 6px;font-size:13px;max-width:100%}
+.pct{font-family:var(--display);font-weight:700;font-size:20px}
+.grow{display:flex;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px}
+.grow .dot{flex:none;width:28px;height:28px;border-radius:50%;background:var(--coin);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
+.ledger{list-style:none;margin:0;padding:0}
+.ledger li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px;align-items:center}
+.ledger li:first-child{border-top:0}
+.ledger .what{min-width:0;overflow-wrap:anywhere}
+.ledger .amt{font-weight:600;white-space:nowrap}
+.amt.plus{color:var(--accent)} .amt.minus{color:var(--back)} .amt.int{color:var(--coin)}
+.weeknav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.icon-btn{border:1px solid var(--line);background:var(--surface);width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:18px}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.day .wd{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.04em}
+.day .dn{font-family:var(--display);font-size:20px;font-weight:700;line-height:1}
+.day .ct{font-size:11px;color:var(--muted)}
+.day.today .dn{color:var(--accent)}
+.day[aria-current="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.day[aria-current="true"] .wd,.day[aria-current="true"] .ct{color:var(--bg);opacity:.8}
+.day.full .ct{color:var(--accent);font-weight:600}
+.day[aria-current="true"].full .ct{color:var(--bg)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.row{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line);align-items:flex-start}
+.row:first-child{border-top:0}
+.check{flex:none;width:36px;height:36px;border-radius:10px;border:2px solid var(--line);background:var(--surface);display:grid;place-items:center}
+.check svg{width:20px;height:20px;opacity:0}
+.s-done .check{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.s-pending .check{background:var(--pending);border-color:var(--pending);color:#fff}
+.s-approved .check{background:var(--coin);border-color:var(--coin);color:#fff}
+.s-done .check svg,.s-pending .check svg,.s-approved .check svg{opacity:1}
+.s-returned .check{border-color:var(--back)}
+.check:disabled{cursor:default}
+.row-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.row-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.name{font-weight:500;overflow-wrap:anywhere}
+.val{font-weight:600;color:var(--coin);white-space:nowrap}
+.row-meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pill{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px}
+.pill.done{background:var(--accent-soft);color:var(--accent)}
+.pill.pending{background:var(--pending-soft);color:var(--pending)}
+.pill.approved{background:var(--coin-soft);color:var(--coin)}
+.pill.returned{background:var(--back-soft);color:var(--back)}
+.link{border:0;background:none;padding:0;color:var(--accent);font-weight:500;font-size:13px;text-decoration:underline;text-underline-offset:2px}
+.link.danger{color:var(--back)}
+.reply{margin:0;font-size:13px;background:var(--back-soft);padding:6px 10px;border-radius:8px}
+.note-text{margin:0;font-size:13px;color:var(--muted);font-style:italic;overflow-wrap:anywhere}
+textarea,input[type=text],input[type=number],input[type=password],input[type=date],select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+textarea{min-height:56px;resize:vertical}
+.sub{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.addform{display:grid;grid-template-columns:1fr 96px auto;gap:8px;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn{border:0;border-radius:12px;padding:10px 16px;font-weight:600;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:var(--sunk);color:var(--ink)}
+.btn.warn{background:var(--back);color:#fff}
+.btn:disabled{opacity:.45;cursor:default}
+.dashed{border:2px dashed var(--line);background:transparent;border-radius:12px;padding:10px;color:var(--muted);font-weight:600;width:100%}
+.empty{color:var(--muted);font-size:14px;padding:8px 0;margin:0}
+.sendbar{position:fixed;left:0;right:0;bottom:0;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(to top,var(--bg) 70%,transparent)}
+.sendbar .btn{display:block;width:100%;max-width:680px;margin:0 auto;padding:14px;font-size:16px;border-radius:14px}
+.prow{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line);flex-wrap:wrap;align-items:center}
+.prow:first-child{border-top:0}
+.prow .info{flex:1 1 200px;min-width:0}
+.prow .acts{display:flex;gap:8px;flex-wrap:wrap}
+.chore-ed{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+.chore-ed:first-child{border-top:0}
+.chore-ed .line{display:grid;grid-template-columns:1fr 100px;gap:8px}
+.dtog{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.dtog button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);font-size:12px;font-weight:600;color:var(--muted)}
+.dtog button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.dtog .link{width:auto;height:auto;border:0;background:none;color:var(--back);font-size:13px}
+.addform.rate{grid-template-columns:1fr 1.4fr auto}
+.money-in{position:relative}
+.money-in span{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.money-in input{padding-left:22px}
+.kidsum{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.kidsum .tot b{color:var(--coin)}
+.pin{display:flex;gap:8px;max-width:340px}
+.notice{background:var(--pending-soft);border-radius:12px;padding:10px 12px;font-size:14px;margin:0}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.who button{border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:22px 12px;font-family:var(--display);font-size:22px;font-weight:700}
+.who button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;max-width:calc(100% - 32px);z-index:20}
+@media (max-width:420px){.big{font-size:38px}.days{gap:4px}.day .dn{font-size:18px}.addform{grid-template-columns:1fr 84px}.addform .btn{grid-column:1/-1}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><p class="muted">Opening the Chore Bank…</p></div>
+<div class="sendbar" id="sendbar" hidden></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+(function(){
+const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DL=['S','M','T','W','T','F','S'];
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const WD=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const ALL=[0,1,2,3,4,5,6];
+const P=s=>new Date(s+'T00:00:00Z');
+const F=d=>d.toISOString().slice(0,10);
+const addDays=(s,n)=>{const d=P(s);d.setUTCDate(d.getUTCDate()+n);return F(d)};
+const sundayOf=s=>addDays(s,-P(s).getUTCDay());
+const num=v=>{const n=Number(v);return isFinite(n)?n:0};
+const money=v=>{const n=Math.round(num(v)*100)/100;return (n<0?'-$':'$')+Math.abs(n).toFixed(2)};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nice=s=>{const d=P(s);return `${MON[d.getUTCMonth()]} ${d.getUTCDate()}`};
+const longDay=s=>{const d=P(s);return `${WD[d.getUTCDay()]}, ${MON[d.getUTCMonth()]} ${d.getUTCDate()}`};
+const nextBoundary=(d,p)=>{if(p==='week'){const w=P(d).getUTCDay();return addDays(d,w===0?7:7-w)}const x=P(d);return F(new Date(Date.UTC(x.getUTCFullYear(),x.getUTCMonth()+1,1)))};
+const sign=e=>e.type==='withdrawal'?-1:1;
+
+/* ---------- session ---------- */
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
+let token=store.get('cb_token');
+let S=null; let hello=null;
+const ui={view:null,week:null,day:null,openNotes:{},addExtra:false,sendBack:{},confirm:null,pk:null,pickWho:null,showAll:false,busy:false};
+const drafts={};
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,3200)}
+async function call(body,auth=true){
+  const res=await fetch('/api/chores',{method:'POST',headers:{'Content-Type':'application/json',...(auth&&token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body)});
+  let data={};try{data=await res.json()}catch(e){}
+  if(res.status===401&&auth){token=null;store.set('cb_token',null);S=null;await boot();throw new Error(data.error||'Please log in again.')}
+  if(!res.ok)throw new Error(data.error||'Something went wrong. Try again.');
+  return data;
+}
+async function act(body){
+  if(ui.busy)return; ui.busy=true;
+  try{const d=await call(body);setState(d.state)}catch(e){toast(e.message)}finally{ui.busy=false}
+}
+function setState(st){
+  S=st;
+  if(!ui.week){ui.week=sundayOf(S.today);ui.day=S.today}
+  if(S.who!=='parent')ui.view=S.who;
+  else if(!ui.view||(ui.view!=='parent'&&!kid(ui.view)))ui.view='parent';
+  render();
+}
+
+/* ---------- derived ---------- */
+const byOrder=(a,b)=>(num(a.order)-num(b.order))||String(a.name).localeCompare(String(b.name));
+const kid=id=>S.kids.find(k=>k.id===id);
+const wk=(k,ws)=>S.weeks[k+'_'+ws];
+const choresFor=k=>S.chores.filter(c=>c.kidId===k&&c.active!==false).sort(byOrder);
+const scheduled=(k,date)=>{const wd=P(date).getUTCDay();return choresFor(k).filter(c=>(Array.isArray(c.days)?c.days:ALL).includes(wd))};
+const itemOf=(k,date,cid)=>wk(k,sundayOf(date))?.days?.[date]?.[cid];
+const extrasFor=(k,date)=>Object.entries(wk(k,sundayOf(date))?.extras||{}).map(([eid,e])=>({eid,...e})).filter(e=>e.date===date&&e.status!=='deleted').sort((a,b)=>num(a.at)-num(b.at));
+function allItems(w){const out=[];for(const [date,m] of Object.entries(w.days||{}))for(const [cid,it] of Object.entries(m||{}))out.push({...it,date,cid});for(const [eid,e] of Object.entries(w.extras||{}))if(e.status!=='deleted')out.push({...e,eid,extra:true});return out}
+const liveVal=it=>{if(it.cid&&(it.status==='done'||it.status==='returned')){const c=S.chores.find(c=>c.id===it.cid);if(c)return num(c.value)}return num(it.value)};
+function weekStats(k,ws){
+  let potential=0;for(let i=0;i<7;i++)potential+=scheduled(k,addDays(ws,i)).reduce((a,c)=>a+num(c.value),0);
+  let earned=0,pending=0,ready=0,readyN=0;const w=wk(k,ws);
+  if(w)for(const it of allItems(w)){const v=liveVal(it);if(it.extra)potential+=num(it.value);if(it.status==='approved')earned+=v;else if(it.status==='pending')pending+=v;else if(it.status==='done'){ready+=v;readyN++}}
+  return {potential,earned,pending,ready,readyN};
+}
+const ledger=k=>(S.ledgers[k]||[]).slice().sort((a,b)=>b.date.localeCompare(a.date)||num(b.at)-num(a.at));
+const balance=k=>(S.ledgers[k]||[]).reduce((a,e)=>a+sign(e)*num(e.amount),0);
+const earnedBetween=(k,from,to)=>(S.ledgers[k]||[]).filter(e=>e.type==='earned'&&e.date>=from&&(!to||e.date<=to)).reduce((a,e)=>a+num(e.amount),0);
+const interestTotal=k=>(S.ledgers[k]||[]).filter(e=>e.type==='interest').reduce((a,e)=>a+num(e.amount),0);
+function pendingAll(){const out=[];for(const w of Object.values(S.weeks))for(const it of allItems(w))if(it.status==='pending')out.push({...it,kidId:w.kidId});return out.sort((a,b)=>a.date.localeCompare(b.date))}
+const dval=(k,f)=>k in drafts?drafts[k]:(f??'');
+
+/* ---------- render ---------- */
+const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const LABEL={done:'Checked',pending:'Waiting for approval',approved:'Approved',returned:'Sent back'};
+const TYPE={earned:'Chore',deposit:'Added',withdrawal:'Taken out',interest:'Interest'};
+
+function render(){
+  const app=document.getElementById('app');
+  const ae=document.activeElement;const fid=ae&&ae.id;const sel=ae&&('selectionStart' in ae)?[ae.selectionStart,ae.selectionEnd]:null;
+  app.innerHTML=S?renderMain():renderLogin();
+  renderSendbar();
+  if(fid){const el=document.getElementById(fid);if(el){el.focus();if(sel&&'setSelectionRange' in el){try{el.setSelectionRange(sel[0],sel[1])}catch(e){}}}}
+}
+
+function renderLogin(){
+  if(!hello)return '<p class="muted">Opening the Chore Bank…</p>';
+  if(hello.error)return `<h1>Chore Bank</h1><p class="notice">${esc(hello.error)}</p>`;
+  if(hello.setup)return `<h1>Chore Bank</h1><section class="panel"><h2>Set up</h2><p class="muted">Create the parent PIN. You'll use it to approve chores and manage the bank. Kids get their own PINs after this.</p><form class="pin" data-form="setup"><input type="password" id="setup-pin" inputmode="numeric" autocomplete="new-password" placeholder="4 to 8 digits" aria-label="Parent PIN"><button class="btn" type="submit">Save</button></form></section>`;
+  let h=`<h1>Chore Bank</h1><section class="panel"><h2>Who's here?</h2><div class="who">`;
+  for(const k of hello.kids)h+=`<button data-act="pick" data-id="${esc(k.id)}" aria-pressed="${ui.pickWho===k.id}">${esc(k.name)}</button>`;
+  h+=`<button data-act="pick" data-id="parent" aria-pressed="${ui.pickWho==='parent'}">Parent</button></div>`;
+  if(ui.pickWho){
+    const k=hello.kids.find(k=>k.id===ui.pickWho);
+    if(k&&!k.hasPin)h+=`<p class="notice">Ask a parent to set your PIN first.</p>`;
+    else h+=`<form class="pin" data-form="login"><input type="password" id="login-pin" inputmode="numeric" autocomplete="current-password" placeholder="Your PIN" aria-label="PIN"><button class="btn" type="submit">Open</button></form>`;
+  }
+  return h+`</section>`;
+}
+
+function renderMain(){
+  const pend=S.who==='parent'?pendingAll().length:0;
+  let h=`<header class="top"><h1>Chore Bank</h1>`;
+  if(S.who==='parent'){
+    h+=`<nav class="tabs" aria-label="Views">`;
+    for(const k of S.kids.slice().sort(byOrder))h+=`<button class="tab" data-act="view" data-id="${esc(k.id)}" aria-current="${ui.view===k.id}">${esc(k.name)}</button>`;
+    h+=`<button class="tab" data-act="view" data-id="parent" aria-current="${ui.view==='parent'}">Parent${pend?`<span class="badge num">${pend}</span>`:''}</button></nav>`;
+  }
+  h+=`<button class="link" data-act="logout">${S.who==='parent'?'Log out':'Not '+esc(kid(S.who)?.name||'you')+'? Switch'}</button></header>`;
+  return h+(ui.view==='parent'?renderParent():renderKid(ui.view));
+}
+
+function bankCard(k,forParent){
+  const K=kid(k);const bal=balance(k);const it=K.interest||{};
+  let h=`<section class="card vault" aria-label="Bank"><div class="head"><div><div class="eyebrow">${forParent?esc(K.name)+"'s bank":'In my bank'}</div><div class="big num${bal<0?' neg':''}">${money(bal)}</div></div>
+    <div style="text-align:right"><div class="eyebrow">Interest earned</div><div class="pct num">${money(interestTotal(k))}</div></div></div>`;
+  if(num(it.rate)>0&&it.last){
+    const nb=nextBoundary(it.last,it.period);const est=Math.max(0,Math.round(bal*it.rate)/100);
+    h+=`<div class="grow"><span class="dot" aria-hidden="true">%</span><span>Grows <b>${it.rate}%</b> every ${it.period==='week'?'week':'month'}. Next interest on <b>${nice(nb)}</b>: about <b class="num">${money(est)}</b> if the balance stays the same.</span></div>`;
+  } else if(!forParent) h+=`<p class="muted small" style="margin:0">Interest is off right now.</p>`;
+  const L=ledger(k);const shown=ui.showAll?L:L.slice(0,6);
+  if(!L.length)h+=`<p class="empty">No money yet. Approved chores land here.</p>`;
+  else{
+    h+=`<ul class="ledger">`;
+    for(const e of shown){const cls=e.type==='withdrawal'?'minus':e.type==='interest'?'int':'plus';
+      h+=`<li><span class="what"><b>${esc(e.note||TYPE[e.type])}</b> <span class="muted small">${TYPE[e.type]} · ${nice(e.date)}</span></span><span style="display:flex;gap:10px;align-items:center"><span class="amt num ${cls}">${e.type==='withdrawal'?'−':'+'}${money(e.amount)}</span>${forParent&&(e.manual||e.type==='interest')?(ui.confirm===e.id?`<button class="link danger" data-act="ledgerDel" data-kid="${esc(k)}" data-id="${esc(e.id)}">Confirm</button>`:`<button class="link danger" data-act="ask" data-id="${esc(e.id)}" aria-label="Remove entry">Remove</button>`):''}</span></li>`}
+    h+=`</ul>`;
+    if(L.length>6)h+=`<button class="link" data-act="showAll">${ui.showAll?'Show less':'Show all '+L.length}</button>`;
+  }
+  return h+`</section>`;
+}
+
+function renderKid(k){
+  const K=kid(k);if(!K)return '';
+  const ws=ui.week;const st=weekStats(k,ws);
+  const pct=st.potential?Math.round(st.earned/st.potential*100):0;
+  const aW=st.potential?Math.min(100,st.earned/st.potential*100):0;
+  const pW=st.potential?Math.min(100-aW,st.pending/st.potential*100):0;
+  const yr=S.today.slice(0,4);const thisWeek=ws===sundayOf(S.today);
+  let h=bankCard(k,false);
+  h+=`<section class="card"><div class="head"><div><div class="eyebrow">${thisWeek?'Earned this week':'Earned week of '+nice(ws)}</div><div class="big num">${money(st.earned)}</div></div>
+    <div style="text-align:right"><div class="pct num">${pct}% of max</div><div class="muted small num">${money(st.potential)} possible</div></div></div>
+    <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" aria-label="Percent of the most you can earn this week"><div class="a" style="width:${aW}%"></div><div class="p" style="width:${pW}%"></div></div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>Approved ${money(st.earned)}</span><span><i style="background:var(--pending)"></i>Waiting ${money(st.pending)}</span><span><i style="background:var(--sunk);outline:1px solid var(--line)"></i>Still possible ${money(Math.max(0,st.potential-st.earned-st.pending))}</span></div>
+    <div class="totals"><div class="tot"><span class="eyebrow">Earned in ${yr}</span><b class="num">${money(earnedBetween(k,yr+'-01-01',yr+'-12-31'))}</b></div>
+    <div class="tot"><label class="eyebrow" for="since-${esc(k)}">Earned since</label><input type="date" id="since-${esc(k)}" data-change="since" data-kid="${esc(k)}" value="${esc(K.since||'')}"><b class="num">${K.since?money(earnedBetween(k,K.since)):'<span class="muted small">Pick a date</span>'}</b></div></div></section>`;
+  h+=`<div class="weeknav"><button class="icon-btn" data-act="week" data-d="-7" aria-label="Previous week">‹</button><h2 class="num">${nice(ws)} – ${nice(addDays(ws,6))}</h2><button class="icon-btn" data-act="week" data-d="7" aria-label="Next week">›</button></div><div class="days">`;
+  for(let i=0;i<7;i++){
+    const d=addDays(ws,i);const sch=scheduled(k,d);const ex=extrasFor(k,d);const total=sch.length+ex.length;
+    const ok=s=>s&&s!=='none'&&s!=='returned';
+    const n=sch.filter(c=>ok(itemOf(k,d,c.id)?.status)).length+ex.filter(e=>ok(e.status)).length;
+    h+=`<button class="day${d===S.today?' today':''}${total&&n===total?' full':''}" data-act="day" data-d="${d}" aria-current="${ui.day===d}" aria-label="${longDay(d)}, ${n} of ${total} done"><span class="wd">${DAYS[i].toUpperCase()}</span><span class="dn num">${P(d).getUTCDate()}</span><span class="ct num">${total?n+'/'+total:'–'}</span></button>`;
+  }
+  h+=`</div>`;
+  const d=ui.day;const sch=scheduled(k,d);const ex=extrasFor(k,d);
+  h+=`<section class="panel"><h3>${longDay(d)}</h3>`;
+  if(!sch.length&&!ex.length)h+=`<p class="empty">No chores set for this day. Add an extra one below if you helped out.</p>`;
+  h+=`<ul class="list">`;
+  for(const c of sch){const it=itemOf(k,d,c.id)||{};h+=rowHtml(k,d,{cid:c.id},c.name,(it.status==='approved'||it.status==='pending')?num(it.value):num(c.value),it,false)}
+  h+=`</ul><div class="sub"><span class="eyebrow">Extra chores</span></div>`;
+  if(ex.length){h+=`<ul class="list">`;for(const e of ex)h+=rowHtml(k,d,{eid:e.eid},e.name,num(e.value),e,true);h+=`</ul>`}
+  if(ui.addExtra)h+=`<form class="addform" data-form="extra" data-kid="${esc(k)}" data-date="${d}"><input type="text" id="x-name" data-draft="x-name" placeholder="What did you do?" value="${esc(dval('x-name'))}" aria-label="Extra chore"><div class="money-in"><span>$</span><input type="number" id="x-val" data-draft="x-val" min="0" step="0.25" inputmode="decimal" placeholder="0.00" value="${esc(dval('x-val'))}" aria-label="Amount"></div><button class="btn" type="submit">Add</button></form>`;
+  else h+=`<button class="dashed" data-act="openExtra">+ Add an extra chore</button>`;
+  return h+`</section>`;
+}
+
+function rowHtml(k,date,ref,name,value,it,isExtra){
+  const st=it.status&&it.status!=='none'?it.status:'none';
+  const key=`${k}|${date}|${ref.cid||ref.eid}`;const locked=st==='pending'||st==='approved';
+  const attrs=`data-kid="${esc(k)}" data-date="${date}" ${ref.cid?`data-cid="${esc(ref.cid)}"`:`data-eid="${esc(ref.eid)}"`}`;
+  const open=ui.openNotes[key];
+  let h=`<li class="row s-${st}"><button class="check" data-act="toggle" ${attrs} ${locked?'disabled':''} aria-pressed="${st==='done'||locked}" aria-label="${esc(name)}">${CHECK}</button><div class="row-main">
+    <div class="row-top"><span class="name">${esc(name)}</span><span class="val num">${money(value)}</span></div>
+    <div class="row-meta">${st!=='none'?`<span class="pill ${st}">${LABEL[st]}</span>`:''}${!open&&st!=='approved'?`<button class="link" data-act="note" data-key="${esc(key)}">${it.note?'Edit note':'Add note'}</button>`:''}${isExtra&&!locked?`<button class="link danger" data-act="delExtra" ${attrs}>Remove</button>`:''}</div>`;
+  if(st==='returned'&&it.reply)h+=`<p class="reply"><b>Parent:</b> ${esc(it.reply)}</p>`;
+  if(open){const nid='n-'+key.replace(/[^a-zA-Z0-9]/g,'_');h+=`<textarea id="${nid}" data-draft="${esc(key)}" data-change="note" ${attrs} placeholder="Anything to tell your parent?" aria-label="Note">${esc(dval(key,it.note))}</textarea>`}
+  else if(it.note)h+=`<p class="note-text">“${esc(it.note)}”</p>`;
+  return h+`</div></li>`;
+}
+
+function renderSendbar(){
+  const bar=document.getElementById('sendbar');
+  if(!S||ui.view==='parent'||!kid(ui.view)){bar.hidden=true;return}
+  const st=weekStats(ui.view,ui.week);bar.hidden=false;
+  bar.innerHTML=`<button class="btn" data-act="send" ${st.readyN?'':'disabled'}>${st.readyN?`Send ${st.readyN} for approval · ${money(st.ready)}`:'Check off chores, then send for approval'}</button>`;
+}
+
+function renderParent(){
+  const kids=S.kids.slice().sort(byOrder);
+  if(!ui.pk||!kid(ui.pk))ui.pk=kids[0]?.id||null;
+  const ws=sundayOf(S.today);
+  let h=`<section class="kidsum">`;
+  for(const k of kids){const st=weekStats(k.id,ws);const p=st.potential?Math.round(st.earned/st.potential*100):0;h+=`<div class="tot"><span class="eyebrow">${esc(k.name)}</span><b class="num">${money(balance(k.id))}</b><span class="muted small num">in the bank · ${money(st.earned)} this week (${p}%) · ${money(st.pending)} waiting</span></div>`}
+  h+=`</section>`;
+  const pend=pendingAll();
+  h+=`<section class="panel"><h2>Waiting for approval</h2>`;
+  if(!pend.length)h+=`<p class="empty">Nothing waiting. Sent chores show up here.</p>`;
+  for(const k of kids){
+    const mine=pend.filter(p=>p.kidId===k.id);if(!mine.length)continue;
+    h+=`<div class="sub"><h3>${esc(k.name)} <span class="muted small num">${money(mine.reduce((a,p)=>a+num(p.value),0))}</span></h3><button class="btn" data-act="approveAll" data-kid="${esc(k.id)}">Approve all</button></div><div>`;
+    for(const p of mine){
+      const key=`${k.id}|${p.date}|${p.cid||p.eid}`;const attrs=`data-kid="${esc(k.id)}" data-date="${p.date}" ${p.cid?`data-cid="${esc(p.cid)}"`:`data-eid="${esc(p.eid)}"`}`;
+      h+=`<div class="prow"><div class="info"><div class="row-top"><span class="name">${esc(p.name)}${p.extra?' <span class="pill done">Extra</span>':''}</span><span class="val num">${money(p.value)}</span></div><div class="muted small">${longDay(p.date)}</div>${p.note?`<p class="note-text">“${esc(p.note)}”</p>`:''}</div>`;
+      if(ui.sendBack[key]){const bid='sb-'+key.replace(/[^a-zA-Z0-9]/g,'_');h+=`<form class="addform" style="flex-basis:100%" data-form="sendback" ${attrs}><input type="text" id="${bid}" data-draft="sb|${esc(key)}" placeholder="Why it's going back (optional)" value="${esc(dval('sb|'+key))}" aria-label="Reason"><button class="btn warn" type="submit">Send back</button><button class="btn ghost" type="button" data-act="cancelBack" data-key="${esc(key)}">Cancel</button></form>`}
+      else h+=`<div class="acts"><button class="btn" data-act="approve" ${attrs}>Approve</button><button class="btn ghost" data-act="openBack" data-key="${esc(key)}">Send back</button></div>`;
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+  }
+  h+=`</section>`;
+  if(!ui.pk)return h;
+  const K=kid(ui.pk);const it=K.interest||{rate:0,period:'month'};
+  h+=`<nav class="tabs" aria-label="Manage which kid">${kids.map(k=>`<button class="tab" data-act="pk" data-id="${esc(k.id)}" aria-current="${ui.pk===k.id}">${esc(k.name)}</button>`).join('')}</nav>`;
+  // bank
+  h+=bankCard(ui.pk,true);
+  h+=`<section class="panel"><h2>Add or take out money</h2><p class="muted small">Use "Take out" when you pay out cash or ${esc(K.name)} spends from the bank. Use "Add" for gifts or a starting balance.</p>
+    <form data-form="ledger" data-kid="${esc(ui.pk)}" style="display:flex;flex-direction:column;gap:8px"><div class="grid2"><select id="lg-type" data-draft="lg-type" aria-label="Type"><option value="deposit" ${dval('lg-type','deposit')==='deposit'?'selected':''}>Add money</option><option value="withdrawal" ${dval('lg-type')==='withdrawal'?'selected':''}>Take out</option></select><div class="money-in"><span>$</span><input type="number" id="lg-amt" data-draft="lg-amt" min="0" step="0.01" inputmode="decimal" placeholder="0.00" value="${esc(dval('lg-amt'))}" aria-label="Amount"></div></div>
+    <div class="grid2"><input type="text" id="lg-note" data-draft="lg-note" placeholder="What for? (Birthday money, paid out…)" value="${esc(dval('lg-note'))}" aria-label="Note"><input type="date" id="lg-date" data-draft="lg-date" value="${esc(dval('lg-date',S.today))}" aria-label="Date"></div><button class="btn" type="submit">Save</button></form></section>`;
+  // interest
+  const bal=balance(ui.pk);const rate=num(dval('in-rate',it.rate||''));const per=dval('in-per',it.period||'month');
+  h+=`<section class="panel"><h2>Interest</h2><p class="muted small">Interest is added automatically on the 1st of each month (or each Sunday for weekly), based on the balance at that moment. Set 0 to turn it off.</p>
+    <form data-form="interest" data-kid="${esc(ui.pk)}" class="addform rate"><div class="money-in"><input type="number" id="in-rate" data-draft="in-rate" min="0" max="100" step="0.1" inputmode="decimal" value="${esc(dval('in-rate',it.rate||''))}" placeholder="1" aria-label="Interest percent" style="padding-left:10px"></div><select id="in-per" data-draft="in-per" aria-label="How often"><option value="month" ${per==='month'?'selected':''}>% per month</option><option value="week" ${per==='week'?'selected':''}>% per week</option></select><button class="btn" type="submit">Save</button></form>
+    <p class="muted small num" style="margin:0">${rate>0?`On today's ${money(bal)} that pays about ${money(Math.max(0,bal*rate/100))} per ${per==='week'?'week':'month'}.`:'Interest is off.'}</p></section>`;
+  // chores
+  const list=choresFor(ui.pk);const st=weekStats(ui.pk,ws);
+  h+=`<section class="panel"><h2>${esc(K.name)}'s chores and pay</h2><p class="muted small num">Each amount is paid per day the chore is done. Most ${esc(K.name)} can earn in a week: <b>${money(st.potential)}</b> plus extras.</p><div>`;
+  if(!list.length)h+=`<p class="empty">No chores yet.</p>`;
+  for(const c of list){
+    const days=Array.isArray(c.days)?c.days:ALL;
+    h+=`<div class="chore-ed"><div class="line"><input type="text" id="cn-${esc(c.id)}" data-draft="cn-${esc(c.id)}" data-change="choreName" data-id="${esc(c.id)}" value="${esc(dval('cn-'+c.id,c.name))}" aria-label="Chore name"><div class="money-in"><span>$</span><input type="number" id="cv-${esc(c.id)}" data-draft="cv-${esc(c.id)}" data-change="choreVal" data-id="${esc(c.id)}" min="0" step="0.25" inputmode="decimal" value="${esc(dval('cv-'+c.id,num(c.value).toFixed(2)))}" aria-label="Pay per day"></div></div>
+    <div class="dtog">${DL.map((l,i)=>`<button data-act="dayTog" data-id="${esc(c.id)}" data-i="${i}" aria-pressed="${days.includes(i)}" aria-label="${DAYS[i]}">${l}</button>`).join('')}<span style="flex:1"></span>${ui.confirm===c.id?`<button class="link danger" data-act="removeChore" data-id="${esc(c.id)}">Tap again to remove</button>`:`<button class="link danger" data-act="ask" data-id="${esc(c.id)}">Remove</button>`}</div></div>`;
+  }
+  h+=`</div><button class="dashed" data-act="addChore">+ Add a chore row</button></section>`;
+  // kid settings
+  h+=`<section class="panel"><h2>${esc(K.name)}'s login</h2><p class="muted small">${K.hasPin?'A PIN is set.':'No PIN yet. Set one so '+esc(K.name)+' can log in.'}</p><form class="pin" data-form="kidpin" data-kid="${esc(ui.pk)}"><input type="password" id="kp-${esc(ui.pk)}" inputmode="numeric" autocomplete="new-password" placeholder="4 to 8 digits" aria-label="Kid PIN"><button class="btn" type="submit">${K.hasPin?'Change':'Set'} PIN</button></form>
+    <div class="pin"><input type="text" id="kn-${esc(ui.pk)}" data-draft="kn-${esc(ui.pk)}" data-change="kidName" data-id="${esc(ui.pk)}" value="${esc(dval('kn-'+ui.pk,K.name))}" aria-label="Name"></div></section>`;
+  h+=`<section class="panel"><h2>Family</h2><form class="addform" data-form="kid" style="grid-template-columns:1fr auto"><input type="text" id="k-new" data-draft="k-new" placeholder="Add a kid" value="${esc(dval('k-new'))}" aria-label="New kid's name"><button class="btn" type="submit">Add</button></form>
+    <div class="eyebrow">Parent PIN</div><form class="pin" data-form="parentpin"><input type="password" id="pp-new" inputmode="numeric" autocomplete="new-password" placeholder="New parent PIN" aria-label="New parent PIN"><button class="btn" type="submit">Change</button></form></section>`;
+  return h;
+}
+
+/* ---------- events ---------- */
+const refOf=d=>d.cid?{cid:d.cid}:{eid:d.eid};
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b||b.disabled)return;
+  const a=b.dataset.act,d=b.dataset;
+  switch(a){
+    case 'pick':ui.pickWho=d.id;render();document.getElementById('login-pin')?.focus();return;
+    case 'logout':token=null;store.set('cb_token',null);S=null;ui.view=null;ui.week=null;ui.pickWho=null;boot();return;
+    case 'view':ui.view=d.id;ui.addExtra=false;ui.showAll=false;break;
+    case 'pk':ui.pk=d.id;ui.confirm=null;ui.showAll=false;for(const k of ['in-rate','in-per','lg-amt','lg-note','lg-type','lg-date'])delete drafts[k];break;
+    case 'week':ui.week=addDays(ui.week,num(d.d));ui.day=ui.week===sundayOf(S.today)?S.today:ui.week;ui.addExtra=false;break;
+    case 'day':ui.day=d.d;ui.addExtra=false;break;
+    case 'openExtra':ui.addExtra=true;render();document.getElementById('x-name')?.focus();return;
+    case 'note':ui.openNotes[d.key]=true;render();return;
+    case 'showAll':ui.showAll=!ui.showAll;break;
+    case 'ask':ui.confirm=d.id;break;
+    case 'toggle':return act({action:'toggle',kid:d.kid,date:d.date,...refOf(d)});
+    case 'delExtra':return act({action:'delExtra',kid:d.kid,date:d.date,...refOf(d)});
+    case 'send':{const st=weekStats(ui.view,ui.week);act({action:'send',kid:ui.view,ws:ui.week}).then(()=>toast(`Sent ${st.readyN} for approval.`));return}
+    case 'approve':return act({action:'approve',kid:d.kid,date:d.date,...refOf(d)});
+    case 'approveAll':act({action:'approveAll',kid:d.kid}).then(()=>toast('Approved. Added to the bank.'));return;
+    case 'openBack':ui.sendBack[d.key]=true;break;
+    case 'cancelBack':delete ui.sendBack[d.key];break;
+    case 'dayTog':{const c=S.chores.find(c=>c.id===d.id);if(!c)return;const s=new Set(Array.isArray(c.days)?c.days:ALL);const i=num(d.i);s.has(i)?s.delete(i):s.add(i);return act({action:'updateChore',id:c.id,days:[...s]})}
+    case 'removeChore':ui.confirm=null;return act({action:'updateChore',id:d.id,active:false});
+    case 'addChore':return act({action:'addChore',kid:ui.pk});
+    case 'ledgerDel':ui.confirm=null;return act({action:'ledgerDelete',kid:d.kid,id:d.id});
+  }
+  render();
+});
+document.addEventListener('input',e=>{const k=e.target.dataset?.draft;if(k!=null){drafts[k]=e.target.value;if(k==='in-rate'||k==='in-per')render()}});
+document.addEventListener('change',e=>{
+  const t=e.target,c=t.dataset?.change;if(!c)return;const v=t.value;
+  if(c==='note'){const key=t.dataset.draft;delete drafts[key];delete ui.openNotes[key];act({action:'note',kid:t.dataset.kid,date:t.dataset.date,...refOf(t.dataset),note:v})}
+  else if(c==='since')act({action:'setSince',kid:t.dataset.kid,since:v});
+  else if(c==='choreName'){delete drafts[t.dataset.draft];if(v.trim())act({action:'updateChore',id:t.dataset.id,name:v})}
+  else if(c==='choreVal'){delete drafts[t.dataset.draft];act({action:'updateChore',id:t.dataset.id,value:num(v)})}
+  else if(c==='kidName'){delete drafts[t.dataset.draft];if(v.trim())act({action:'renameKid',kid:t.dataset.id,name:v})}
+});
+document.addEventListener('submit',async e=>{
+  const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();
+  const kind=f.dataset.form,fd=f.dataset;
+  try{
+    if(kind==='setup'||kind==='login'){
+      const pin=f.querySelector('input').value.trim();if(!pin){toast('Type the PIN first.');return}
+      const d=await call(kind==='setup'?{action:'setup',pin}:{action:'login',who:ui.pickWho,pin},false);
+      token=d.token;store.set('cb_token',token);setState(d.state);return;
+    }
+    if(kind==='extra'){const name=(drafts['x-name']||'').trim();if(!name){toast('Type what you did first.');return}
+      await act({action:'addExtra',kid:fd.kid,date:fd.date,name,value:num(drafts['x-val'])});delete drafts['x-name'];delete drafts['x-val'];ui.addExtra=false;render();return}
+    if(kind==='sendback'){const key=`${fd.kid}|${fd.date}|${fd.cid||fd.eid}`;await act({action:'sendBack',kid:fd.kid,date:fd.date,...refOf(fd),reply:drafts['sb|'+key]||''});delete drafts['sb|'+key];delete ui.sendBack[key];render();return}
+    if(kind==='ledger'){const amt=num(drafts['lg-amt']);if(!(amt>0)){toast('Enter an amount above $0.');return}
+      await act({action:'ledgerAdd',kid:fd.kid,type:drafts['lg-type']||'deposit',amount:amt,note:drafts['lg-note']||'',date:drafts['lg-date']||S.today});
+      for(const k of ['lg-amt','lg-note','lg-date'])delete drafts[k];render();toast('Saved to the bank.');return}
+    if(kind==='interest'){const K=kid(fd.kid);await act({action:'setInterest',kid:fd.kid,rate:num(dval('in-rate',K.interest?.rate||0)),period:dval('in-per',K.interest?.period||'month')});delete drafts['in-rate'];delete drafts['in-per'];render();toast('Interest saved.');return}
+    if(kind==='kidpin'||kind==='parentpin'){const pin=f.querySelector('input').value.trim();if(!/^\d{4,8}$/.test(pin)){toast('Use 4 to 8 digits.');return}
+      await act(kind==='kidpin'?{action:'setKidPin',kid:fd.kid,pin}:{action:'setParentPin',pin});toast('PIN saved.');return}
+    if(kind==='kid'){const name=(drafts['k-new']||'').trim();if(!name)return;await act({action:'addKid',name});delete drafts['k-new'];render();return}
+  }catch(err){toast(err.message)}
+});
+
+/* ---------- boot + refresh ---------- */
+async function boot(){
+  if(token){try{const d=await call({action:'state'});setState(d.state);return}catch(e){}}
+  try{hello=await call({action:'hello'},false)}catch(e){hello={error:e.message}}
+  render();
+}
+async function refresh(){
+  if(!S||!token||ui.busy||document.hidden)return;
+  const ae=document.activeElement;if(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))return;
+  try{const d=await call({action:'state'});S=d.state;render()}catch(e){}
+}
+setInterval(refresh,20000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
+boot();
+})();
+</script>
+</body>
+</html>
